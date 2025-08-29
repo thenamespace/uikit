@@ -18,12 +18,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@/components/*": ["src/components/*"],
-      "@/atoms/*": ["src/components/atoms/*"],
-      "@/molecules/*": ["src/components/molecules/*"],
-      "@/constants/*": ["src/constants/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/types/*": ["src/types/*"]
+      "@/components": ["src/components/index"],
+      "@/atoms": ["src/components/atoms/index"],
+      "@/molecules": ["src/components/molecules/index"],
+      "@/constants": ["src/constants/index"],
+      "@/utils": ["src/utils/index"],
+      "@/types": ["src/types/index"]
     }
   },
   "include": ["src", "*.ts", "*.tsx"],

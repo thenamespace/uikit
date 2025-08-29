@@ -1,1 +1,2 @@
-export const a = 1;
+// Address constants will be added here
+export const addressConstants = [];

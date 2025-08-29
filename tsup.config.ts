@@ -11,7 +11,6 @@ export default defineConfig({
   splitting: false,
   minify: false,
   target: "es2020",
-  css: true,
   esbuildOptions(options) {
     options.alias = {
       "@": "./src",

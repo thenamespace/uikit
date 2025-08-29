@@ -42,20 +42,8 @@ export const supportedTexts: SupportedTextRecord[] = [
     key: "location",
     category: TextRecordCategory.General,
   },
-  {
-    icon: "",
-    key: "url",
-    category: TextRecordCategory.General,
-  },
-  {
-    icon: "",
-    key: "location",
-    category: TextRecordCategory.General,
-  },
 ];
 
 export const getSupportedText = (key: string) => {
   return supportedTexts.find(txt => txt.key === key);
 };
-
-export const a = 1;

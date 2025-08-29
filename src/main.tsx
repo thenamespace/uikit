@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Button, SelectRecordsForm } from "../src";
-import "../src/styles/theme.css";
-import { EnsRecords, EnsTextRecord } from "../src/types";
+import { Button, SelectRecordsForm } from "@/components";
+import "./styles/theme.css";
+import { EnsRecords, EnsTextRecord } from "@/types";
 
 const _texts: EnsTextRecord[] = [
   {

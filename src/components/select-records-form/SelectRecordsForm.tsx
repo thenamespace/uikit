@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { EnsAddressRecord, EnsRecords, EnsTextRecord } from "../../types";
-import { Icon, Text } from "../atoms";
+import { Text } from "../atoms";
 import { TextRecords } from "./text-records/TextRecords";
 import { AddressRecords } from "./AddressRecords";
 import { ContenthashRecord } from "./ContenthashRecord";
