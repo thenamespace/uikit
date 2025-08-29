@@ -1,0 +1,22 @@
+.ns-text-records {
+
+}
+
+.ns-text-records .circle-icon {
+    background-color: var(--ns-color-fg);
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+}
+
+.ns-text-records .ns-text-record-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.ns-text-records .ns-text-record-field .ns-input__wrapper {
+    flex: 1;
+    min-width: 0;
+}

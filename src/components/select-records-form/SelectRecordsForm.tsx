@@ -1,8 +1,8 @@
 
 import { useState } from "react"
-import { EnsRecords } from "../../types"
+import { EnsAddressRecord, EnsRecords, EnsTextRecord } from "../../types"
 import { Icon, Text } from "../atoms"
-import { TextRecords } from "./TextRecords"
+import { TextRecords } from "./text-records/TextRecords"
 import { AddressRecords } from "./AddressRecords"
 import { ContenthashRecord } from "./ContenthashRecord"
 import "./SelectRecordsForm.css"
@@ -29,6 +29,15 @@ export const SelectRecordsForm = ({
 
     const [selectedItem, setSelectedItem] = useState<string>(NAV_TEXTS)
 
+    const handleTextsUpdated = (texts: EnsTextRecord[]) => {
+        onRecordsUpdated({...records, texts})
+    }
+
+    const handleAddressesUpdated = (addresses: EnsAddressRecord[]) => {
+        onRecordsUpdated({...records, addresses})
+    }
+
+
     return <div className="ns-select-records-form">
 
         {/* // cover and avatar */}
@@ -39,7 +48,7 @@ export const SelectRecordsForm = ({
         </div>
 
 
-        {/* // nav items */}
+        {/* nav items */}
         <div className="ns-select-records-nav d-flex justify-content-around align-items-center">
             {navigation_items.map(item =>
                 <div key={item}
@@ -51,12 +60,14 @@ export const SelectRecordsForm = ({
                 </div>)}
         </div>
 
+        {/* records */}
         <div className="ns-select-records-content">
-            {/* {selectedItem === NAV_TEXTS && <TextSelector />} */}
-           { selectedItem === NAV_TEXTS && <TextRecords></TextRecords>}
+           { selectedItem === NAV_TEXTS && 
+                <TextRecords 
+                    texts={records.texts} 
+                    onTextsChanged={handleTextsUpdated}></TextRecords>}
            { selectedItem === NAV_ADDRS && <AddressRecords/>}
            { selectedItem === WEBSITE && <ContenthashRecord/>}
-           <Icon name="person"></Icon>
         </div>
     </div>
 }
