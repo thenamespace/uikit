@@ -52,4 +52,4 @@ export const Disabled: Story = {
     disabled: true,
     children: "Disabled",
   },
-}; 
+};

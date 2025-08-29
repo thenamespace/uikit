@@ -35,7 +35,7 @@ export const DifferentColors: Story = {
 export const CommonIcons: Story = {
   render: () => (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-       <Icon name="person" size={16} />
+      <Icon name="person" size={16} />
     </div>
   ),
-}; 
+};

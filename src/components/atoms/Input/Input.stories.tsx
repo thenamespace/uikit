@@ -47,7 +47,14 @@ export const NumberInput: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "300px" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+        width: "300px",
+      }}
+    >
       <Input size="sm" placeholder="Small input" />
       <Input size="md" placeholder="Medium input" />
       <Input size="lg" placeholder="Large input" />
@@ -67,4 +74,4 @@ export const Disabled: Story = {
     disabled: true,
     placeholder: "Disabled input",
   },
-}; 
+};

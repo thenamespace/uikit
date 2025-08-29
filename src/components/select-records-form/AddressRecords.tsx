@@ -1,3 +1,3 @@
 export const AddressRecords = () => {
-    return <div>Address Selector</div>
-}
+  return <div>Address Selector</div>;
+};

@@ -2,13 +2,13 @@ import React, { ReactElement } from "react";
 import * as LucideIcons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import "./Icon.css";
-import { User } from 'lucide-react';
+import { User } from "lucide-react";
 
-export type IconName = "person"
+export type IconName = "person";
 
 const icons: Record<IconName, LucideIcon> = {
-  person: User
-}
+  person: User,
+};
 
 export interface IconProps {
   name: IconName;
@@ -42,4 +42,4 @@ export const Icon: React.FC<IconProps> = ({
   );
 };
 
-export default Icon; 
+export default Icon;

@@ -43,15 +43,17 @@ export const RightAligned: Story = {
 export const CustomTrigger: Story = {
   args: {
     trigger: (
-      <div style={{ 
-        padding: "0.5rem 1rem", 
-        background: "var(--ns-color-primary)", 
-        color: "var(--ns-color-primary-contrast)",
-        borderRadius: "var(--ns-radius-md)",
-        cursor: "pointer"
-      }}>
+      <div
+        style={{
+          padding: "0.5rem 1rem",
+          background: "var(--ns-color-primary)",
+          color: "var(--ns-color-primary-contrast)",
+          borderRadius: "var(--ns-radius-md)",
+          cursor: "pointer",
+        }}
+      >
         Custom Trigger
       </div>
     ),
   },
-}; 
+};

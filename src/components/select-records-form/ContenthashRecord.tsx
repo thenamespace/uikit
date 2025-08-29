@@ -1,4 +1,3 @@
 export const ContenthashRecord = () => {
-    return <div></div>
-}
-    
+  return <div></div>;
+};

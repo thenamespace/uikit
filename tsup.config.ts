@@ -20,7 +20,7 @@ export default defineConfig({
       "@/molecules": "./src/components/molecules",
       "@/constants": "./src/constants",
       "@/utils": "./src/utils",
-      "@/types": "./src/types"
+      "@/types": "./src/types",
     };
-  }
-}); 
+  },
+});

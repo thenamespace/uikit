@@ -27,13 +27,7 @@ export const Text: React.FC<TextProps> = ({
   const weightClass = `ns-text--${weight}`;
   const colorClass = `ns-text--${color}`;
 
-  const classes = [
-    "ns-text",
-    sizeClass,
-    weightClass,
-    colorClass,
-    className,
-  ]
+  const classes = ["ns-text", sizeClass, weightClass, colorClass, className]
     .filter(Boolean)
     .join(" ");
 
@@ -44,4 +38,4 @@ export const Text: React.FC<TextProps> = ({
   );
 };
 
-export default Text; 
+export default Text;

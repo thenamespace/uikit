@@ -24,7 +24,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   const handleToggle = useCallback(() => {
     if (!disabled) {
-      setIsOpen((prev) => !prev);
+      setIsOpen(prev => !prev);
     }
   }, [disabled]);
 
@@ -42,7 +42,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   useEffect(() => {
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", (e) => {
+      document.addEventListener("keydown", e => {
         if (e.key === "Escape") setIsOpen(false);
       });
     }
@@ -67,7 +67,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         tabIndex={disabled ? -1 : 0}
         aria-expanded={isOpen}
         aria-haspopup="true"
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             handleToggle();
@@ -90,4 +90,4 @@ export const Dropdown: React.FC<DropdownProps> = ({
   );
 };
 
-export default Dropdown; 
+export default Dropdown;

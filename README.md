@@ -9,6 +9,7 @@ npm i @arti/ui-components
 ```
 
 Peer dependencies:
+
 - react, react-dom
 
 ## Usage
@@ -16,8 +17,8 @@ Peer dependencies:
 Wrap your app with `ThemeProvider` and use components.
 
 ```tsx
-import React from 'react';
-import { ThemeProvider, Button } from '@arti/ui-components';
+import React from "react";
+import { ThemeProvider, Button } from "@arti/ui-components";
 
 export function App() {
   return (
@@ -34,7 +35,7 @@ export function App() {
 - Toggle theme via `useTheme` or set `data-theme` on a wrapper element.
 
 ```tsx
-import { useTheme } from '@arti/ui-components';
+import { useTheme } from "@arti/ui-components";
 
 function Toggle() {
   const { theme, toggleTheme } = useTheme();
@@ -55,4 +56,4 @@ Override CSS variables in your app stylesheet if needed:
 - `npm run dev` - watch build
 - `npm run build` - build to `dist`
 - `npm run storybook` - run Storybook
-- `npm run build-storybook` - build Storybook static site 
+- `npm run build-storybook` - build Storybook static site

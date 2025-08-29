@@ -4,7 +4,8 @@ import "./Button.css";
 export type ButtonVariant = "solid" | "outline" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
@@ -54,4 +55,4 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
-export default Button; 
+export default Button;

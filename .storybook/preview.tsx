@@ -9,7 +9,13 @@ const preview: Preview = {
       const theme = context.globals.theme === "dark" ? "dark" : "light";
       return (
         <ThemeProvider initialTheme={theme as any} useDocument={false}>
-          <div style={{ background: "var(--ns-color-bg)", minHeight: "100vh", padding: 24 }}>
+          <div
+            style={{
+              background: "var(--ns-color-bg)",
+              minHeight: "100vh",
+              padding: 24,
+            }}
+          >
             <Story />
           </div>
         </ThemeProvider>
@@ -32,4 +38,4 @@ const preview: Preview = {
   },
 };
 
-export default preview; 
+export default preview;

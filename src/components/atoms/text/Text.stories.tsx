@@ -62,4 +62,4 @@ export const Combinations: Story = {
       </Text>
     </div>
   ),
-}; 
+};

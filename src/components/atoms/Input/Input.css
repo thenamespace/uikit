@@ -9,12 +9,14 @@
 .ns-input {
   width: 100%;
   height: 40px;
-  background: #FCFCFC;
+  background: #fcfcfc;
   border: 1px solid var(--ns-color-border);
   border-radius: var(--ns-radius-md);
   color: var(--ns-color-fg);
   font-family: var(--ns-font-family);
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
   outline: none;
   padding: 0 0.7rem;
   box-sizing: border-box;
@@ -22,7 +24,8 @@
 
 .ns-input:focus {
   border-color: var(--ns-color-primary);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ns-color-primary) 15%, transparent);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--ns-color-primary) 15%, transparent);
 }
 
 .ns-input:disabled {
@@ -101,4 +104,4 @@
 
 .ns-input[type="number"] {
   -moz-appearance: textfield;
-} 
+}

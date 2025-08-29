@@ -1,3 +1,3 @@
 export const EditRecordsForm = () => {
-    return <div></div>
-}
+  return <div></div>;
+};
