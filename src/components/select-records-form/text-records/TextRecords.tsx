@@ -1,9 +1,9 @@
-import { EnsTextRecord } from "../../../types"
-import { SupportedTextRecord, supportedTexts } from "../../../constants";
+import { EnsTextRecord } from "@/types"
+import { SupportedTextRecord, supportedTexts } from "@/constants";
 import { useMemo } from "react";
-import { Icon, Input, Text } from "../../atoms";
+import { Icon, Input, Text } from "@/components";
 import "./TextRecords.css";
-import { capitalize } from "../../../utils";
+import { capitalize } from "@/utils";
 
 
 

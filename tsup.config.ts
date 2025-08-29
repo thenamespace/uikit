@@ -12,4 +12,15 @@ export default defineConfig({
   minify: false,
   target: "es2020",
   css: true,
+  esbuildOptions(options) {
+    options.alias = {
+      "@": "./src",
+      "@/components": "./src/components",
+      "@/atoms": "./src/components/atoms",
+      "@/molecules": "./src/components/molecules",
+      "@/constants": "./src/constants",
+      "@/utils": "./src/utils",
+      "@/types": "./src/types"
+    };
+  }
 }); 
