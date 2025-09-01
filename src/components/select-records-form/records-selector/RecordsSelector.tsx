@@ -1,8 +1,9 @@
 import { EnsAddressRecord, EnsTextRecord } from "@/types";
 import "./RecordsSelector.css";
-import { Button, Icon, IconName, Input, Text } from "@/components/atoms";
+import { Button, ChainIcon, Icon, IconName, Input, Text } from "@/components/atoms";
 import { useMemo, useRef, useState } from "react";
 import {
+    supportedAddresses,
     SupportedTextRecord,
     supportedTexts,
     TextRecordCategory,
@@ -61,12 +62,12 @@ export const RecordsSelector = ({ onClose, texts, addresses, onTextsAdded, onAdd
         return records;
     }, []);
 
-       const recordsAddedCount = useMemo(() => {
+    const recordsAddedCount = useMemo(() => {
         const addedTexts = Object.keys(selectedTextsMap).length;
         const addedAddrs = Object.keys(selectedAddressesMap).length;
 
         return addedTexts + addedAddrs;
-    },[selectedTextsMap, selectedAddressesMap])
+    }, [selectedTextsMap, selectedAddressesMap])
 
     const handleAddRecords = () => {
         const textKeys = Object.keys(selectedTextsMap);
@@ -124,9 +125,23 @@ export const RecordsSelector = ({ onClose, texts, addresses, onTextsAdded, onAdd
         setSelectedTextsMap(textMap);
     };
 
+    const toggleSelectAddress = (chainName: string) => {
+        const addressMap = { ...selectedAddressesMap };
+        if (addressMap[chainName]) {
+            delete addressMap[chainName];
+        } else {
+            addressMap[chainName] = true;
+        }
+        setSelectedAddressesMap(addressMap)
+    }
+
     const isTextSelected = (key: string) => {
         return selectedTextsMap[key];
     };
+
+    const isAddressSelected = (chainName: string) => {
+        return selectedAddressesMap[chainName];
+    }
 
 
     return (
@@ -222,6 +237,19 @@ export const RecordsSelector = ({ onClose, texts, addresses, onTextsAdded, onAdd
                         <Text className="ns-mb-1" weight="bold">
                             Addresses
                         </Text>
+                       {supportedAddresses.map(item => {
+                                const isActive = isAddressSelected(item.chainName);
+                                return <div
+                                    onClick={() => toggleSelectAddress(item.chainName)}
+                                    className={`ns-text-record d-flex align-items-center ${isActive ? "active" : ""}`}
+                                    key={item.chainName}
+                                >
+                                   <ChainIcon className="me-1" chain={item.chainName} size={22}/>
+                                    <Text weight="medium" color={isActive ? "white" : "primary"} size="sm">
+                                        {item.label}
+                                    </Text>
+                                </div>
+                            })}
                     </div>
                     <div
                         ref={websiteCategoryRef}
