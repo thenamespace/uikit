@@ -46,6 +46,7 @@ export const CommonIcons: Story = {
 export const SocialMediaIcons: Story = {
   render: () => (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+      <Icon name="x" size={24} />
       <Icon name="discord" size={24} />
       <Icon name="github" size={24} />
       <Icon name="telegram" size={24} />

@@ -56,7 +56,7 @@ export const supportedTexts: SupportedTextRecord[] = [
     label: "E-Mail",
   },
   {
-    icon: "person",
+    icon: "twitter",
     key: "com.twitter",
     category: TextRecordCategory.Social,
     label: "Twitter",

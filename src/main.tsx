@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Button, SelectRecordsForm } from "@/components";
+import { Button, ContenthashIcon, SelectRecordsForm } from "@/components";
 import "./styles/theme.css";
-import { EnsAddressRecord, EnsRecords, EnsTextRecord } from "@/types";
+import { ContenthashProtocol, EnsAddressRecord, EnsRecords, EnsTextRecord } from "@/types";
 import { zeroAddress } from "viem";
 
 const _texts: EnsTextRecord[] = [
@@ -51,6 +51,9 @@ function TestApp() {
       >
         Print
       </Button>
+      <ContenthashIcon protocol={ContenthashProtocol.Ipfs} size={20}/>
+      <ContenthashIcon protocol={ContenthashProtocol.Airwave} size={20}/>
+      <ContenthashIcon protocol={ContenthashProtocol.Onions} size={20}/>
     </div>
   );
 }

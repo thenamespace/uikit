@@ -18,3 +18,11 @@ export interface ContenthashRecord {
   protocol: string;
   value: string;
 }
+
+export enum ContenthashProtocol {
+  Ipfs = "ipfs",
+  Onion = "onion3",
+  Arweave = "arweave",
+  Skynet = "skynet",
+  Swarm = "swarm"
+}

@@ -2,8 +2,8 @@ import React, { ReactElement } from "react";
 import * as LucideIcons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import "./Icon.css";
-import { User, X, Search, SquareUser, Globe, Pin, Box, Book } from "lucide-react";
-import { DiscordIcon, GithubIcon, TelegramIcon, YoutubeIcon } from "./custom";
+import { User, Search, SquareUser, Globe, Pin, Box, Book, X, Twitter } from "lucide-react";
+import { DiscordIcon, GithubIcon, TelegramIcon, YoutubeIcon, XIcon } from "./custom";
 
 type CustomIcon = React.ComponentType<{ size?: number; color?: string; className?: string; 'data-test-id'?: string }>;
 type IconComponent = LucideIcon | CustomIcon;
@@ -23,6 +23,7 @@ export type IconName =
   | "github"
   | "telegram"
   | "youtube"
+  | "twitter"
 
 const icons: Record<IconName, IconComponent> = {
   person: User,
@@ -38,7 +39,8 @@ const icons: Record<IconName, IconComponent> = {
   discord: DiscordIcon,
   github: GithubIcon,
   telegram: TelegramIcon,
-  youtube: YoutubeIcon
+  youtube: YoutubeIcon,
+  twitter: Twitter
 };
 
 export interface IconProps {
