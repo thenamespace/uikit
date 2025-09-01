@@ -33,8 +33,6 @@
   padding: 8px;
   border: 1px solid var(--ns-color-border);
   border-radius: 7px;
-  padding-left: 15px;
-  margin-bottom: 5px;
   cursor: pointer;
   transition: all 0.2s linear;
 }
@@ -55,6 +53,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.ns-text-record.disabled {
+    background-color: var(--ns-color-bg-darker);
+    border-color: var(--ns-color-bg-darker);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ns-text-record.disabled:hover {
+    border-color: var(--ns-color-border);
 }
 
 .ns-text-record.active .ns-icon-cont {

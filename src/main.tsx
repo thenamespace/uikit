@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Button, SelectRecordsForm } from "@/components";
 import "./styles/theme.css";
-import { EnsRecords, EnsTextRecord } from "@/types";
+import { EnsAddressRecord, EnsRecords, EnsTextRecord } from "@/types";
+import { zeroAddress } from "viem";
 
 const _texts: EnsTextRecord[] = [
   {
@@ -15,10 +16,21 @@ const _texts: EnsTextRecord[] = [
   },
 ];
 
+const _addrs: EnsAddressRecord[] = [
+  {
+    coinType: 60,
+    value: zeroAddress
+  },
+  {
+    coinType: 0,
+    value: zeroAddress
+  }
+]
+
 function TestApp() {
   const [records, setRecords] = useState<EnsRecords>({
     texts: [..._texts],
-    addresses: [],
+    addresses: _addrs,
   });
 
   const handleRecordsUpdated = (newRecords: EnsRecords) => {

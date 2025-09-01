@@ -54,7 +54,7 @@ export const TextRecords = ({ texts, onTextsChanged }: TextRecordsProps) => {
                 ></Icon>
               </div>
               <Text size="sm" weight="medium">
-                {capitalize(text.key)}
+                {supportedText ? supportedText.label : capitalize(text.key)}
               </Text>
             </div>
             <div className="col-7 d-flex align-items-center">
@@ -73,13 +73,3 @@ export const TextRecords = ({ texts, onTextsChanged }: TextRecordsProps) => {
     </div>
   );
 };
-
-const TextRecord = ({
-  key,
-  value,
-  onChange,
-}: {
-  key: string;
-  value: string;
-  onChange: (key: string, value: string) => void;
-}) => {};

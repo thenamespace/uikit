@@ -32,7 +32,7 @@ export const SelectRecordsForm = ({
   const handleAddressesUpdated = (addresses: EnsAddressRecord[]) => {
     onRecordsUpdated({ ...records, addresses });
   };
-  
+
   const handleTextsAdded = (textKeys: string[]) => {
     const texts = [...records.texts];
     textKeys.forEach(key => {
@@ -41,7 +41,19 @@ export const SelectRecordsForm = ({
         value: ""
       })
     })
-    onRecordsUpdated({...records, texts: texts});
+    onRecordsUpdated({ ...records, texts: texts });
+  }
+
+  const handleAddressesAdded = (coins: number[]) => {
+    const addresses = [...records.addresses];
+    console.log("Handling coins addresses", coins)
+    coins.forEach(coin => {
+      addresses.push({
+        coinType: coin,
+        value: ""
+      })
+    })
+    onRecordsUpdated({ ...records, addresses: addresses })
   }
 
   return (
@@ -80,7 +92,9 @@ export const SelectRecordsForm = ({
                 onTextsChanged={handleTextsUpdated}
               ></TextRecords>
             )}
-            {selectedItem === NAV_ADDRS && <AddressRecords />}
+            {selectedItem === NAV_ADDRS && <AddressRecords
+              addresses={records.addresses}
+              onAddressesChanged={(newAddresses) => handleAddressesUpdated(newAddresses)} />}
             {selectedItem === WEBSITE && <ContenthashRecord />}
             <div className="mt-3">
               <Button
@@ -99,7 +113,7 @@ export const SelectRecordsForm = ({
           texts={records.texts}
           addresses={records.addresses}
           onClose={() => setSelectRecords(false)}
-          onAddressesAdded={() => {}}
+          onAddressesAdded={(coins) => handleAddressesAdded(coins)}
           onTextsAdded={(keys) => handleTextsAdded(keys)}
         />
       )}

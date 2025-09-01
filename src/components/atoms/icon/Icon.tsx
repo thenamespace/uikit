@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import * as LucideIcons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import "./Icon.css";
-import { User, X, Search, SquareUser, Globe, Pin, Box, Book } from "lucide-react";
+import { User, X, Search, SquareUser, Globe, Pin, Box, Book, XIcon, Youtube } from "lucide-react";
 
 export type IconName =
   | "person"
