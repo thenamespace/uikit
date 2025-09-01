@@ -2,7 +2,11 @@ import React, { ReactElement } from "react";
 import * as LucideIcons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import "./Icon.css";
-import { User, X, Search, SquareUser, Globe, Pin, Box, Book, XIcon, Youtube } from "lucide-react";
+import { User, X, Search, SquareUser, Globe, Pin, Box, Book } from "lucide-react";
+import { DiscordIcon, GithubIcon, TelegramIcon, YoutubeIcon } from "./custom";
+
+type CustomIcon = React.ComponentType<{ size?: number; color?: string; className?: string; 'data-test-id'?: string }>;
+type IconComponent = LucideIcon | CustomIcon;
 
 export type IconName =
   | "person"
@@ -15,8 +19,12 @@ export type IconName =
   | "book"
   | "map-pin"
   | "mail"
+  | "discord"
+  | "github"
+  | "telegram"
+  | "youtube"
 
-const icons: Record<IconName, LucideIcon> = {
+const icons: Record<IconName, IconComponent> = {
   person: User,
   x: X,
   search: Search,
@@ -26,7 +34,11 @@ const icons: Record<IconName, LucideIcon> = {
   box: Box,
   book: Book,
   'map-pin': LucideIcons.MapPin,
-  mail: LucideIcons.Mail
+  mail: LucideIcons.Mail,
+  discord: DiscordIcon,
+  github: GithubIcon,
+  telegram: TelegramIcon,
+  youtube: YoutubeIcon
 };
 
 export interface IconProps {
@@ -44,15 +56,15 @@ export const Icon: React.FC<IconProps> = ({
   className = "",
   dataTestId,
 }) => {
-  const LucideIconComponent = icons[name] as LucideIcon;
+  const IconComponent = icons[name];
 
-  if (!LucideIconComponent) {
-    console.warn(`Icon "${name}" not found in Lucide Icons`);
+  if (!IconComponent) {
+    console.warn(`Icon "${name}" not found in Icons`);
     return null;
   }
 
   return (
-    <LucideIconComponent
+    <IconComponent
       size={size}
       color={color}
       className={`ns-icon ${className}`}
