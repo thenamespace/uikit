@@ -52,7 +52,7 @@
 .ns-btn--outline {
   background-color: transparent;
   color: var(--ns-color-primary);
-  border-color: #2a2a2a;
+  border-color: var(--ns-color-border);
 }
 .ns-btn--outline:hover:not(:disabled) {
   background-color: color-mix(

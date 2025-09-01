@@ -1,0 +1,15 @@
+.ns-records-sidebar .sidebar-item {
+    cursor: pointer;
+    padding: 5px;
+    transition: all 0.2s linear;
+}
+
+.ns-records-sidebar .sidebar-item.active {
+    background-color: var(--ns-color-bg-darker);
+    border-radius: 5px;
+}
+
+.ns-records-sidebar .sidebar-item:hover {
+    background-color: var(--ns-color-bg-darker);
+    border-radius: 5px;
+}

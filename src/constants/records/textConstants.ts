@@ -18,27 +18,27 @@ export const supportedTexts: SupportedTextRecord[] = [
     category: TextRecordCategory.Image,
   },
   {
-    icon: "",
+    icon: "person",
     key: "header",
     category: TextRecordCategory.Image,
   },
   {
-    icon: "",
+    icon: "person",
     key: "name",
     category: TextRecordCategory.General,
   },
   {
-    icon: "",
+    icon: "x",
     key: "description",
     category: TextRecordCategory.General,
   },
   {
-    icon: "",
+    icon: "person",
     key: "url",
     category: TextRecordCategory.General,
   },
   {
-    icon: "",
+    icon: "person",
     key: "location",
     category: TextRecordCategory.General,
   },

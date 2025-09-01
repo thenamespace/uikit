@@ -38,9 +38,10 @@ export const TextRecords = ({ texts, onTextsChanged }: TextRecordsProps) => {
         return (
           <div
             key={text.key}
-            className="mb-2 ns-text-record-field d-flex align-items-center"
+            className="row mb-2 ns-text-record-field d-flex align-items-center"
           >
-            <div className="circle-icon d-flex align-items-center justify-content-center">
+            <div className="col-4 d-flex align-items-center">
+              <div className="circle-icon d-flex align-items-center justify-content-center me-2">
               <Icon
                 color="white"
                 size={15}
@@ -50,11 +51,15 @@ export const TextRecords = ({ texts, onTextsChanged }: TextRecordsProps) => {
             <Text size="sm" weight="medium">
               {capitalize(text.key)}
             </Text>
-            <Input
+            </div>
+            <div className="col-7 d-flex align-items-center">
+              <Input
               value={text.value}
               onChange={e => updateTextValue(text.key, e.target.value)}
               size="md"
             ></Input>
+            <Icon  name="x" size={18} className="ms-1 ns-close-icon"/>
+            </div>
           </div>
         );
       })}

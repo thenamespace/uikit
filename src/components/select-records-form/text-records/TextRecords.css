@@ -12,6 +12,15 @@
   width: 100%;
 }
 
+.ns-text-records .ns-close-icon {
+  cursor: pointer;
+}
+
+.ns-text-records .ns-close-icon:hover {
+  transform: scale(1.15);
+  transition: all 0.2s linear;
+}
+
 .ns-text-records .ns-text-record-field .ns-input__wrapper {
   flex: 1;
   min-width: 0;
