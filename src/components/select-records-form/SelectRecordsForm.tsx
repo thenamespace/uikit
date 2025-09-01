@@ -32,6 +32,17 @@ export const SelectRecordsForm = ({
   const handleAddressesUpdated = (addresses: EnsAddressRecord[]) => {
     onRecordsUpdated({ ...records, addresses });
   };
+  
+  const handleTextsAdded = (textKeys: string[]) => {
+    const texts = [...records.texts];
+    textKeys.forEach(key => {
+      texts.push({
+        key: key,
+        value: ""
+      })
+    })
+    onRecordsUpdated({...records, texts: texts});
+  }
 
   return (
     <div className="ns-select-records-form">
@@ -88,8 +99,8 @@ export const SelectRecordsForm = ({
           texts={records.texts}
           addresses={records.addresses}
           onClose={() => setSelectRecords(false)}
-          onTextSelected={() => {}}
-          onAddressSelected={() => {}}
+          onAddressesAdded={() => {}}
+          onTextsAdded={(keys) => handleTextsAdded(keys)}
         />
       )}
     </div>

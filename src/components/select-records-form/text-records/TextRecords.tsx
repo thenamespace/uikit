@@ -30,6 +30,11 @@ export const TextRecords = ({ texts, onTextsChanged }: TextRecordsProps) => {
     onTextsChanged(_texts);
   };
 
+  const handleTextRemoved = (key: string) => {
+    const _texts = texts.filter(text => text.key !== key);
+    onTextsChanged(_texts);
+  }
+  
   return (
     <div className="ns-text-records">
       {texts.length === 0 && <Text>No texts</Text>}
@@ -58,7 +63,9 @@ export const TextRecords = ({ texts, onTextsChanged }: TextRecordsProps) => {
                 onChange={e => updateTextValue(text.key, e.target.value)}
                 size="md"
               ></Input>
-              <Icon name="x" size={18} className="ms-1 ns-close-icon" />
+              <div onClick={() => handleTextRemoved(text.key)}>
+                <Icon name="x" size={18} className="ms-1 ns-close-icon" />
+              </div>
             </div>
           </div>
         );

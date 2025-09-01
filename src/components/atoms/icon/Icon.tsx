@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import * as LucideIcons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import "./Icon.css";
-import { User, X, Search, SquareUser, Globe, Pin, Box } from "lucide-react";
+import { User, X, Search, SquareUser, Globe, Pin, Box, Book } from "lucide-react";
 
 export type IconName =
   | "person"
@@ -11,7 +11,10 @@ export type IconName =
   | "square-user"
   | "globe"
   | "pin"
-  | "box";
+  | "box"
+  | "book"
+  | "map-pin"
+  | "mail"
 
 const icons: Record<IconName, LucideIcon> = {
   person: User,
@@ -21,6 +24,9 @@ const icons: Record<IconName, LucideIcon> = {
   globe: Globe,
   pin: Pin,
   box: Box,
+  book: Book,
+  'map-pin': LucideIcons.MapPin,
+  mail: LucideIcons.Mail
 };
 
 export interface IconProps {

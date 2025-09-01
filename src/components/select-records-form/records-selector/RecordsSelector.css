@@ -52,8 +52,11 @@
   height: 22px;
   border-radius: 100%;
   background-color: var(--ns-color-fg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.ns-text-record .ns-icon-cont.active {
+.ns-text-record.active .ns-icon-cont {
   background-color: var(--ns-color-bg);
 }
