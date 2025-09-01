@@ -6,10 +6,10 @@ export enum TextRecordCategory {
   Social = "social",
 }
 export interface SupportedTextRecord {
-  icon: IconName | string;
+  icon: IconName;
   key: string;
   category: TextRecordCategory;
-  label?: string
+  label?: string;
 }
 
 export const supportedTexts: SupportedTextRecord[] = [
@@ -17,73 +17,73 @@ export const supportedTexts: SupportedTextRecord[] = [
     icon: "person",
     key: "avatar",
     category: TextRecordCategory.Image,
-    label: "Avatar"
+    label: "Avatar",
   },
   {
     icon: "person",
     key: "header",
     category: TextRecordCategory.Image,
-    label: "Header"
+    label: "Header",
   },
   {
     icon: "person",
     key: "name",
     category: TextRecordCategory.General,
-    label: "Nickname"
+    label: "Nickname",
   },
   {
     icon: "x",
     key: "description",
     category: TextRecordCategory.General,
-    label: "Short bio"
+    label: "Short bio",
   },
   {
     icon: "person",
     key: "url",
     category: TextRecordCategory.General,
-    label: "Website"
+    label: "Website",
   },
   {
     icon: "person",
     key: "location",
     category: TextRecordCategory.General,
-    label: "Location"
+    label: "Location",
   },
   {
     icon: "person",
     key: "mail",
     category: TextRecordCategory.General,
-    label: "E-Mail"
+    label: "E-Mail",
   },
-   {
+  {
     icon: "person",
     key: "com.twitter",
     category: TextRecordCategory.Social,
-    label: "Twitter"
+    label: "Twitter",
   },
-    {
+  {
     icon: "person",
     key: "com.discord",
     category: TextRecordCategory.Social,
-    label: "Discord"
+    label: "Discord",
   },
-    {
+  {
     icon: "person",
     key: "com.github",
     category: TextRecordCategory.Social,
-    label: "Github"
+    label: "Github",
   },
-    {
+  {
     icon: "person",
     key: "org.telegram",
     category: TextRecordCategory.Social,
-    label: "Telegram"
+    label: "Telegram",
   },
-    {
+  {
     icon: "person",
     key: "com.youtube",
     category: TextRecordCategory.Social,
-    label: "Youtube"
+    label: "Youtube",
   },
 ];
 

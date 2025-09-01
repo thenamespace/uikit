@@ -1,29 +1,59 @@
 .ns-records-sidebar .sidebar-item {
-    cursor: pointer;
-    padding: 8px;
-    transition: all 0.2s linear;
+  cursor: pointer;
+  padding: 8px;
+  transition: all 0.2s linear;
 }
 
 .ns-records-sidebar .sidebar-item.active {
-    background-color: var(--ns-color-bg-darker);
-    border-radius: 5px;
+  background-color: var(--ns-color-bg-darker);
+  border-radius: 5px;
 }
 
 .ns-records-sidebar .sidebar-item:hover {
-    background-color: var(--ns-color-bg-darker);
-    border-radius: 5px;
+  background-color: var(--ns-color-bg-darker);
+  border-radius: 5px;
 }
 
 .ns-records-sidebar .ns-records-content {
-    height: 200px;
-    overflow-y: scroll;
+  height: 230px;
+  overflow-y: scroll;
+  position: relative;
 }
 
-.ns-records-selector-category .text-record {
-    background-color: var(--ns-color-bg);
-    padding: 8px;
-    border: 1px solid var(--ns-color-border);
-    border-radius: 10px;
-    padding-left: 15px;
-    margin-bottom: 5px;
+.ns-records-content .bot-gradiant {
+  width: 100%;
+  height: 30px;
+  background-color: red;
+  position: absolute;
+  bottom: 0px;
+}
+
+.ns-records-selector-category .ns-text-record {
+  background-color: var(--ns-color-bg);
+  padding: 8px;
+  border: 1px solid var(--ns-color-border);
+  border-radius: 7px;
+  padding-left: 15px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: all 0.2s linear;
+}
+
+.ns-records-selector-category .ns-text-record:hover {
+  border-color: var(--ns-color-fg);
+}
+
+.ns-records-selector-category .ns-text-record.active {
+  background-color: var(--ns-color-fg);
+}
+
+.ns-text-record .ns-icon-cont {
+  width: 22px;
+  height: 22px;
+  border-radius: 100%;
+  background-color: var(--ns-color-fg);
+}
+
+.ns-text-record .ns-icon-cont.active {
+  background-color: var(--ns-color-bg);
 }

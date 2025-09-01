@@ -6,10 +6,9 @@ const meta: Meta<typeof SelectRecordsForm> = {
   component: SelectRecordsForm,
   args: {
     records: {
-        texts: [],
-        addresses: []
+      texts: [],
+      addresses: [],
     },
-
   },
 };
 export default meta;
@@ -21,10 +20,13 @@ export const Default: Story = {};
 export const DifferentSizes: Story = {
   render: () => (
     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-      <SelectRecordsForm onRecordsUpdated={() => {}} records={{
-        texts: [],
-        addresses: []
-      }}/>
+      <SelectRecordsForm
+        onRecordsUpdated={() => {}}
+        records={{
+          texts: [],
+          addresses: [],
+        }}
+      />
     </div>
   ),
 };

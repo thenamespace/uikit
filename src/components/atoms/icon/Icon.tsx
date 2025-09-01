@@ -4,16 +4,23 @@ import type { LucideIcon } from "lucide-react";
 import "./Icon.css";
 import { User, X, Search, SquareUser, Globe, Pin, Box } from "lucide-react";
 
-export type IconName = "person" | "x" | "search" | "square-user" | "globe" | "pin" | "box";
+export type IconName =
+  | "person"
+  | "x"
+  | "search"
+  | "square-user"
+  | "globe"
+  | "pin"
+  | "box";
 
 const icons: Record<IconName, LucideIcon> = {
   person: User,
   x: X,
   search: Search,
-  'square-user': SquareUser,
+  "square-user": SquareUser,
   globe: Globe,
   pin: Pin,
-  box: Box
+  box: Box,
 };
 
 export interface IconProps {
