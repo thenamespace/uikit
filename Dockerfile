@@ -16,11 +16,11 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production=false
-
 # Copy source code
 COPY . .
+
+# Install dependencies
+RUN npm install
 
 # Build Storybook
 RUN npm run build-storybook
