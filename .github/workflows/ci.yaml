@@ -5,12 +5,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  e2e:
-    uses: ./.github/workflows/e2e.yaml
-    permissions:
-      contents: read
-      id-token: write
-    secrets: inherit
   build-and-push:
     needs: e2e
     uses: thenamespace/.github-private/.github/workflows/gcp-oidc-docker-build-push.yaml@main
