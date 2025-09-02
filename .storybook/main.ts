@@ -1,15 +1,14 @@
-import type { StorybookConfig } from "@storybook/react-vite";
+// .storybook/main.ts
+import tsconfigPaths from 'vite-tsconfig-paths'
+import type { StorybookConfig } from '@storybook/react-vite'
 
 const config: StorybookConfig = {
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  addons: ["@storybook/addon-essentials", "@storybook/addon-interactions"],
-  framework: {
-    name: "@storybook/react-vite",
-    options: {},
+  framework: { name: '@storybook/react-vite', options: {} },
+  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: ['@storybook/addon-essentials', '@storybook/addon-interactions'],
+  viteFinal: async (viteConfig) => {
+    viteConfig.plugins = [...(viteConfig.plugins || []), tsconfigPaths()]
+    return viteConfig
   },
-  docs: {
-    autodocs: "tag",
-  },
-};
-
-export default config;
+}
+export default config

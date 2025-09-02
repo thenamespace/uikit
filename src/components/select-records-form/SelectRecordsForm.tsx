@@ -4,7 +4,7 @@ import {
   EnsContenthashRecord,
   EnsRecords,
   EnsTextRecord,
-} from "../../types";
+} from "@/types";
 import { Button, Text } from "../atoms";
 import { TextRecords } from "./text-records/TextRecords";
 import { AddressRecords } from "./address-record/AddressRecords";

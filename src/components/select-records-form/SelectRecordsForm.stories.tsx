@@ -1,14 +1,24 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 import { SelectRecordsForm } from "./SelectRecordsForm";
+import { useState } from "react";
+import { EnsRecords } from "@/types";
+
+let records: EnsRecords = {
+  texts: [],
+  addresses: []
+}
+
+const updateRecords = (_records: EnsRecords) => {
+  records = _records;
+}
 
 const meta: Meta<typeof SelectRecordsForm> = {
   title: "Components/SelectRecordsForm",
   component: SelectRecordsForm,
   args: {
-    records: {
-      texts: [],
-      addresses: [],
-    },
+    records: records,
+    onRecordsUpdated: updateRecords
   },
 };
 export default meta;
@@ -18,15 +28,17 @@ type Story = StoryObj<typeof SelectRecordsForm>;
 export const Default: Story = {};
 
 export const DifferentSizes: Story = {
-  render: () => (
-    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-      <SelectRecordsForm
-        onRecordsUpdated={() => {}}
-        records={{
-          texts: [],
-          addresses: [],
-        }}
-      />
-    </div>
-  ),
+  render: (args) => {
+    const [records, setRecords] = useState<EnsRecords>({ texts: [], addresses: [] });
+
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <SelectRecordsForm
+          {...args}                     // keep controls working
+          records={records}             // but force our local state
+          onRecordsUpdated={setRecords} // guaranteed function
+        />
+      </div>
+    );
+  },
 };

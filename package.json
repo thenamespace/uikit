@@ -58,7 +58,8 @@
     "storybook": "^8.6.14",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {
     "lucide-react": "^0.542.0",
