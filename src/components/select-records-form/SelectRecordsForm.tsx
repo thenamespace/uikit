@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { ReactElement, useMemo, useState } from "react";
 import {
   EnsAddressRecord,
   EnsContenthashRecord,
@@ -25,11 +25,13 @@ const navigation_items: string[] = [NAV_TEXTS, NAV_ADDRS, WEBSITE];
 export interface SelectRecordsFormProps {
   records: EnsRecords;
   onRecordsUpdated: (records: EnsRecords) => void;
+  actions?: ReactElement;
 }
 
 export const SelectRecordsForm = ({
   records,
   onRecordsUpdated,
+  actions,
 }: SelectRecordsFormProps) => {
   const [selectedItem, setSelectedItem] = useState<string>(NAV_TEXTS);
   const [selectRecords, setSelectRecords] = useState<boolean>(false);
@@ -178,7 +180,7 @@ export const SelectRecordsForm = ({
                 onContenthashRemoved={() => handleContenthashRemoved()}
               />
             )}
-            <div style={{ padding: 20, paddingTop: 0 }}>
+            <div style={{ padding: 20, paddingTop: 0, paddingBottom: actions ? 0 : 20}}>
               <Button
                 onClick={() => setSelectRecords(true)}
                 style={{ width: "100%", padding: "10px" }}
@@ -187,6 +189,7 @@ export const SelectRecordsForm = ({
                 + Add Record
               </Button>
             </div>
+            {actions && <div className="ns-mt-2 ns-record-actions">{actions}</div>}
           </div>
         </>
       )}

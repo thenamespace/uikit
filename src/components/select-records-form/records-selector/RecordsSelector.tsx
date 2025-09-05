@@ -498,7 +498,7 @@ export const RecordsSelector = ({
           )}
         </div>
       </div>
-      <div className="ns-mt-3">
+      <div className="ns-mt-3" style={{display:"flex", gap: "7px"}}>
         <Button
           style={{ width: "50%" }}
           size="lg"

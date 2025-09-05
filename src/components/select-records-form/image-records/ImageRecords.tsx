@@ -46,7 +46,7 @@ export const ImageRecords = ({
   return (
     <div className="ns-image-records">
       <div style={headerStyles} className="ns-cover-record-cont">
-        <Dropdown
+        {!headerRecordSet && <Dropdown
           trigger={
             <div className="ns-image-handle header-handle">
               <Icon color="white" name="image"></Icon>
@@ -74,9 +74,9 @@ export const ImageRecords = ({
               Select NFT
             </Text>
           </div>
-        </Dropdown>
+        </Dropdown>}
         <div style={avatarStyles} className="ns-avatar-record-cont">
-          <Dropdown
+          {!avatarRecordSet && <Dropdown
             trigger={
               <div className="ns-image-handle">
                 <Icon color="white" name="image"></Icon>
@@ -104,7 +104,7 @@ export const ImageRecords = ({
                 Select NFT
               </Text>
             </div>
-          </Dropdown>
+          </Dropdown>}
         </div>
       </div>
     </div>

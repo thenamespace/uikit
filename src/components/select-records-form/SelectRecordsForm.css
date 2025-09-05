@@ -3,6 +3,7 @@
   width: 100%;
   max-width: 450px;
   padding: 20px;
+  border-radius: 15px;
 }
 
 .ns-select-records-form .ns-records-wrapper {
@@ -13,6 +14,8 @@
 
 .ns-select-records-form .ns-select-records-content {
   background-color: var(--ns-color-bg);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 .ns-select-records-nav .nav-cont {
@@ -48,4 +51,9 @@
 
 .ns-select-records-form .not-found-badge {
   border: 1px solid var(--ns-color-bg);
+}
+
+.ns-select-records-form .ns-record-actions {
+  padding: 0px 20px;
+  padding-bottom: 20px;
 }

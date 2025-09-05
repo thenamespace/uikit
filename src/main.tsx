@@ -9,6 +9,7 @@ import {
   EnsTextRecord,
 } from "@/types";
 import { zeroAddress } from "viem";
+import { EditRecordsForm } from "./components/edit-records-form/EditRecordsForm";
 
 const _texts: EnsTextRecord[] = [
   {
@@ -44,21 +45,7 @@ function TestApp() {
 
   return (
     <div>
-      Hello there
-      <SelectRecordsForm
-        records={records}
-        onRecordsUpdated={handleRecordsUpdated}
-      />
-      <Button
-        onClick={() => {
-          console.log(records);
-        }}
-      >
-        Print
-      </Button>
-      <ContenthashIcon protocol={ContenthashProtocol.Ipfs} size={20} />
-      <ContenthashIcon protocol={ContenthashProtocol.Arweave} size={20} />
-      <ContenthashIcon protocol={ContenthashProtocol.Onion} size={20} />
+           <EditRecordsForm name="artii.eth"/>
     </div>
   );
 }
