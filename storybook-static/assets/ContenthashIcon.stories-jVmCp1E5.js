@@ -44,7 +44,7 @@ import{j as n}from"./jsx-runtime-Cf8x2fCZ.js";import{C as e,a as t}from"./Conten
         fontSize: "10px"
       }}>48px</div>
       </div>
-       <div style={{
+      <div style={{
       textAlign: "center"
     }}>
         <ContenthashIcon protocol={ContenthashProtocol.Swarm} size={48} />

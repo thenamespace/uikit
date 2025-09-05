@@ -97,7 +97,7 @@ import{j as a}from"./jsx-runtime-Cf8x2fCZ.js";import{r as i}from"./index--qcDGAq
 | "github"
 | "telegram"
 | "youtube"
- | "image"
+| "image"
 | "circle-person"
 | "twitter"
 | "circle-alert"`,elements:[{name:"literal",value:'"person"'},{name:"literal",value:'"x"'},{name:"literal",value:'"search"'},{name:"literal",value:'"square-user"'},{name:"literal",value:'"globe"'},{name:"literal",value:'"pin"'},{name:"literal",value:'"box"'},{name:"literal",value:'"book"'},{name:"literal",value:'"map-pin"'},{name:"literal",value:'"mail"'},{name:"literal",value:'"discord"'},{name:"literal",value:'"github"'},{name:"literal",value:'"telegram"'},{name:"literal",value:'"youtube"'},{name:"literal",value:'"image"'},{name:"literal",value:'"circle-person"'},{name:"literal",value:'"twitter"'},{name:"literal",value:'"circle-alert"'}]},description:""},color:{required:!1,tsType:{name:"string"},description:"",defaultValue:{value:'"currentColor"',computed:!1}},size:{required:!1,tsType:{name:"number"},description:"",defaultValue:{value:"24",computed:!1}},className:{required:!1,tsType:{name:"string"},description:"",defaultValue:{value:'""',computed:!1}},dataTestId:{required:!1,tsType:{name:"string"},description:""}}};export{Q as I};
