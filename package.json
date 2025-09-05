@@ -62,6 +62,7 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {
+    "@ensdomains/address-encoder": "^1.1.4",
     "lucide-react": "^0.542.0",
     "viem": "^2.36.0",
     "wagmi": "^2.16.8"

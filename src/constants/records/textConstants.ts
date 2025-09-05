@@ -97,6 +97,14 @@ export const supportedTexts: SupportedTextRecord[] = [
   },
 ];
 
+export const getSupportedTextMap = (): Record<string,SupportedTextRecord> => {
+  const map: Record<string,SupportedTextRecord> = {};
+  supportedTexts.forEach(txt => {
+    map[txt.key] = txt;
+  })
+  return map;
+}
+
 export const getSupportedText = (key: string) => {
   return supportedTexts.find(txt => txt.key === key);
 };

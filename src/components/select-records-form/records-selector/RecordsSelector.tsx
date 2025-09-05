@@ -177,10 +177,11 @@ export const RecordsSelector = ({
     }
     const addressKeys = Object.keys(selectedAddressesMap);
     if (addressKeys.length > 0) {
+      console.log(addressKeys, "ADdress keys!")
       onAddressesAdded(
         addressKeys.map(i => {
           const s = getSupportedAddressByName(i as any);
-          return s?.coinType || -1;
+          return s?.coinType !== undefined ? s.coinType : 0;
         })
       );
     }
@@ -498,7 +499,7 @@ export const RecordsSelector = ({
           )}
         </div>
       </div>
-      <div className="ns-mt-3" style={{display:"flex", gap: "7px"}}>
+      <div className="ns-mt-3" style={{display:"flex", gap: "8px"}}>
         <Button
           style={{ width: "50%" }}
           size="lg"
