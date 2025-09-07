@@ -11,10 +11,6 @@ import {
   Box,
   Book,
   X,
-  CheckCircle,
-  AlertTriangle,
-  Info,
-  XCircle,
 } from "lucide-react";
 import {
   DiscordIcon,
@@ -50,11 +46,7 @@ export type IconName =
   | "image"
   | "circle-person"
   | "twitter"
-  | "circle-alert"
-  | "check-circle"
-  | "alert-triangle"
-  | "info"
-  | "x-circle";
+  | "circle-alert";
 
 const icons: Record<IconName, IconComponent> = {
   person: User,
@@ -75,10 +67,6 @@ const icons: Record<IconName, IconComponent> = {
   "circle-person": LucideIcons.CircleUser,
   twitter: XIcon,
   "circle-alert": LucideIcons.CircleAlert,
-  "check-circle": CheckCircle,
-  "alert-triangle": AlertTriangle,
-  info: Info,
-  "x-circle": XCircle,
 };
 
 export interface IconProps {
