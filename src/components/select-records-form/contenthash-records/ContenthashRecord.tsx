@@ -2,11 +2,11 @@ import { Input, Text, Icon } from "@/components/atoms";
 import { ContenthashIcon } from "@/components/molecules";
 import {
   getSupportedChashByProtocol,
+  isContenthashValid,
   SupportedContenthashRecord,
 } from "@/constants";
 import { ContenthashProtocol, EnsContenthashRecord } from "@/types";
 import { useMemo } from "react";
-import meta from "../SelectRecordsForm.stories";
 
 interface ContenthashRecordProps {
   contenthash?: EnsContenthashRecord;
@@ -19,6 +19,15 @@ export const ContenthashRecord = ({
   onContenthashChanged,
   onContenthashRemoved,
 }: ContenthashRecordProps) => {
+
+  const isValidInput = useMemo(() => {
+
+    if (contenthash && contenthash.value.length > 0) {
+      return isContenthashValid(contenthash.protocol, contenthash.value);
+    }
+
+    return true;
+  },[contenthash])
   const metadata = useMemo<SupportedContenthashRecord | undefined>(() => {
     if (contenthash?.protocol) {
       return getSupportedChashByProtocol(contenthash?.protocol);
@@ -32,8 +41,7 @@ export const ContenthashRecord = ({
     onContenthashChanged({ protocol, value });
   };
 
-  if (true) {
-    return (
+  return (
       <div className="ns-records-wrapper">
         {!metadata && (
           <div className="not-found-badge d-flex align-items-center">
@@ -53,6 +61,7 @@ export const ContenthashRecord = ({
             </div>
             <div className="col-8 d-flex align-items-center">
               <Input
+                error={!isValidInput}
                 value={contenthash?.value}
                 placeholder={`${contenthash?.protocol}://`}
                 onChange={e =>
@@ -67,5 +76,4 @@ export const ContenthashRecord = ({
         )}
       </div>
     );
-  }
 };

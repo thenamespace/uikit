@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Button, ContenthashIcon, SelectRecordsForm } from "@/components";
 import "./styles/theme.css";
-import {
-  ContenthashProtocol,
-  EnsAddressRecord,
-  EnsRecords,
-  EnsTextRecord,
-} from "@/types";
+import { EnsAddressRecord, EnsRecords, EnsTextRecord } from "@/types";
 import { zeroAddress } from "viem";
 import { EnsRecordsForm } from "./components/ens-records-form/EnsRecordsForm";
 import { WalletConnect } from "./wallet-connect";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { sepolia } from "viem/chains";
 
 const _texts: EnsTextRecord[] = [
   {
@@ -35,6 +30,10 @@ const _addrs: EnsAddressRecord[] = [
   },
 ];
 
+const SEPOLIA_PUB_RES = "0x8948458626811dd0c23EB25Cc74291247077cC51";
+const ENS_NAME = "bejzsepolija.eth";
+const NAME_CHAIN_ID = sepolia.id;
+
 function TestApp() {
   const [records, setRecords] = useState<EnsRecords>({
     texts: [..._texts],
@@ -47,13 +46,23 @@ function TestApp() {
 
   return (
     <div>
-           <WalletConnect>
-            <EnsRecordsForm name="artii.eth" resolverAddress={"0x0dcD506D1Be162E50A2b434028A9a148F2686444"} initialRecords={{
-              texts: [{ key: "avatar", value: "testvalue"}],
-              addresses: [{ coinType: 60, value: "0x0dcD506D1Be162E50A2b434028A9a148F2686444"}]
-            }}/>
-            <ConnectButton/>
-           </WalletConnect>
+      <WalletConnect>
+        <EnsRecordsForm
+          name={ENS_NAME}
+          resolverAddress={SEPOLIA_PUB_RES}
+          chainId={NAME_CHAIN_ID}
+          initialRecords={{
+            texts: [{ key: "avatar", value: "testvalue" }],
+            addresses: [
+              {
+                coinType: 60,
+                value: "0x0dcD506D1Be162E50A2b434028A9a148F2686444",
+              },
+            ],
+          }}
+        />
+        <ConnectButton />
+      </WalletConnect>
     </div>
   );
 }

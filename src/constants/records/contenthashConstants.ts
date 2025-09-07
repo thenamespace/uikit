@@ -1,4 +1,5 @@
 import { ContenthashProtocol } from "@/types";
+import { encode } from "@ensdomains/content-hash";
 
 export interface SupportedContenthashRecord {
   protocol: ContenthashProtocol;
@@ -32,4 +33,16 @@ export const getSupportedChashByProtocol = (
   protocol: ContenthashProtocol
 ): SupportedContenthashRecord | undefined => {
   return supportedContenthashRecords.find(chash => chash.protocol === protocol);
+};
+
+export const isContenthashValid = (
+  protocol: ContenthashProtocol,
+  value: string
+) => {
+  try {
+    encode(protocol, value);
+    return true;
+  } catch (err) {
+    return false;
+  }
 };

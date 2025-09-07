@@ -1,14 +1,9 @@
-import {
-  encodeFunctionData,
-  Hash,
-  namehash,
-  parseAbi,
-  toHex,
-} from "viem";
+import { encodeFunctionData, Hash, namehash, parseAbi, toHex } from "viem";
 import { EnsRecordsDiff } from "./records";
-import { EnsAddressRecord, EnsTextRecord } from "@/types";
-import { SET_ADDRESS_FUNC, SET_TEXT_FUNC } from "@/web3";
+import { EnsAddressRecord, EnsContenthashRecord, EnsTextRecord } from "@/types";
+import { SET_ADDRESS_FUNC, SET_CONTENTHASH_FUNC, SET_TEXT_FUNC } from "@/web3";
 import { getCoderByCoinType } from "@ensdomains/address-encoder";
+import { encode } from "@ensdomains/content-hash";
 
 export const convertToMulticallResolverData = (
   name: string,
@@ -19,6 +14,7 @@ export const convertToMulticallResolverData = (
 
   convertTextData(node, resolverMulticallData, recordsDiff);
   convertAddressData(node, resolverMulticallData, recordsDiff);
+  convertContenthashData(node, resolverMulticallData, recordsDiff);
   return resolverMulticallData;
 };
 
@@ -90,4 +86,39 @@ const convertAddressData = (
     });
     resolverData.push(data);
   });
+};
+
+const convertContenthashData = (
+  node: Hash,
+  resolverData: Hash[],
+  diff: EnsRecordsDiff
+) => {
+  if (diff.contenthashRemoved) {
+    const data = encodeFunctionData({
+      functionName: "setContenthash",
+      abi: parseAbi([SET_CONTENTHASH_FUNC]),
+      args: [node, "0x"],
+    });
+    resolverData.push(data);
+    return;
+  }
+
+  let contenthash: EnsContenthashRecord | undefined = undefined;
+  if (diff.contenthashModified !== undefined) {
+    contenthash = diff.contenthashModified;
+  } else if (diff.contenthashAdded !== undefined) {
+    contenthash = diff.contenthashAdded;
+  }
+
+  if (contenthash !== undefined) {
+    const { protocol, value } = contenthash;
+    const encodedValue = encode(protocol, value);
+
+    const data = encodeFunctionData({
+      functionName: "setContenthash",
+      abi: parseAbi([SET_CONTENTHASH_FUNC]),
+      args: [node, encodedValue as `0x${string}`],
+    });
+    resolverData.push(data);
+  }
 };

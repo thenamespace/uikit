@@ -5,11 +5,11 @@ import { Button, Text } from "../atoms";
 import "./EnsRecordsForm.css";
 import { convertToMulticallResolverData } from "@/utils/resolver";
 import { deepCopy, getEnsRecordsDiff } from "@/utils";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useSwitchChain, useWalletClient } from "wagmi";
 import { mainnet } from "viem/chains";
 import { ENS_RESOLVER_ABI } from "@/web3";
 import { Address, ContractFunctionExecutionError, Hash } from "viem";
-import { getSupportedAddressMap } from "@/constants";
+import { getSupportedAddressMap, isContenthashValid } from "@/constants";
 import { RecordDiff } from "./record-diff/RecordDiff";
 
 interface EditRecordsFormProps {
@@ -34,7 +34,7 @@ export const EnsRecordsForm = ({
   chainId,
   resolverAddress,
   onCancel,
-  onSuccess
+  onSuccess,
 }: EditRecordsFormProps) => {
   const [records, setRecords] = useState<EnsRecords>(
     initialRecords ? deepCopy(initialRecords) : { texts: [], addresses: [] }
@@ -43,18 +43,28 @@ export const EnsRecordsForm = ({
   const currentChainId = chainId || mainnet.id;
   const publicClient = usePublicClient({ chainId: currentChainId });
   const { data: walletClient } = useWalletClient({ chainId: currentChainId });
-  const { address } = useAccount();
+  const { switchChainAsync, switchChain} = useSwitchChain()
+  const { address, chain } = useAccount();
   const [contractError, setContractError] = useState<string | null>(null);
-  const [generalError, setGeneralError] = useState<string | null>(
-    "Something went wrong"
-  );
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const [txIndicator, setTxIndicator] = useState<{
-    isWaitingForWallet: boolean
-    isWaitingForTx: boolean
+    isWaitingForWallet: boolean;
+    isWaitingForTx: boolean;
   }>({
     isWaitingForTx: false,
-    isWaitingForWallet: false
-  })
+    isWaitingForWallet: false,
+  });
+
+  useEffect(() => {
+
+    // if the chain is not current chain
+    // switch network async
+    if (!chain || chain?.id !== currentChainId) {
+      switchChain({chainId: currentChainId})
+    }
+
+
+  },[chain])
 
   useEffect(() => {
     if (!address) {
@@ -91,6 +101,17 @@ export const EnsRecordsForm = ({
     return true;
   }, [records.texts]);
 
+  const isChashValid = useMemo(() => {
+    if (!records.contenthash) {
+      return true;
+    }
+
+    return isContenthashValid(
+      records.contenthash.protocol,
+      records.contenthash.value
+    );
+  }, [records.contenthash]);
+
   const getInitalRecords = (): EnsRecords => {
     return initialRecords ? initialRecords : { texts: [], addresses: [] };
   };
@@ -123,8 +144,6 @@ export const EnsRecordsForm = ({
     );
   }, [records, initialRecords]);
 
-  const isFormValid = areValidTexts && areValidAddresses && isDiffPresent;
-
   const handleUpdateRecords = async () => {
     try {
       const old: EnsRecords = initialRecords
@@ -133,7 +152,7 @@ export const EnsRecordsForm = ({
       const diff = getEnsRecordsDiff(old, records);
       const resolverData = convertToMulticallResolverData(name, diff);
 
-      setTxIndicator({...txIndicator, isWaitingForWallet: true})
+      setTxIndicator({ ...txIndicator, isWaitingForWallet: true });
 
       const { request } = await publicClient!.simulateContract({
         abi: ENS_RESOLVER_ABI,
@@ -145,9 +164,11 @@ export const EnsRecordsForm = ({
 
       const tx = await walletClient!.writeContract(request);
 
-      setTxIndicator({isWaitingForTx: true, isWaitingForWallet: false})
+      console.log(tx, "TRANSACTION!!")
 
-      console.log(tx);
+      setTxIndicator({ isWaitingForTx: true, isWaitingForWallet: false });
+      await publicClient!.waitForTransactionReceipt({ hash: tx });
+      onSuccess?.(tx);
     } catch (err) {
       console.error(err);
       if (err instanceof ContractFunctionExecutionError) {
@@ -157,9 +178,14 @@ export const EnsRecordsForm = ({
         setContractError("Transaction failed for unknown reason!");
       }
     } finally {
-      setTxIndicator({ isWaitingForTx: false, isWaitingForWallet: false})
+      setTxIndicator({ isWaitingForTx: false, isWaitingForWallet: false });
     }
   };
+
+  const updateBtnLoading =
+    txIndicator.isWaitingForTx || txIndicator.isWaitingForWallet;
+  const isFormValid =
+    areValidTexts && areValidAddresses && isDiffPresent && isChashValid;
 
   return (
     <div className="ns-edit-records-form">
@@ -176,7 +202,8 @@ export const EnsRecordsForm = ({
               Cancel
             </Button>
             <Button
-              disabled={!isFormValid}
+              loading={updateBtnLoading}
+              disabled={!isFormValid || updateBtnLoading}
               onClick={() => handleUpdateRecords()}
               size="lg"
               style={{ width: "100%" }}
