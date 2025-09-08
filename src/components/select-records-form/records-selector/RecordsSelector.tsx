@@ -276,15 +276,6 @@ export const RecordsSelector = ({
 
   return (
     <div className="ns-records-selector">
-      <div
-        onClick={onClose}
-        className="ns-mb-3 text-center"
-        style={{ textAlign: "center" }}
-      >
-        <Text size="lg" weight="bold">
-          Add Records
-        </Text>
-      </div>
       <div className="ns-mb-3">
         <Input
           value={filterValue}

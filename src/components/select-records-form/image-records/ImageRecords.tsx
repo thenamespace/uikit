@@ -46,10 +46,11 @@ export const ImageRecords = ({
   return (
     <div className="ns-image-records">
       <div style={headerStyles} className="ns-cover-record-cont">
+        <div className="ns-top-grad"></div>
         {!headerRecordSet && <Dropdown
           trigger={
-            <div className="ns-image-handle header-handle">
-              <Icon color="white" name="image"></Icon>
+            <div className="ns-header-handle">
+            <Icon color="white" name="rotate-circle"></Icon>
             </div>
           }
         >
@@ -79,7 +80,7 @@ export const ImageRecords = ({
           {!avatarRecordSet && <Dropdown
             trigger={
               <div className="ns-image-handle">
-                <Icon color="white" name="image"></Icon>
+                <Icon color="grey" name="rotate-circle"></Icon>
               </div>
             }
           >

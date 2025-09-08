@@ -1,9 +1,9 @@
 import React from "react";
 import "./Text.css";
 
-export type TextSize = "sm" | "md" | "lg" | "xl";
+export type TextSize = "xs" | "sm" | "md" | "lg" | "xl";
 export type TextWeight = "light" | "regular" | "medium" | "bold";
-export type TextColor = "primary" | "white" | "grey";
+export type TextColor = "primary" | "white" | "grey" | "danger";
 
 export interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;

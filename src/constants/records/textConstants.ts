@@ -82,28 +82,31 @@ export const supportedTexts: SupportedTextRecord[] = [
     key: "com.github",
     category: TextRecordCategory.Social,
     label: "Github",
+    placeholder: "eg. namespace",
   },
   {
     icon: "telegram",
     key: "org.telegram",
     category: TextRecordCategory.Social,
     label: "Telegram",
+    placeholder: "eg. namespace",
   },
   {
     icon: "youtube",
     key: "com.youtube",
     category: TextRecordCategory.Social,
     label: "Youtube",
+    placeholder: "eg. namespace",
   },
 ];
 
-export const getSupportedTextMap = (): Record<string,SupportedTextRecord> => {
-  const map: Record<string,SupportedTextRecord> = {};
+export const getSupportedTextMap = (): Record<string, SupportedTextRecord> => {
+  const map: Record<string, SupportedTextRecord> = {};
   supportedTexts.forEach(txt => {
     map[txt.key] = txt;
-  })
+  });
   return map;
-}
+};
 
 export const getSupportedText = (key: string) => {
   return supportedTexts.find(txt => txt.key === key);

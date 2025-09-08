@@ -4,25 +4,35 @@
 }
 
 .ns-image-records .ns-cover-record-cont {
-  height: 120px;
+  height: 140px;
   width: 100%;
-  background-color: var(--ns-color-border);
-  border-radius: 10px;
   position: relative;
   display: flex;
   justify-content: end;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.ns-top-grad {
+  position: absolute;
+  top: 0px;
+  height: 130px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+  width: 100%;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
 }
 
 .ns-image-records .ns-avatar-record-cont {
   width: 100px;
   height: 100px;
-  border-radius: 10px;
-  background-color: var(--ns-color-border);
+  border-radius: 20px;
+  background-color: var(--ns-color-bg);
   position: absolute;
   outline: 5px solid var(--ns-color-bg-accent);
   left: 50%;
   transform: translateX(-50%);
-  bottom: -25px;
+  bottom: -20px;
   transition: all 0.25s linear;
   display: flex;
   align-items: center;
@@ -30,24 +40,36 @@
 }
 
 .ns-image-records .ns-image-handle {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--ns-color-fg);
-  border-radius: 10px;
-  opacity: 0.2;
+  background-color: var(--ns-color-bg-accent);
+  border-radius: 100%;
   transition: all 0.25s linear;
 }
 
 .ns-image-records .ns-image-handle:hover {
-  opacity: 1;
-  outline: 1px solid (--ns-color-bg);
+  background-color: var(--ns-color-bg-accent-hover);
+  transform: scale(1.05);
 }
 
-.ns-image-handle.header-handle {
+.ns-header-handle {
   margin: 15px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(0, 0, 0, 0.1);
+  border-radius: 100%;
+  transition: all 0.25s linear;
+}
+
+.ns-header-handle:hover {
+  background-color: rgb(0, 0, 0, 0.5);
+  transform: scale(1.05);
 }
 
 .ns-upload-options {

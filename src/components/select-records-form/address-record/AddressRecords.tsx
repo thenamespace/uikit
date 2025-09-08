@@ -1,12 +1,7 @@
 import { EnsAddressRecord } from "@/types";
-import "./AddressRecords.css";
-import {
-  getSupportedAddressByCoin,
-  supportedAddresses,
-  SupportedEnsAddress,
-} from "@/constants";
+import { supportedAddresses } from "@/constants";
 import { ChainIcon, Icon, Input, Text } from "@/components/atoms";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface AddressRecordProps {
   addresses: EnsAddressRecord[];
@@ -17,40 +12,31 @@ export const AddressRecords = ({
   addresses,
   onAddressesChanged,
 }: AddressRecordProps) => {
-  const supportedAddrsByCoins = useMemo(() => {
-    const map: Record<number, SupportedEnsAddress> = {};
-    supportedAddresses.forEach(addr => {
+  const existingAddressMap = useMemo(() => {
+    const map: Record<number, EnsAddressRecord> = {};
+    addresses.forEach(addr => {
       map[addr.coinType] = addr;
     });
     return map;
-  }, [supportedAddresses]);
+  }, [addresses]);
 
-  const invalidAddrsMap = useMemo(() => {
-    if (!addresses || !supportedAddrsByCoins) {
-      return {};
+  const [lastAddedKey, setLastAddedKey] = useState<string | null>(null);
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  useEffect(() => {
+    if (lastAddedKey && inputRefs.current[lastAddedKey]) {
+      inputRefs.current[lastAddedKey]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      inputRefs.current[lastAddedKey]?.focus();
+      setLastAddedKey(null);
     }
-
-    let map: Record<number, boolean> = {};
-    addresses.forEach(addr => {
-      const supportedAddr = supportedAddrsByCoins[addr.coinType];
-      if (
-        addr.value.length > 0 &&
-        supportedAddr &&
-        supportedAddr.validateFunc
-      ) {
-        const isValidAddress = supportedAddr.validateFunc(addr.value);
-        map[addr.coinType] = isValidAddress;
-      } else {
-        map[addr.coinType] = true;
-      }
-    });
-
-    return map;
-  }, [addresses, supportedAddrsByCoins]);
+  }, [addresses, lastAddedKey]);
 
   const handleAddressChanged = (coin: number, value: string) => {
     const _addresses = [...addresses];
-    for (const addr of addresses) {
+    for (const addr of _addresses) {
       if (addr.coinType === coin) {
         addr.value = value;
       }
@@ -58,60 +44,87 @@ export const AddressRecords = ({
     onAddressesChanged(_addresses);
   };
 
-  const handleAddressRemoved = (coin: number) => {
+  const handleAddressAdded = (coin: number) => {
+    onAddressesChanged([...addresses, { coinType: coin, value: "" }]);
+    setLastAddedKey(`${coin}`);
+  };
+
+  const handleRemoveAddress = (coin: number) => {
     onAddressesChanged(addresses.filter(addr => addr.coinType !== coin));
   };
 
   return (
-    <div className="ns-records-wrapper ns-styled-scrollbar">
-      <div className="ns-address-records-container">
-        {addresses.length === 0 && (
-          <div className="not-found-badge d-flex align-items-center">
-            <Icon name="circle-alert" size={16} />
-            <Text color="grey" weight="medium" size="sm" className="ns-ms-1">
-              No addresses found
-            </Text>
-          </div>
-        )}
-        {addresses.map(addr => {
-          const supportedAddress = getSupportedAddressByCoin(addr.coinType);
-
-          // We should show default for not supported
-          if (!supportedAddress) {
-            console.log(
-              "Supported ADDR not present for coin: " + addr.coinType
-            );
-            return null;
-          }
+    <div className="ns-text-records">
+      <Text className="ns-mb-2" weight="bold">
+        Addresses
+      </Text>
+      {supportedAddresses
+        .filter(record => existingAddressMap[record.coinType] !== undefined)
+        .map(record => {
+          const current = existingAddressMap[record.coinType];
+          const isInvalidAddress =
+            current.value.length > 0 && !record.validateFunc?.(current.value);
 
           return (
-            <div className="ns-address-record row" key={addr.coinType}>
-              <div className="col-4 d-flex align-items-center">
-                <ChainIcon chain={supportedAddress.chainName} size={25} />
-                <Text weight="medium" size="sm" className="ns-ms-1">
-                  {supportedAddress.label}
-                </Text>
-              </div>
-              <div className="col-8 d-flex align-items-center ns-mb-1">
+            <div key={record.chainName} style={{ marginBottom: 10 }}>
+              <Text
+                style={{ marginBottom: "4px" }}
+                color="grey"
+                size="xs"
+                weight="medium"
+              >
+                {record.label}
+              </Text>
+              <div
+                style={{ width: "100%" }}
+                className="d-flex align-items-center"
+              >
                 <Input
-                  error={!invalidAddrsMap[addr.coinType]}
+                  ref={(el: HTMLInputElement | null) => {
+                    inputRefs.current[record.coinType] = el;
+                  }}
+                  error={isInvalidAddress}
+                  style={{ width: "100%" }}
                   onChange={e =>
-                    handleAddressChanged(addr.coinType, e.target.value)
+                    handleAddressChanged(record.coinType, e.target.value)
                   }
-                  value={addr.value}
-                  placeholder={supportedAddress.placeholder}
+                  prefix={<ChainIcon chain={record.chainName} size={18} />}
+                  value={current.value}
+                  placeholder={record.placeholder}
                 />
                 <div
-                  onClick={() =>
-                    handleAddressRemoved(supportedAddress.coinType)
-                  }
+                  onClick={() => handleRemoveAddress(record.coinType)}
+                  className="ns-close-icon ns-ms-1"
                 >
-                  <Icon name="x" size={18} className="ns-ms-1 ns-close-icon" />
+                  <Icon name="x" size={18} />
                 </div>
               </div>
+              {isInvalidAddress && (
+                <Text
+                  size="xs"
+                  color="danger"
+                  className="ns-mt-1"
+                >{`${record.label} address is not valid`}</Text>
+              )}
             </div>
           );
         })}
+      <div className="row g-2">
+        {supportedAddresses
+          .filter(record => existingAddressMap[record.coinType] === undefined)
+          .map(record => (
+            <div key={record.coinType} className="col col-lg-3 col-sm-6">
+              <div
+                className="ns-text-suggestion"
+                onClick={() => handleAddressAdded(record.coinType)}
+              >
+                <ChainIcon size={20} chain={record.chainName} />
+                <Text className="ns-mt-1" size="xs" weight="medium">
+                  {record.label}
+                </Text>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

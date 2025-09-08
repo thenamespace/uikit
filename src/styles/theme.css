@@ -12,6 +12,7 @@
 
   --ns-color-bg: #ffffff;
   --ns-color-bg-accent: #f4f4f4;
+  --ns-color-bg-accent-hover: #d9d9d9;
   --ns-color-bg-darker: #e2e2e2;
   --ns-color-fg: #111827;
   --ns-color-muted: #6b7280;
@@ -94,11 +95,12 @@
 
 .ns-styled-scrollbar::-webkit-scrollbar {
   -webkit-appearance: none;
-  width: 8px;
+  width: 6px;
+  background-color: var(--ns-color-bg-accent);
 }
 
 .ns-styled-scrollbar::-webkit-scrollbar-thumb {
-  background-color: var(--ns-color-muted);
+  background-color: var(--ns-color-fg);
   border-radius: 4px;
 }
 

@@ -54,7 +54,8 @@ export type IconName =
   | "check-circle"
   | "alert-triangle"
   | "info"
-  | "x-circle";
+  | "x-circle"
+  | "rotate-circle"
 
 const icons: Record<IconName, IconComponent> = {
   person: User,
@@ -79,6 +80,7 @@ const icons: Record<IconName, IconComponent> = {
   "alert-triangle": AlertTriangle,
   info: Info,
   "x-circle": XCircle,
+  "rotate-circle": LucideIcons.CircleFadingPlus
 };
 
 export interface IconProps {

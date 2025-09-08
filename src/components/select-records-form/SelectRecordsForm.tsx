@@ -1,11 +1,12 @@
-import { ReactElement, useMemo, useState } from "react";
+import { ReactElement, RefObject, useMemo, useRef, useState } from "react";
 import {
+  ContenthashProtocol,
   EnsAddressRecord,
   EnsContenthashRecord,
   EnsRecords,
   EnsTextRecord,
 } from "@/types";
-import { Button, Text } from "../atoms";
+import { Button, Icon, Input, Text } from "../atoms";
 import { TextRecords } from "./text-records/TextRecords";
 import { AddressRecords } from "./address-record/AddressRecords";
 import { ContenthashRecord } from "./contenthash-records/ContenthashRecord";
@@ -17,10 +18,24 @@ import {
 } from "./records-selector/RecordsSelector";
 import { ImageRecords } from "./image-records/ImageRecords";
 import { deepCopy } from "@/utils";
+import {
+  getSupportedAddressMap,
+  getSupportedTextMap,
+  supportedTexts,
+  TextRecordCategory,
+} from "@/constants";
 
 const NAV_TEXTS = "Text Records";
 const NAV_ADDRS = "Address Records";
 const WEBSITE = "Website";
+
+enum RecordsSidebarItem {
+  General = "General",
+  Social = "Social",
+  Addresses = "Addresses",
+  Website = "Website",
+}
+
 
 const navigation_items: string[] = [NAV_TEXTS, NAV_ADDRS, WEBSITE];
 
@@ -35,11 +50,18 @@ export const SelectRecordsForm = ({
   onRecordsUpdated,
   actions,
 }: SelectRecordsFormProps) => {
-  const [initialRecords] = useState<EnsRecords>(
-    deepCopy(records)
-  );
+  const [initialRecords] = useState<EnsRecords>(deepCopy(records));
   const [selectedItem, setSelectedItem] = useState<string>(NAV_TEXTS);
   const [selectRecords, setSelectRecords] = useState<boolean>(false);
+
+  const generalCategoryRef = useRef<HTMLDivElement | null>(null);
+  const socialCategoryRef = useRef<HTMLDivElement | null>(null);
+  const addressesCategoryRef = useRef<HTMLDivElement | null>(null);
+  const websiteCategoryRef = useRef<HTMLDivElement | null>(null);
+
+  const [currentNav, setCurrentNav] = useState<RecordsSidebarItem>(
+    RecordsSidebarItem.General
+  );
 
   const handleTextsUpdated = (texts: EnsTextRecord[]) => {
     onRecordsUpdated({ ...records, texts });
@@ -48,6 +70,49 @@ export const SelectRecordsForm = ({
   const handleAddressesUpdated = (addresses: EnsAddressRecord[]) => {
     onRecordsUpdated({ ...records, addresses });
   };
+
+  const scrollToCategory = (category: RecordsSidebarItem) => {
+    const references: Record<
+      RecordsSidebarItem,
+      RefObject<HTMLDivElement | null>
+    > = {
+      General: generalCategoryRef,
+      Social: socialCategoryRef,
+      Website: websiteCategoryRef,
+      Addresses: addressesCategoryRef,
+    };
+
+    const currentRef = references[category];
+
+    if (currentRef && currentRef.current) {
+      currentRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
+  const handleSidebarChange = (
+    nav: RecordsSidebarItem,
+    scroll: boolean = true
+  ) => {
+    setCurrentNav(nav);
+    if (scroll) {
+      scrollToCategory(nav);
+    }
+  };
+
+  const handleContenthashAdded = (protocol: ContenthashProtocol) => {
+   
+    const oldContenthash = initialRecords.contenthash;
+
+    let value = "";
+    if (oldContenthash && oldContenthash.protocol === protocol) {
+      value = oldContenthash.value;
+    }
+    onRecordsUpdated({...records, contenthash: { protocol, value }})
+    
+  }
 
   const handleRecordsAdded = (params: RecordsAddedParams) => {
     const newTexts = [...records.texts];
@@ -150,6 +215,90 @@ export const SelectRecordsForm = ({
     setSelectedItem(NAV_TEXTS);
   };
 
+  if (true) {
+    return (
+      <div className="ns-select-records-form">
+        {/* Avatar and header */}
+        <div style={{ marginBottom: 50 }}>
+          <ImageRecords
+            avatar={avatar}
+            header={header}
+            onAvatarAdded={(value: string) =>
+              handleImageRecordAdded("avatar", value)
+            }
+            onHeaderAdded={(value: string) =>
+              handleImageRecordAdded("header", value)
+            }
+          />
+        </div>
+        {/* Search Input */}
+        <div className="ns-records-content-wrapper">
+          <div className="ns-records-content row g-2">
+            <div className="col-12 ns-mb-1">
+              <Input
+                placeholder="Search"
+                prefix={<Icon name="search" size={18} />}
+              />
+            </div>
+            {/* Sidebar Navigation */}
+            <div className="col col-sm-3 col-12 ns-records-sidebar">
+              {Object.keys(RecordsSidebarItem).map(item => {
+                return (
+                  <div
+                    onClick={() =>
+                      handleSidebarChange(item as RecordsSidebarItem)
+                    }
+                    key={item}
+                    className={`sidebar-item ${item === currentNav ? "active" : ""}`}
+                  >
+                    <Text weight="medium" size="sm">
+                      {item}
+                    </Text>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Record Container */}
+            <div className="col col-sm-9 col-12 ns-records-inner ns-styled-scrollbar">
+              {/* General Records */}
+              <div ref={generalCategoryRef} className="ns-mb-2">
+                <TextRecords
+                  texts={records.texts}
+                  onTextsChanged={handleTextsUpdated}
+                  category={TextRecordCategory.General}
+                />
+              </div>
+              {/* Social Records Records */}
+              <div ref={socialCategoryRef} className="ns-mb-2">
+                <TextRecords
+                  texts={records.texts}
+                  onTextsChanged={handleTextsUpdated}
+                  category={TextRecordCategory.Social}
+                />
+              </div>
+              {/* Address Records */}
+              <div ref={addressesCategoryRef} className="ns-mb-2">
+                <AddressRecords
+                  addresses={records.addresses}
+                  onAddressesChanged={e => handleAddressesUpdated(e)}
+                />
+              </div>
+              {/* Address Records */}
+              <div ref={websiteCategoryRef} className="ns-mb-2">
+                <ContenthashRecord
+                  contenthash={records.contenthash}
+                  onContenthashChanged={e => handleContenthashUpdated(e)}
+                  onContenthashRemoved={() => handleContenthashRemoved()}
+                  onContenthashAdded={(e) => handleContenthashAdded(e)}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="ns-select-records-form">
       {!selectRecords && (
@@ -179,7 +328,7 @@ export const SelectRecordsForm = ({
                 <Text
                   size="sm"
                   weight="medium"
-                  style={{whiteSpace: "nowrap"}}
+                  style={{ whiteSpace: "nowrap" }}
                   color={selectedItem === item ? "primary" : "grey"}
                 >
                   {item}
@@ -195,12 +344,12 @@ export const SelectRecordsForm = ({
 
           {/* records */}
           <div className="ns-select-records-content">
-            {selectedItem === NAV_TEXTS && (
+            {/* {selectedItem === NAV_TEXTS && (
               <TextRecords
                 texts={records.texts}
                 onTextsChanged={handleTextsUpdated}
               ></TextRecords>
-            )}
+            )} */}
             {selectedItem === NAV_ADDRS && (
               <AddressRecords
                 addresses={records.addresses}
@@ -214,6 +363,7 @@ export const SelectRecordsForm = ({
                 contenthash={records.contenthash}
                 onContenthashChanged={hash => handleContenthashUpdated(hash)}
                 onContenthashRemoved={() => handleContenthashRemoved()}
+                onContenthashAdded={() => {}}
               />
             )}
             <div
@@ -247,6 +397,26 @@ export const SelectRecordsForm = ({
           onRecordsAdded={params => handleRecordsAdded(params)}
         />
       )}
+    </div>
+  );
+};
+
+export const SocialTextRecords = ({
+  texts,
+  onTextChanged,
+}: {
+  texts: EnsTextRecord[];
+  onTextChanged: (key: string, value: string) => void;
+}) => {
+  const socialRecords = useMemo(() => {
+    return supportedTexts.filter(
+      txt => txt.category === TextRecordCategory.Social
+    );
+  }, []);
+
+  return (
+    <div>
+      <Text weight="bold">General</Text>
     </div>
   );
 };

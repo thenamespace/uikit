@@ -7,6 +7,7 @@ import { EnsRecordsForm } from "./components/ens-records-form/EnsRecordsForm";
 import { WalletConnect } from "./wallet-connect";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { mainnet, sepolia } from "viem/chains";
+import { SelectRecordsForm } from "./components";
 
 const _texts: EnsTextRecord[] = [
   {
@@ -47,7 +48,8 @@ function TestApp() {
   return (
     <div>
       <WalletConnect>
-        <EnsRecordsForm
+        <SelectRecordsForm records={records} onRecordsUpdated={(e) => setRecords(e)}/>
+        {/* <EnsRecordsForm
           name={ENS_NAME}
           resolverAddress={SEPOLIA_PUB_RES}
           chainId={NAME_CHAIN_ID}
@@ -61,7 +63,7 @@ function TestApp() {
             ],
           }}
         />
-        <ConnectButton />
+        <ConnectButton /> */}
       </WalletConnect>
     </div>
   );

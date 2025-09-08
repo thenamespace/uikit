@@ -46,17 +46,17 @@
 /* Size variants - now controlled by height */
 .ns-input--sm {
   height: 32px;
-  font-size: 0.875rem;
+  font-size: 0.775rem;
 }
 
 .ns-input--md {
   height: 40px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .ns-input--lg {
   height: 48px;
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 /* Prefix and Suffix - positioned inside input */
@@ -73,11 +73,11 @@
 }
 
 .ns-input__prefix {
-  left: 1rem;
+  left: 10px;
 }
 
 .ns-input__suffix {
-  right: 1rem;
+  right: 10px;
 }
 
 /* Adjust input padding when prefix/suffix present */
@@ -93,12 +93,12 @@
 .ns-input::placeholder {
   color: var(--ns-color-muted);
   opacity: 0.5;
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .ns-input {
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* Number input spinner removal */
