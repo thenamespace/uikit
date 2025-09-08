@@ -1,0 +1,3 @@
+import{b as o}from"./core-_Wz1i6p7.js";import"./iframe-BrkGxyGZ.js";import"./index.es-DsL3jj4g.js";import"./index-BUSIDwT2.js";import"./index-yBjzXJbu.js";import"./events-DQ172AOg.js";import"./index-nibyPLVP.js";import"./SelectRecordsForm-CwDqfJhG.js";import"./jsx-runtime-Cf8x2fCZ.js";import"./Text-DmuCryDF.js";import"./Input-Bq4XNRC6.js";import"./Icon-z_mIe9Ku.js";import"./ChainIcon-BQ3_MsNd.js";import"./ContenthashIcon-Yb8iOiso.js";import"./Dropdown-Dno3pwEY.js";import"./en_US-RFN65H63-CanLp8zq.js";import"./index-SiouUkHJ.js";import"./index-B6ujFmsw.js";import"./Alert-DZx66M8k.js";import"./Button-BjPKkd8E.js";const w=o` <svg fill="none" viewBox="0 0 13 4">
+  <path fill="currentColor" d="M.5 0h12L8.9 3.13a3.76 3.76 0 0 1-4.8 0L.5 0Z" />
+</svg>`;export{w as cursorSvg};
