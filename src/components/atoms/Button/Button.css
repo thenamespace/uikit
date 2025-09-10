@@ -85,6 +85,42 @@
   animation: ui-spin 700ms linear infinite;
 }
 
+/* Prefix styling */
+.ns-btn__prefix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ns-btn__prefix svg {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* Ensure proper spacing between prefix and label */
+.ns-btn__prefix + .ns-btn__label {
+  margin-left: 0.5rem;
+}
+
+/* When only prefix is present (no label) */
+.ns-btn:has(.ns-btn__prefix):not(:has(.ns-btn__label)) {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Size-specific prefix adjustments */
+.ns-btn--sm .ns-btn__prefix svg {
+  width: 0.875em;
+  height: 0.875em;
+}
+
+.ns-btn--lg .ns-btn__prefix svg {
+  width: 1.125em;
+  height: 1.125em;
+}
+
 @keyframes ui-spin {
   0% {
     transform: rotate(0deg);

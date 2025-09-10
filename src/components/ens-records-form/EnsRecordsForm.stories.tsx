@@ -5,7 +5,7 @@ import { WalletConnect } from "@/wallet-connect";
 import { EnsRecordsForm } from "./EnsRecordsForm";
 import { Button, Input, Text } from "../atoms";
 import { useAccount } from "wagmi";
-import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Address, zeroAddress } from "viem";
 import axios from "axios";
 import { SelectRecordsForm } from "..";

@@ -1,7 +1,7 @@
 import { EnsRecords } from "@/types";
 import { useEffect, useMemo, useState } from "react";
 import { SelectRecordsForm } from "../select-records-form/SelectRecordsForm";
-import { Button } from "../atoms";
+import { Button, Icon } from "../atoms";
 import "./EnsRecordsForm.css";
 import { convertToMulticallResolverData } from "@/utils/resolver";
 import { deepCopy, getEnsRecordsDiff } from "@/utils";
@@ -15,7 +15,6 @@ import { mainnet } from "viem/chains";
 import { ENS_RESOLVER_ABI } from "@/web3";
 import { Address, ContractFunctionExecutionError, Hash } from "viem";
 import { getSupportedAddressMap, isContenthashValid } from "@/constants";
-import { Alert } from "../molecules";
 
 interface EditRecordsFormProps {
   initialRecords?: EnsRecords;
@@ -43,7 +42,7 @@ export const EnsRecordsForm = ({
   const currentChainId = chainId || mainnet.id;
   const publicClient = usePublicClient({ chainId: currentChainId });
   const { data: walletClient } = useWalletClient({ chainId: currentChainId });
-  const { address, chain } = useAccount();
+  const { address, chain, isConnected } = useAccount();
   const { switchChain } = useSwitchChain();
   const [contractError, setContractError] = useState<string | null>(null);
   const [generalError, setGeneralError] = useState<{
@@ -174,10 +173,18 @@ export const EnsRecordsForm = ({
     }
   };
 
+  const getActionButton = () => {
+
+    if (!isConnected) {
+      return <Button prefix={<Icon name="x"/>} disabled={true}></Button>
+    }
+
+  }
+
   const updateBtnLoading =
     txIndicator.isWaitingForTx || txIndicator.isWaitingForWallet;
   const isFormValid =
-    areValidTexts && areValidAddresses && isDiffPresent && isChashValid;
+    areValidTexts && areValidAddresses && isDiffPresent && isChashValid && !shouldSwitchNetwork && isConnected;
 
   return (
     <div className="ns-edit-records-form">
@@ -195,41 +202,18 @@ export const EnsRecordsForm = ({
           >
             Cancel
           </Button>
-          <Button
+          {/* <Button
             loading={updateBtnLoading}
             disabled={!isFormValid || updateBtnLoading}
             onClick={() => handleUpdateRecords()}
             size="lg"
             style={{ width: "100%" }}
           >
+              <Icon name="alert-triangle" size={20} />
             Update
-          </Button>
+          </Button> */}
+          {getActionButton()}
         </div>
-        {generalError && (
-          <Alert
-            onClose={() => setGeneralError(null)}
-            dismissible={true}
-            variant="warning"
-            title={generalError.title}
-          >
-            {generalError.subtitle}
-          </Alert>
-        )}
-        {!generalError && shouldSwitchNetwork && (
-          <Alert variant="warning" title="Switch network">
-            <div className="d-flex">
-              You are not on required network.
-              <Button
-                onClick={() => switchChain({ chainId: currentChainId })}
-                className="ns-mt-2"
-                variant="outline"
-                style={{ width: 180 }}
-              >
-                Switch Network
-              </Button>
-            </div>
-          </Alert>
-        )}
       </div>
     </div>
   );

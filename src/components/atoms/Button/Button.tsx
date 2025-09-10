@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import "./Button.css";
 
 export type ButtonVariant = "solid" | "outline" | "ghost";
@@ -9,6 +9,7 @@ export interface ButtonProps
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
+  prefix?: ReactNode;
   dataTestId?: string;
 }
 
@@ -25,6 +26,7 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   loading = false,
   disabled,
+  prefix,
   dataTestId,
   ...rest
 }) => {
@@ -50,6 +52,7 @@ export const Button: React.FC<ButtonProps> = ({
       {...rest}
     >
       {loading && <span className="ns-btn__spinner" aria-hidden="true" />}
+      {prefix && !loading && <span className="ns-btn__prefix">{prefix}</span>}
       <span className="ns-btn__label">{children}</span>
     </button>
   );
