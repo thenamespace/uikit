@@ -271,7 +271,6 @@ const StoryComponent = () => {
   return (
     <div style={{ width: "1080px" }} className="row">
       <div className="col col-lg-4">
-        <ConnectButton/>
         <div className="ns-mt-3">
           <Text size="md" weight="medium" color="primary">
             Your ENS name

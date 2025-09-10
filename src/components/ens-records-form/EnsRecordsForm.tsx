@@ -1,7 +1,7 @@
 import { EnsRecords } from "@/types";
 import { useEffect, useMemo, useState } from "react";
 import { SelectRecordsForm } from "../select-records-form/SelectRecordsForm";
-import { Button, Text } from "../atoms";
+import { Button } from "../atoms";
 import "./EnsRecordsForm.css";
 import { convertToMulticallResolverData } from "@/utils/resolver";
 import { deepCopy, getEnsRecordsDiff } from "@/utils";
@@ -27,11 +27,6 @@ interface EditRecordsFormProps {
 }
 
 const addressMapByCoin = getSupportedAddressMap();
-
-const blankRecords: EnsRecords = {
-  texts: [],
-  addresses: [],
-};
 
 export const EnsRecordsForm = ({
   name,
