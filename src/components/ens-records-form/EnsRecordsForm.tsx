@@ -15,7 +15,6 @@ import { mainnet } from "viem/chains";
 import { ENS_RESOLVER_ABI } from "@/web3";
 import { Address, ContractFunctionExecutionError, Hash } from "viem";
 import { getSupportedAddressMap, isContenthashValid } from "@/constants";
-import { RecordDiff } from "./record-diff/RecordDiff";
 import { Alert } from "../molecules";
 
 interface EditRecordsFormProps {
@@ -191,7 +190,7 @@ export const EnsRecordsForm = ({
         records={records}
         onRecordsUpdated={records => setRecords(records)}
       />
-      <div style={{ padding: 15, paddingTop: -5 }}>
+      <div style={{ padding: 15, paddingTop: 0 }}>
         <div className="d-flex align-items-center" style={{ gap: "8px" }}>
           <Button
             onClick={() => onCancel?.()}

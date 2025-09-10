@@ -1,15 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { ContenthashProtocol, EnsContenthashRecord, EnsRecords } from "@/types";
+import { EnsRecords } from "@/types";
 import { WalletConnect } from "@/wallet-connect";
 import { EnsRecordsForm } from "./EnsRecordsForm";
 import { Button, Input, Text } from "../atoms";
 import { useAccount } from "wagmi";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
-import { Address, isAddress, zeroAddress } from "viem";
+import { Address, zeroAddress } from "viem";
 import axios from "axios";
-import { Alert } from "../molecules";
-import { Connect } from "vite";
 import { SelectRecordsForm } from "..";
 
 interface ApiEnsRecords {
@@ -38,26 +36,194 @@ const updateRecords = (_records: EnsRecords) => {
   records = _records;
 };
 
-const meta: Meta<typeof EnsRecordsForm> = {
+export default {
   title: "Components/EnsRecordsForm",
   component: EnsRecordsForm,
+  decorators: [
+    (Story: any) => (
+      <WalletConnect>
+        <Story />
+      </WalletConnect>
+    ),
+  ],
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component: `
+# EnsRecordsForm
+
+A comprehensive form component for editing ENS (Ethereum Name Service) records. This component allows users to modify text records, address records, and other ENS data associated with a domain name.
+
+## Features
+
+- **Text Records**: Edit various text records like description, URL, avatar, etc.
+- **Address Records**: Manage cryptocurrency addresses for different coin types
+- **Contenthash Records**: Set content hash for decentralized websites
+- **Real-time Validation**: Validates ENS records before submission
+- **Transaction Management**: Handles blockchain transactions for record updates
+
+## Usage
+
+\`\`\`tsx
+import { EnsRecordsForm } from '@/components/ens-records-form/EnsRecordsForm';
+import { WalletConnect } from '@/wallet-connect';
+
+<WalletConnect>
+  <EnsRecordsForm
+    name="example.eth"
+    resolverAddress="0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41"
+    initialRecords={records}
+    onSuccess={(txHash) => console.log('Transaction:', txHash)}
+  />
+</WalletConnect>
+\`\`\`
+        `
+      }
+    }
+  },
+  argTypes: {
+    name: {
+      control: { type: 'text' },
+      description: 'The ENS name to edit records for (e.g., "example.eth")',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: 'undefined' }
+      }
+    },
+    initialRecords: {
+      control: { type: 'object' },
+      description: 'Initial records to populate the form with',
+      table: {
+        type: { summary: 'EnsRecords' },
+        defaultValue: { summary: 'undefined' }
+      }
+    },
+    resolverAddress: {
+      control: { type: 'text' },
+      description: 'The resolver contract address for the ENS name',
+      table: {
+        type: { summary: 'Address' },
+        defaultValue: { summary: 'undefined' }
+      }
+    },
+    chainId: {
+      control: { type: 'number' },
+      description: 'The blockchain chain ID (defaults to mainnet)',
+      table: {
+        type: { summary: 'number' },
+        defaultValue: { summary: '1' }
+      }
+    },
+    onCancel: {
+      action: 'cancelled',
+      description: 'Callback function called when the user cancels editing',
+      table: {
+        type: { summary: '() => void' },
+        defaultValue: { summary: 'undefined' }
+      }
+    },
+    onSuccess: {
+      action: 'success',
+      description: 'Callback function called when records are successfully updated',
+      table: {
+        type: { summary: '(txHash: Hash) => void' },
+        defaultValue: { summary: 'undefined' }
+      }
+    },
+  },
+} as Meta<typeof EnsRecordsForm>;
+
+const Template = (args: any) => <EnsRecordsForm {...args} />;
+
+export const Default: StoryObj<typeof EnsRecordsForm> = {
+  render: Template,
   args: {
     name: "artii.eth",
+    resolverAddress: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41",
+    chainId: 1,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'The default view of the EnsRecordsForm component with basic configuration.',
+      },
+    },
   },
 };
-export default meta;
 
-type Story = StoryObj<typeof EnsRecordsForm>;
+export const WithInitialRecords: StoryObj<typeof EnsRecordsForm> = {
+  render: Template,
+  args: {
+    name: "example.eth",
+    resolverAddress: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41",
+    chainId: 1,
+    initialRecords: {
+      texts: [
+        { key: "description", value: "This is an example ENS name" },
+        { key: "url", value: "https://example.com" },
+        { key: "avatar", value: "https://example.com/avatar.png" }
+      ],
+      addresses: [
+        { coinType: 60, value: "0x1234567890123456789012345678901234567890" },
+        { coinType: 0, value: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" }
+      ]
+    },
+    onCancel: () => console.log("Cancel clicked"),
+    onSuccess: (txHash: any) => console.log("Success:", txHash)
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'EnsRecordsForm with pre-populated records and callback handlers.',
+      },
+    },
+  },
+};
 
-export const Default: Story = {
-  render: args => {
+export const InteractiveDemo: StoryObj<typeof EnsRecordsForm> = {
+  render: (args: any) => {
     return (
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <WalletConnect>
-          <StoryComponent />
-        </WalletConnect>
+        <StoryComponent />
       </div>
     );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Interactive demo with wallet connection and ENS name input.',
+      },
+    },
+  },
+};
+
+export const Docs: StoryObj<typeof EnsRecordsForm> = {
+  render: Template,
+  args: {
+    name: "example.eth",
+    resolverAddress: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41",
+    chainId: 1,
+    initialRecords: {
+      texts: [
+        { key: "description", value: "This is an example ENS name" },
+        { key: "url", value: "https://example.com" },
+        { key: "avatar", value: "https://example.com/avatar.png" }
+      ],
+      addresses: [
+        { coinType: 60, value: "0x1234567890123456789012345678901234567890" },
+        { coinType: 0, value: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" }
+      ]
+    },
+    onCancel: () => console.log("Cancel clicked"),
+    onSuccess: (txHash: any) => console.log("Success:", txHash)
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Complete documentation and examples for the EnsRecordsForm component.',
+      },
+    },
   },
 };
 
@@ -107,8 +273,8 @@ const StoryComponent = () => {
       <div className="col col-lg-4">
         <ConnectButton/>
         <div className="ns-mt-3">
-          <Text size="sm" color="grey">
-            Your Ens name
+          <Text size="md" weight="medium" color="primary">
+            Your ENS name
           </Text>
           <Input
             value={selectedName}
@@ -145,3 +311,4 @@ const StoryComponent = () => {
     </div>
   );
 };
+

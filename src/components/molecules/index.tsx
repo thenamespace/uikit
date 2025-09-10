@@ -2,3 +2,4 @@
 export * from "./dropdown/Dropdown";
 export * from "./contenthash/ContenthashIcon";
 export * from "./alert/Alert";
+export * from "./modal/Modal";
