@@ -5,7 +5,7 @@ import {
   TextRecordCategory,
 } from "@/constants";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Icon, Input, Text } from "@/components";
+import { Icon, Input, Text } from "@/components/atoms";
 import { capitalize } from "@/utils";
 
 interface TextRecordsProps {
