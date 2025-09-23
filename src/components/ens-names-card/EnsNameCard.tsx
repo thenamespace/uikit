@@ -13,10 +13,10 @@ interface ENSNameCardProps {
 
 export const ENSNameCard = ({ name, imageUrl, expires, chainId }: ENSNameCardProps) => {
   const iconSrc = chainId ? chainIcons[chainId] : "/icons/eth.svg";
-
+  
   return (
     <Card className="ens-name-card">
-  
+
       <div className="ens-card-image-container">
         <img src={imageUrl} alt={name} className="ens-card-image" />
         <div className="ens-card-badge">
@@ -27,13 +27,12 @@ export const ENSNameCard = ({ name, imageUrl, expires, chainId }: ENSNameCardPro
           />
         </div>
       </div>
-
-      
       <div className="ens-card-body">
         <Text className="ens-card-title">{name}</Text>
+        
         <div className="ens-card-expiry">
-          <Clock size={14} />
-          <span>Expires {expires}</span>
+          <Clock size={14} className="ens-expiry-icon" />
+          <span className="ens-expiry-text">Expires {expires}</span>
         </div>
       </div>
     </Card>

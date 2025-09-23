@@ -1,0 +1,108 @@
+.ns-profile-header {
+  background: var(--ns-color-bg);
+  border: 1px solid var(--ns-color-border);
+  border-radius: var(--ns-radius-lg);
+  box-shadow: var(--ns-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.ns-profile-header__banner {
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+}
+
+.ns-profile-header__banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ns-profile-header__avatar {
+  position: relative;
+  margin-top: -50px;
+}
+
+.ns-avatar-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid var(--ns-color-bg);
+  object-fit: cover;
+}
+
+.ns-profile-header__chain {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--ns-color-bg);
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: var(--ns-shadow);
+}
+
+.ns-profile-header__chain img {
+  width: 20px;
+  height: 20px;
+}
+
+.ns-profile-header__info {
+  padding: 12px;
+}
+
+.ns-profile-header__username {
+  font-size: 0.85rem;
+  color: var(--ns-color-muted);
+  margin-bottom: 4px;
+}
+
+.ns-profile-header__name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--ns-color-fg);
+  margin: 0;
+}
+
+.ns-profile-header__primary {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: var(--ns-radius-sm);
+  font-size: 0.75rem;
+  background: var(--ns-color-bg-accent);
+  color: var(--ns-color-fg);
+}
+
+.ns-profile-header__bio {
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: var(--ns-color-muted);
+}
+
+.ns-profile-header__stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--ns-color-fg);
+}
+
+.ns-profile-header__follow {
+  margin-left: 8px;
+  padding: 4px 12px;
+  border: none;
+  border-radius: var(--ns-radius-md);
+  background: var(--ns-color-primary);
+  color: var(--ns-color-primary-contrast);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.ns-profile-header__follow:hover {
+  background: var(--ns-color-fg);
+}

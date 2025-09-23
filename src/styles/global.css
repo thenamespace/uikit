@@ -100,3 +100,106 @@
   border-radius: 4px;
 }
 
+
+
+
+
+
+.ns-sidebar {
+  flex: 0 0 300px;
+}
+
+.ns-main {
+  flex: 1;
+}
+
+.ns-ens-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+
+.ns-page {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 24px;
+  padding: 20px;
+  background: #f5f5f7;
+  min-height: 100vh;
+}
+
+/* Left Profile */
+.ns-left {
+  position: sticky;
+  top: 80px;
+  align-self: start;
+}
+
+/* Right ENS Section */
+.ns-right {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ns-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ns-tabs {
+  display: flex;
+  gap: 20px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.ns-tabs span {
+  cursor: pointer;
+  color: #555;
+}
+
+.ns-tabs span.active {
+  color: #000;
+}
+
+.ns-tabs .count {
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+.ns-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ns-search input {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.ns-search button {
+  background: #f5f5f5;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ENS Grid */
+.ns-ens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
