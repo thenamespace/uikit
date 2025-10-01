@@ -1,5 +1,5 @@
-export const useWaitForTransaction = ({ chainId: number}: {chainId: number}) => {
-
-   
-
-}
+export const useWaitForTransaction = ({
+  chainId: number,
+}: {
+  chainId: number;
+}) => {};

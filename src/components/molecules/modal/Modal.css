@@ -18,9 +18,15 @@
   box-shadow: var(--ns-shadow);
 }
 
-.ns-modal--sm { max-width: 420px; }
-.ns-modal--md { max-width: 640px; }
-.ns-modal--lg { max-width: 920px; }
+.ns-modal--sm {
+  max-width: 420px;
+}
+.ns-modal--md {
+  max-width: 640px;
+}
+.ns-modal--lg {
+  max-width: 920px;
+}
 
 .ns-modal__header {
   display: flex;
@@ -30,7 +36,9 @@
   border-bottom: 1px solid var(--ns-color-border);
 }
 
-.ns-modal__title { margin-right: 12px; }
+.ns-modal__title {
+  margin-right: 12px;
+}
 
 .ns-modal__close {
   appearance: none;
@@ -41,7 +49,9 @@
   font-size: 20px;
   cursor: pointer;
 }
-.ns-modal__close:hover { opacity: 1; }
+.ns-modal__close:hover {
+  opacity: 1;
+}
 
 .ns-modal__body {
   padding: 20px;
@@ -56,5 +66,3 @@
   padding: 14px 20px;
   border-top: 1px solid var(--ns-color-border);
 }
-
-

@@ -47,7 +47,7 @@ export default {
     ),
   ],
   parameters: {
-    layout: 'padded',
+    layout: "padded",
     docs: {
       description: {
         component: `
@@ -78,58 +78,59 @@ import { WalletConnect } from '@/wallet-connect';
   />
 </WalletConnect>
 \`\`\`
-        `
-      }
-    }
+        `,
+      },
+    },
   },
   argTypes: {
     name: {
-      control: { type: 'text' },
+      control: { type: "text" },
       description: 'The ENS name to edit records for (e.g., "example.eth")',
       table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: 'undefined' }
-      }
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
     },
     initialRecords: {
-      control: { type: 'object' },
-      description: 'Initial records to populate the form with',
+      control: { type: "object" },
+      description: "Initial records to populate the form with",
       table: {
-        type: { summary: 'EnsRecords' },
-        defaultValue: { summary: 'undefined' }
-      }
+        type: { summary: "EnsRecords" },
+        defaultValue: { summary: "undefined" },
+      },
     },
     resolverAddress: {
-      control: { type: 'text' },
-      description: 'The resolver contract address for the ENS name',
+      control: { type: "text" },
+      description: "The resolver contract address for the ENS name",
       table: {
-        type: { summary: 'Address' },
-        defaultValue: { summary: 'undefined' }
-      }
+        type: { summary: "Address" },
+        defaultValue: { summary: "undefined" },
+      },
     },
     chainId: {
-      control: { type: 'number' },
-      description: 'The blockchain chain ID (defaults to mainnet)',
+      control: { type: "number" },
+      description: "The blockchain chain ID (defaults to mainnet)",
       table: {
-        type: { summary: 'number' },
-        defaultValue: { summary: '1' }
-      }
+        type: { summary: "number" },
+        defaultValue: { summary: "1" },
+      },
     },
     onCancel: {
-      action: 'cancelled',
-      description: 'Callback function called when the user cancels editing',
+      action: "cancelled",
+      description: "Callback function called when the user cancels editing",
       table: {
-        type: { summary: '() => void' },
-        defaultValue: { summary: 'undefined' }
-      }
+        type: { summary: "() => void" },
+        defaultValue: { summary: "undefined" },
+      },
     },
     onSuccess: {
-      action: 'success',
-      description: 'Callback function called when records are successfully updated',
+      action: "success",
+      description:
+        "Callback function called when records are successfully updated",
       table: {
-        type: { summary: '(txHash: Hash) => void' },
-        defaultValue: { summary: 'undefined' }
-      }
+        type: { summary: "(txHash: Hash) => void" },
+        defaultValue: { summary: "undefined" },
+      },
     },
   },
 } as Meta<typeof EnsRecordsForm>;
@@ -146,7 +147,8 @@ export const Default: StoryObj<typeof EnsRecordsForm> = {
   parameters: {
     docs: {
       description: {
-        story: 'The default view of the EnsRecordsForm component with basic configuration.',
+        story:
+          "The default view of the EnsRecordsForm component with basic configuration.",
       },
     },
   },
@@ -162,20 +164,21 @@ export const WithInitialRecords: StoryObj<typeof EnsRecordsForm> = {
       texts: [
         { key: "description", value: "This is an example ENS name" },
         { key: "url", value: "https://example.com" },
-        { key: "avatar", value: "https://example.com/avatar.png" }
+        { key: "avatar", value: "https://example.com/avatar.png" },
       ],
       addresses: [
         { coinType: 60, value: "0x1234567890123456789012345678901234567890" },
-        { coinType: 0, value: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" }
-      ]
+        { coinType: 0, value: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" },
+      ],
     },
     onCancel: () => console.log("Cancel clicked"),
-    onSuccess: (txHash: any) => console.log("Success:", txHash)
+    onSuccess: (txHash: any) => console.log("Success:", txHash),
   },
   parameters: {
     docs: {
       description: {
-        story: 'EnsRecordsForm with pre-populated records and callback handlers.',
+        story:
+          "EnsRecordsForm with pre-populated records and callback handlers.",
       },
     },
   },
@@ -192,7 +195,7 @@ export const InteractiveDemo: StoryObj<typeof EnsRecordsForm> = {
   parameters: {
     docs: {
       description: {
-        story: 'Interactive demo with wallet connection and ENS name input.',
+        story: "Interactive demo with wallet connection and ENS name input.",
       },
     },
   },
@@ -208,20 +211,21 @@ export const Docs: StoryObj<typeof EnsRecordsForm> = {
       texts: [
         { key: "description", value: "This is an example ENS name" },
         { key: "url", value: "https://example.com" },
-        { key: "avatar", value: "https://example.com/avatar.png" }
+        { key: "avatar", value: "https://example.com/avatar.png" },
       ],
       addresses: [
         { coinType: 60, value: "0x1234567890123456789012345678901234567890" },
-        { coinType: 0, value: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" }
-      ]
+        { coinType: 0, value: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" },
+      ],
     },
     onCancel: () => console.log("Cancel clicked"),
-    onSuccess: (txHash: any) => console.log("Success:", txHash)
+    onSuccess: (txHash: any) => console.log("Success:", txHash),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Complete documentation and examples for the EnsRecordsForm component.',
+        story:
+          "Complete documentation and examples for the EnsRecordsForm component.",
       },
     },
   },
@@ -247,9 +251,9 @@ const StoryComponent = () => {
       openConnectModal?.();
       return;
     } else if (!showForm) {
-      handleSelect()
+      handleSelect();
     } else {
-      setInitialRecords({ texts: [], addresses: []})
+      setInitialRecords({ texts: [], addresses: [] });
       setSelectedName("");
       setResolver(zeroAddress);
       setShowForm(false);
@@ -310,4 +314,3 @@ const StoryComponent = () => {
     </div>
   );
 };
-

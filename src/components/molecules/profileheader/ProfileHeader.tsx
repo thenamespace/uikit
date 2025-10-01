@@ -47,7 +47,9 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
       {/* Info */}
       <div className="ns-profile-header__info">
-        {username && <div className="ns-profile-header__username">{username}</div>}
+        {username && (
+          <div className="ns-profile-header__username">{username}</div>
+        )}
 
         <h2 className="ns-profile-header__name">{name}</h2>
 
@@ -61,10 +63,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           <span>{followers} Followers</span>
           <span>·</span>
           <span>{following} Following</span>
-          <button
-            className="ns-profile-header__follow"
-            onClick={onFollowClick}
-          >
+          <button className="ns-profile-header__follow" onClick={onFollowClick}>
             Follow
           </button>
         </div>

@@ -7,7 +7,9 @@
   box-shadow: var(--ns-shadow);
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .ens-name-card:hover {
@@ -28,7 +30,6 @@
   height: 100%;
   object-fit: cover;
   background: var(--ns-color-bg-accent);
-
 }
 
 .ens-card-badge {
@@ -48,7 +49,6 @@
   width: 18px;
   height: 18px;
 }
-
 
 .ens-card-body {
   padding: 10px 12px;

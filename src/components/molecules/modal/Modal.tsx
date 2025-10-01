@@ -70,7 +70,7 @@ export const Modal: React.FC<ModalProps> = ({
         className={classes}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? (titleId || "ns-modal-title") : undefined}
+        aria-labelledby={title ? titleId || "ns-modal-title" : undefined}
         style={style}
       >
         {(title || !isDismissDisabled) && (
@@ -78,14 +78,20 @@ export const Modal: React.FC<ModalProps> = ({
             {title && (
               <div className="ns-modal__title" id={titleId || "ns-modal-title"}>
                 {typeof title === "string" ? (
-                  <Text size="lg" weight="medium">{title}</Text>
+                  <Text size="lg" weight="medium">
+                    {title}
+                  </Text>
                 ) : (
                   title
                 )}
               </div>
             )}
             {!isDismissDisabled && (
-              <button className="ns-modal__close" aria-label="Close" onClick={onClose}>
+              <button
+                className="ns-modal__close"
+                aria-label="Close"
+                onClick={onClose}
+              >
                 ×
               </button>
             )}
@@ -95,8 +101,12 @@ export const Modal: React.FC<ModalProps> = ({
         <div className="ns-modal__body">{children}</div>
 
         <div className="ns-modal__footer">
-          {footer !== undefined ? footer : (
-            <Button variant="outline" onClick={onClose}>Close</Button>
+          {footer !== undefined ? (
+            footer
+          ) : (
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
           )}
         </div>
       </div>
@@ -105,5 +115,3 @@ export const Modal: React.FC<ModalProps> = ({
 };
 
 export default Modal;
-
-

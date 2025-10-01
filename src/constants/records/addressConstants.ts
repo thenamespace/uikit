@@ -2,7 +2,15 @@ import { ChainName } from "@/types";
 import { convertEVMChainIdToCoinType } from "@/utils";
 import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { isAddress } from "viem";
-import { base, arbitrum, polygon, optimism, zora, mainnet, celo } from "viem/chains";
+import {
+  base,
+  arbitrum,
+  polygon,
+  optimism,
+  zora,
+  mainnet,
+  celo,
+} from "viem/chains";
 
 export interface SupportedEnsAddress {
   validateFunc?: (value: string) => boolean;
@@ -19,26 +27,23 @@ const isValidEmvAddress = (value: string): boolean => {
 };
 
 const verifyAddress = (value: string, coinName: string): boolean => {
-
   try {
     const coder = getCoderByCoinName(coinName);
     coder.decode(value);
     return true;
-  } catch(err) {
+  } catch (err) {
     console.log(`Failed to decode value: ${coinName}`, err);
     return false;
   }
-
-}
+};
 
 const isValidBtcAddress = (value: string): boolean => {
-  return verifyAddress(value, "btc")
-}
+  return verifyAddress(value, "btc");
+};
 
 const isValidSolAddress = (value: string): boolean => {
-  return verifyAddress(value, "sol")
-}
-
+  return verifyAddress(value, "sol");
+};
 
 export const supportedAddresses: SupportedEnsAddress[] = [
   {
@@ -57,7 +62,7 @@ export const supportedAddresses: SupportedEnsAddress[] = [
     chainName: "bitcoin",
     chainId: 0,
     placeholder: "7Mi3m...sy7dw",
-    validateFunc: isValidBtcAddress
+    validateFunc: isValidBtcAddress,
   },
   {
     isEMV: false,
@@ -66,7 +71,7 @@ export const supportedAddresses: SupportedEnsAddress[] = [
     chainName: "sol",
     chainId: 501,
     placeholder: "1BH2S...Y3x33",
-    validateFunc: isValidSolAddress
+    validateFunc: isValidSolAddress,
   },
   {
     isEMV: true,
@@ -124,15 +129,18 @@ export const supportedAddresses: SupportedEnsAddress[] = [
   },
 ];
 
-export const getSupportedAddressMap = (): Record<number,SupportedEnsAddress> => {
-  const map: Record<number,SupportedEnsAddress> = {}
+export const getSupportedAddressMap = (): Record<
+  number,
+  SupportedEnsAddress
+> => {
+  const map: Record<number, SupportedEnsAddress> = {};
 
   supportedAddresses.forEach(addr => {
     map[addr.coinType] = addr;
-  })
+  });
 
   return map;
-}
+};
 
 export const getSupportedAddressByCoin = (
   coin: number

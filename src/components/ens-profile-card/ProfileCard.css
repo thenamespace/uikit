@@ -1,204 +1,204 @@
 .ns-profile-card {
-    max-width: 450px;
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    font-family: sans-serif;
-    position: relative;
+  max-width: 450px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: sans-serif;
+  position: relative;
 }
 
 .ns-profile-banner {
-    position: relative;
-    height: 150px;
-    background: #eaeaea;
+  position: relative;
+  height: 150px;
+  background: #eaeaea;
 }
 
 .ns-profile-banner img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .ns-profile-avatar {
-    position: absolute;
-    bottom: -40px;
-    left: 50%;
-    transform: translateX(-50%);
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .ns-profile-avatar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 20%;
-    border: 6px solid #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  width: 100px;
+  height: 100px;
+  border-radius: 20%;
+  border: 6px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .ns-avatar-badge {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background: #fff;
-    overflow: hidden;
-    border-radius: 50%;
-    width: 10px;
-    height: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #fff;
+  overflow: hidden;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ns-avatar-badge-icon {
-    width: 10px;
-    height: 10px;
+  width: 10px;
+  height: 10px;
 }
 
 .ns-profile-body {
-    padding: 60px 16px 20px;
-    text-align: center;
+  padding: 60px 16px 20px;
+  text-align: center;
 }
 
 .ns-profile-tag {
-    font-size: 12px;
-    background: #f3f3f3;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-weight: 500;
+  font-size: 12px;
+  background: #f3f3f3;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
 }
 
 .ns-username-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 8px 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 4px;
 }
 
 .ns-profile-username {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
 }
 
 .ns-edit-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #555;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
 }
 
 .ns-profile-bio {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 12px;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 12px;
 }
 
 .ns-profile-socials {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .ns-profile-socials button {
-    border: 1px solid #ccc;
-    background: #fff;
-    border-radius: 8px;
-    padding: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #555;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    width: 36px;
-    height: 36px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 36px;
+  height: 36px;
 }
 
 .ns-copy-btn,
 .ns-social-btn {
-    background: #f3f3f3;
-    border: none;
-    border-radius: 8px;
-    padding: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #555;
-    box-shadow: none;
+  background: #f3f3f3;
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  box-shadow: none;
 }
 
 .ns-profile-stats {
-    font-size: 14px;
-    color: #333;
-    margin: 10px 0;
+  font-size: 14px;
+  color: #333;
+  margin: 10px 0;
 }
 
 .ns-profile-stats span {
-    font-weight: 500;
-    margin: 0 4px;
+  font-weight: 500;
+  margin: 0 4px;
 }
 
 .ns-follow-btn {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-bottom: 14px;
-    font-weight: 500;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 14px;
+  font-weight: 500;
 }
 
 .ns-profile-extra {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-    padding: 8px;
-    border-radius: 12px;
-    background: transparent;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 12px;
+  background: transparent;
 }
 
 .ns-extra-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    background: #eef2ff;
-    color: #2563eb;
-    font-size: 13px;
-    font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .ns-extra-text {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .ns-extra-btn {
-    background: transparent;
-    border: none;
-    color: #2563eb;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .ns-extra-item span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .ns-profile-extra a {
-    color: #2563eb;
-    text-decoration: none;
+  color: #2563eb;
+  text-decoration: none;
 }
 .ns-profile-footer {
   display: flex;
@@ -219,12 +219,10 @@
 
 .ns-footer-label {
   font-weight: 600;
-  font-size: 16px ;
+  font-size: 16px;
 }
 
 .ns-footer-text {
   font-size: 18px;
   font-weight: 500;
 }
-
-

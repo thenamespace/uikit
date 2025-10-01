@@ -1,8 +1,6 @@
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
-interface TransactionContext {
-  
-}
+interface TransactionContext {}
 
 export const TransactionProvider = () => {
   const { address } = useAccount();

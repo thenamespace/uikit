@@ -39,7 +39,7 @@ interface RecordsSelectorProps {
   addresses: EnsAddressRecord[];
   contenthash?: EnsContenthashRecord;
   segment?: ScrollToRecordSegment;
-  onRecordsAdded: (params: RecordsAddedParams) => void
+  onRecordsAdded: (params: RecordsAddedParams) => void;
   onClose: () => void;
 }
 
@@ -63,7 +63,7 @@ export const RecordsSelector = ({
   addresses,
   contenthash,
   segment,
-  onRecordsAdded
+  onRecordsAdded,
 }: RecordsSelectorProps) => {
   const [selectedTextsMap, setSelectedTextsMap] = useState<
     Record<string, boolean>
@@ -176,22 +176,22 @@ export const RecordsSelector = ({
     const textKeys = Object.keys(selectedTextsMap);
     const addressKeys = Object.keys(selectedAddressesMap);
     const addressCoins: number[] = addressKeys.map(i => {
-          const s = getSupportedAddressByName(i as any);
-          return s?.coinType !== undefined ? s.coinType : 0;
-        })
-   
+      const s = getSupportedAddressByName(i as any);
+      return s?.coinType !== undefined ? s.coinType : 0;
+    });
+
     const records: RecordsAddedParams = {
       coins: addressCoins,
-      keys: textKeys
-    }    
+      keys: textKeys,
+    };
 
     if (selectedContenthash) {
       records.contenthash = {
         protocol: selectedContenthash,
-        value: ""
-      }
+        value: "",
+      };
     }
-    
+
     onRecordsAdded(records);
 
     setSelectedContenthash(null);

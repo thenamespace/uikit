@@ -10,55 +10,61 @@ import { mainnet } from "viem/chains";
 
 import { ENSNameCard } from "./components";
 import { ProfileCard } from "./components";
-import { UserRound,Settings  } from "lucide-react";     
+import { NavbarProfileCard } from "./components";
+import { UserRound, Settings } from "lucide-react";
 export const dummyENSNames = [
   {
     name: "neeraj.eth",
-    imageUrl: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
+    imageUrl:
+      "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
     expires: "2025-12-31",
     chain: "eth",
   },
   {
     name: "nikku.eth",
-    imageUrl: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
+    imageUrl:
+      "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
     expires: "2026-03-15",
-    chain: "arb", 
+    chain: "arb",
   },
   {
     name: "buzzify.eth",
-    imageUrl: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
+    imageUrl:
+      "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
     expires: "2025-11-10",
-    chain: "base", 
+    chain: "base",
   },
   {
     name: "cryptoqueen.eth",
-    imageUrl: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
+    imageUrl:
+      "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
     expires: "2026-01-20",
-    chain: "eth"
+    chain: "eth",
   },
   {
     name: "web3dev.eth",
-    imageUrl: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
+    imageUrl:
+      "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
     expires: "2025-10-05",
-    chain: "eth"
+    chain: "eth",
   },
   {
     name: "zkbuilder.eth",
     imageUrl: "https://picsum.photos/200?random=1",
     expires: "2026-02-12",
-    chain: "eth"
+    chain: "eth",
   },
   {
     name: "ethchamp.eth",
     imageUrl: "https://picsum.photos/200?random=2",
     expires: "2027-07-18",
-    chain: "base"
+    chain: "base",
   },
   {
     name: "defiking.eth",
     imageUrl: "https://picsum.photos/200?random=3",
     expires: "2026-06-22",
-    chain: "base"
+    chain: "base",
   },
   {
     name: "solmax.eth",
@@ -70,74 +76,69 @@ export const dummyENSNames = [
     name: "chainmaster.eth",
     imageUrl: "https://picsum.photos/200?random=5",
     expires: "2027-01-03",
-    chain: "arb"
+    chain: "arb",
   },
   {
     name: "layerzero.eth",
     imageUrl: "https://picsum.photos/200?random=6",
     expires: "2026-12-09",
-    chain: "arb"
+    chain: "arb",
   },
   {
     name: "gasguru.eth",
     imageUrl: "https://picsum.photos/200?random=7",
     expires: "2025-05-21",
-    chain: "arb"
+    chain: "arb",
   },
   {
     name: "rollup.eth",
     imageUrl: "https://picsum.photos/200?random=8",
     expires: "2026-04-30",
-    chain: "base"
+    chain: "base",
   },
   {
     name: "devwizard.eth",
     imageUrl: "https://picsum.photos/200?random=9",
     expires: "2027-03-12",
-    chain: "base"
+    chain: "base",
   },
   {
     name: "stakingpro.eth",
     imageUrl: "https://picsum.photos/200?random=10",
     expires: "2025-08-08",
-    chain: "base"
+    chain: "base",
   },
   {
     name: "rektlord.eth",
     imageUrl: "https://picsum.photos/200?random=11",
     expires: "2026-09-01",
-    chain: "base"
+    chain: "base",
   },
   {
     name: "airdrophunter.eth",
     imageUrl: "https://picsum.photos/200?random=12",
     expires: "2027-10-17",
-    chain: "base"
-
+    chain: "base",
   },
   {
     name: "wagmi.eth",
     imageUrl: "https://picsum.photos/200?random=13",
     expires: "2026-07-28",
-    chain: "base"
-
+    chain: "base",
   },
   {
     name: "gmgn.eth",
     imageUrl: "https://picsum.photos/200?random=14",
     expires: "2025-11-02",
-    chain: "base"
-
+    chain: "base",
   },
   {
     name: "daoqueen.eth",
     imageUrl: "https://picsum.photos/200?random=15",
     expires: "2027-05-25",
-    chain: "base"
-
+    chain: "base",
   },
 ];
-
 
 const _texts: EnsTextRecord[] = [
   {
@@ -160,7 +161,6 @@ const _addrs: EnsAddressRecord[] = [
 const SEPOLIA_PUB_RES = "0x0dcD506D1Be162E50A2b434028A9a148F2686444";
 const ENS_NAME = "artii.eth";
 const NAME_CHAIN_ID = mainnet.id;
-
 
 function TestApp() {
   const [records, setRecords] = useState<EnsRecords>({
@@ -193,7 +193,7 @@ function TestApp() {
               subnames={3}
               profit={6}
               volume={0}
-            // onFollowClick={() => console.log("Follow clicked")}
+              // onFollowClick={() => console.log("Follow clicked")}
             />
           </aside>
 
@@ -238,15 +238,12 @@ function TestApp() {
           <input type="text" placeholder="Search" className="ns-searchbar" />
         </div>
         <div className="ns-navbar-right">
-          <span className="ns-network">ΞF</span>
-          <div className="ns-profile">
-            <img
-              src="https://i.pravatar.cc/40"
-              alt="avatar"
-              className="ns-navbar-profile-avatar"
-            />
-            <span>thecap.eth</span>
-          </div>
+          <NavbarProfileCard
+            imageUrl="https://avatars.githubusercontent.com/u/123456?v=4"
+            name="thecap.eth"
+            address="0x035eB...24117D3"
+            onLogout={() => console.log("Logout clicked")}
+          />
         </div>
       </nav>
     );
@@ -259,7 +256,7 @@ function TestApp() {
           <span className="active">
             <UserRound className="ns-icon" />
           </span>
-        
+
           <span>
             <Settings className="ns-icon" />
           </span>
@@ -287,7 +284,6 @@ function TestApp() {
           expires="25/11/29"
           chainId={137}
         /> */}
-
 
         <div className="ns-layout">
           <Navbar />

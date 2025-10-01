@@ -4,7 +4,10 @@ interface BitcoinSvgProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
 }
 
-export const BitcoinSvg: React.FC<BitcoinSvgProps> = ({ size = 20, ...props }) => {
+export const BitcoinSvg: React.FC<BitcoinSvgProps> = ({
+  size = 20,
+  ...props
+}) => {
   return (
     <svg
       width={size}

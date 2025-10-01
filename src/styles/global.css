@@ -84,8 +84,8 @@
   --ns-alert-success-close-hover: rgba(134, 239, 172, 0.1);
 }
 
-html{
-  background-color: #F5F4F5 !important;
+html {
+  background-color: #f5f4f5 !important;
 }
 
 .ns-reset {
@@ -104,14 +104,11 @@ html{
   border-radius: 4px;
 }
 
-
-
 .ns-ens-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
-
 
 /* Body Layout */
 .ns-body {
@@ -119,8 +116,6 @@ html{
   flex: 1;
   background: var(--bg);
 }
-
-
 
 /* Main */
 .ns-main {
@@ -162,13 +157,11 @@ html{
   border-bottom: 1px solid var(--border);
 }
 
-
 .ns-tabs {
   display: flex;
   gap: 16px;
   font-weight: 500;
 }
-
 
 .ns-tabs span {
   cursor: pointer;
@@ -189,7 +182,6 @@ html{
   background: var(--bg);
 }
 
-
 .ns-tabs .count {
   background: #f0f0f0;
   padding: 2px 6px;
@@ -205,13 +197,15 @@ html{
   padding: 6px 10px;
   cursor: pointer;
   font-size: 14px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .ns-search button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .ns-search input {
@@ -222,8 +216,6 @@ html{
   outline: none;
 }
 
-
-
 /* ENS Grid */
 .ns-ens-grid {
   display: grid;
@@ -231,15 +223,12 @@ html{
   gap: 16px;
 }
 
-
 .ns-searchbar {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 6px 10px;
   font-size: 14px;
 }
-
-
 
 .ns-sidebar {
   width: 60px; /* slightly wider for icons */

@@ -21,7 +21,7 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 1.4;
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.15),
     0 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -115,7 +115,7 @@
   background: var(--ns-color-fg);
   color: var(--ns-color-bg);
   border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.3),
     0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -151,7 +151,7 @@
   background: var(--ns-color-bg);
   color: var(--ns-color-fg);
   border: 1px solid var(--ns-color-border);
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.1),
     0 2px 4px rgba(0, 0, 0, 0.05);
 }
@@ -281,7 +281,7 @@
     padding: 6px 10px;
     max-width: 250px;
   }
-  
+
   .ns-tooltip__arrow {
     border-width: 5px;
   }

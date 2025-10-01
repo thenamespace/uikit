@@ -10,8 +10,8 @@ export interface SupportedTextRecord {
   key: string;
   category: TextRecordCategory;
   label?: string;
-  placeholder?: string
-  socialRecordPrefix?: string
+  placeholder?: string;
+  socialRecordPrefix?: string;
 }
 
 export const supportedTexts: SupportedTextRecord[] = [

@@ -18,25 +18,25 @@ export const RecordDiff = ({ diff }: RecordDiffProps) => {
 
   return (
     <div className="ns-record-diff">
-      {textsAdded.length  > 0 && (
+      {textsAdded.length > 0 && (
         <div>
           <Text>Texts added</Text>
           {textsAdded.map(txt => txt.key)}
         </div>
       )}
-      {textsModified.length  > 0 && (
+      {textsModified.length > 0 && (
         <div>
           <Text>Texts modified</Text>
           {textsModified.map(txt => txt.key)}
         </div>
       )}
-      {textsRemoved.length  > 0 && (
+      {textsRemoved.length > 0 && (
         <div>
           <Text>Texts removed</Text>
           {textsRemoved.map(txt => txt.key)}
         </div>
       )}
-      {addressesAdded.length  > 0 && (
+      {addressesAdded.length > 0 && (
         <div>
           <Text>Address added</Text>
           {addressesAdded.map(addr => addr.coinType)}
@@ -48,7 +48,7 @@ export const RecordDiff = ({ diff }: RecordDiffProps) => {
           {addressesModified.map(addr => addr.coinType)}
         </div>
       )}
-      {addressesRemoved.length  > 0 && (
+      {addressesRemoved.length > 0 && (
         <div>
           <Text>Address removed</Text>
           {addressesRemoved.map(addr => addr.coinType)}

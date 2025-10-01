@@ -79,14 +79,16 @@ export const TextRecords = ({
   };
 
   const filteredItems: SupportedTextRecord[] = useMemo(() => {
-
     const shownTextCategory = [category];
     if (category === TextRecordCategory.General) {
       // We also show image records under general
       shownTextCategory.push(TextRecordCategory.Image);
     }
 
-    return supportedTexts.filter(record => filterSuggestions(record) && shownTextCategory.includes(record.category));
+    return supportedTexts.filter(
+      record =>
+        filterSuggestions(record) && shownTextCategory.includes(record.category)
+    );
   }, [searchFilter]);
 
   if (filteredItems.length === 0) {
