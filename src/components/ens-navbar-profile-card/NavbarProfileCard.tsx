@@ -1,6 +1,7 @@
 import React from "react";
 import "./NavbarProfileCard.css";
 import Icon from "../atoms/icon/Icon";
+import { Text } from "../atoms";
 
 interface NavbarProfileCardProps {
   imageUrl: string;
@@ -19,8 +20,12 @@ export const NavbarProfileCard: React.FC<NavbarProfileCardProps> = ({
     <div className="ns-navbar-profile">
       <img src={imageUrl} alt={name} className="ns-navbar-profile-avatar" />
       <div className="ns-navbar-profile-info">
-        <span className="ns-navbar-profile-name">{name}</span>
-        <span className="ns-navbar-profile-address">{address}</span>
+        <Text color="primary" size="md">
+          {name}
+        </Text>
+        <Text color="grey" size="sm">
+          {address}
+        </Text>
       </div>
       <button className="ns-navbar-profile-action" onClick={onLogout}>
         <Icon name="logout" size={18} />

@@ -1,5 +1,6 @@
 import "./ProfileCard.css";
 import Icon from "../atoms/icon/Icon";
+import Text from "../atoms/text/Text";
 
 interface ProfileCardProps {
   bannerUrl: string;
@@ -38,7 +39,6 @@ export const ProfileCard = ({
 }: ProfileCardProps) => {
   return (
     <div className="ns-profile-card">
-      {/* Banner + Avatar */}
       <div className="ns-profile-banner">
         <img src={bannerUrl} alt="banner" />
         <div className="ns-profile-avatar">
@@ -56,16 +56,16 @@ export const ProfileCard = ({
 
       {/* Body */}
       <div className="ns-profile-body">
-        <span className="ns-profile-tag">Cap</span>
+        <Text>Cap</Text>
 
         <div className="ns-username-container">
-          <h2 className="ns-profile-username">{username}</h2>
+          <Text size="lg">{username}</Text>
           <button className="ns-edit-btn">
-            <Icon name="book" size={16} />
+            <Icon name="edit" size={16} />
           </button>
         </div>
 
-        <p className="ns-profile-bio">{bio}</p>
+        <Text className="ns-profile-bio">{bio}</Text>
 
         {/* Social / Copy actions */}
         <div className="ns-profile-socials">
@@ -86,58 +86,62 @@ export const ProfileCard = ({
           </button>
         </div>
 
-        {/* Stats */}
         <div className="ns-profile-stats">
-          <span>{followers} Followers</span>
-          <span>•</span>
-          <span>{following} Following</span>
-          <button className="ns-follow-btn">Follow</button>
+          <div className="ns-stats-row">
+            <Text size="sm">{followers} Followers</Text>
+            <Text>•</Text>
+            <Text size="sm">{following} Following</Text>
+            <button className="ns-follow-btn">Follow</button>
+          </div>
         </div>
 
         {/* Extra Info */}
         <div className="ns-profile-extra">
           <div className="ns-extra-item">
-            <span className="ns-extra-text">Owned by {ownedBy}</span>
+            <Text size="sm">Owned by {ownedBy}</Text>
             <button className="ns-extra-btn">
-              <Icon name="check-circle" size={14} />
+              <Icon name="check-circle" size={16} />
             </button>
           </div>
 
           <div className="ns-extra-item">
-            <span className="ns-extra-text">Expires {expires}</span>
-            <Icon name="info" size={14} />
+            <Text size="sm">Expires {expires}</Text>
+            <Icon name="info" size={16} />
           </div>
 
           <div className="ns-extra-item">
-            <span className="ns-extra-text">{address}</span>
-            <Icon name="map-pin" size={14} />
+            <Text size="sm">{address}</Text>
+            <Icon name="map-pin" size={16} />
           </div>
 
           {website && (
             <div className="ns-extra-item">
-              <span className="ns-extra-text">{website}</span>
+              <Text size="sm">{website}</Text>
               <a href={website} target="_blank" rel="noreferrer">
-                <Icon name="globe" size={14} />
+                <Icon name="globe" size={16} />
               </a>
             </div>
           )}
         </div>
 
-        {/* Footer */}
         <div className="ns-profile-footer">
           <div className="ns-footer-item">
-            <span className="ns-footer-label">{subnames}</span>
-            <span className="ns-footer-text">Subnames</span>
+            <Text className="ns-footer-label">{subnames}</Text>
+            <Text className="ns-footer-text">Subnames</Text>
           </div>
 
-          <div className="ns-footer-item">
-            <span className="ns-footer-label">{profit}</span>
-            <span className="ns-footer-text">Profit</span>
-          </div>
+          <Text className="ns-footer-dot">•</Text>
 
           <div className="ns-footer-item">
-            <span className="ns-footer-label">{volume}</span>
-            <span className="ns-footer-text">Volume</span>
+            <Text className="ns-footer-label">{profit}</Text>
+            <Text className="ns-footer-text">Profit</Text>
+          </div>
+
+          <Text className="ns-footer-dot">•</Text>
+
+          <div className="ns-footer-item">
+            <Text className="ns-footer-label">{volume}</Text>
+            <Text className="ns-footer-text">Volume</Text>
           </div>
         </div>
       </div>

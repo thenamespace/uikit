@@ -27,23 +27,6 @@
   min-width: 0;
 }
 
-.ns-navbar-profile-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ns-navbar-profile-address {
-  font-size: 13px;
-  color: #666;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .ns-navbar-profile-action {
   background: transparent;
   border: none;

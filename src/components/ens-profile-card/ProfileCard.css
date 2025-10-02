@@ -90,8 +90,6 @@
 }
 
 .ns-profile-bio {
-  font-size: 14px;
-  color: #555;
   margin-bottom: 12px;
 }
 
@@ -132,33 +130,48 @@
 }
 
 .ns-profile-stats {
-  font-size: 14px;
-  color: #333;
-  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
 }
 
-.ns-profile-stats span {
-  font-weight: 500;
-  margin: 0 4px;
+.ns-stats-row {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  gap: 6px;
+  color: #374151;
+}
+
+.ns-stats-row span {
+  font-weight: 600;
+  color: #111827;
+  font-size: small;
 }
 
 .ns-follow-btn {
   background: #2563eb;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 8px 16px;
+  padding: 7px 18px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 10px;
   cursor: pointer;
-  margin-bottom: 14px;
   font-weight: 500;
+  transition: background 0.2s;
+}
+
+.ns-follow-btn:hover {
+  background: #1d4ed8;
 }
 
 .ns-profile-extra {
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
-  padding: 8px;
+  padding: 2px;
   border-radius: 12px;
   background: transparent;
 }
@@ -179,6 +192,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  font-weight: 400;
 }
 
 .ns-extra-btn {
@@ -200,29 +214,34 @@
   color: #2563eb;
   text-decoration: none;
 }
+
 .ns-profile-footer {
   display: flex;
-  justify-content: space-around;
+  justify-items: center;
   align-items: center;
-  gap: 16px;
-  padding: 10px;
+  padding: 16px;
+
+  background: #fff;
   border-radius: 12px;
-  margin-top: 12px;
+  margin-top: 16px;
+  border: 1px solid #e5e7eb;
 }
 
 .ns-footer-item {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  min-width: 60px;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  width: 100%;
 }
 
 .ns-footer-label {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 18px;
+  color: #111827;
 }
 
 .ns-footer-text {
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 16px;
+  color: #6b7280;
 }

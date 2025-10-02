@@ -3,12 +3,11 @@ import { createRoot } from "react-dom/client";
 import "./styles/index.css";
 import { EnsAddressRecord, EnsRecords, EnsTextRecord } from "@/types";
 import { zeroAddress } from "viem";
-
 import { WalletConnect } from "./wallet-connect";
 
 import { mainnet } from "viem/chains";
 
-import { ENSNameCard } from "./components";
+import { ENSNameCard, Input, Text } from "./components";
 import { ProfileCard } from "./components";
 import { NavbarProfileCard } from "./components";
 import { UserRound, Settings } from "lucide-react";
@@ -201,17 +200,23 @@ function TestApp() {
             <div className="ns-header">
               <div className="ns-tabs">
                 <span className="active">
-                  ENS Names <span className="count">45</span>
+                  <Text>ENS Names</Text>{" "}
+                  <Text weight="bold" color="primary">
+                    45
+                  </Text>
                 </span>
                 <span>
-                  Subnames <span className="count">31</span>
+                  <Text>Subnames</Text>{" "}
+                  <Text weight="bold" color="primary">
+                    31
+                  </Text>
                 </span>
-                <span>Wizard</span>
+                <span>
+                  <Text>Wizard</Text>
+                </span>
               </div>
               <div className="ns-search">
-                <input type="text" placeholder="Search" />
-                <button>🔲</button>
-                <button>☰</button>
+                <Input size="lg" placeholder="Search ENS, addresses, txns..." />
               </div>
             </div>
 
@@ -234,8 +239,8 @@ function TestApp() {
     return (
       <nav className="ns-navbar">
         <div className="ns-navbar-left">
-          <div className="ns-logo">n</div>
-          <input type="text" placeholder="Search" className="ns-searchbar" />
+          <div className="ns-logo">NS</div>
+          <Input size="lg" placeholder="Search ENS, addresses, txns..." />
         </div>
         <div className="ns-navbar-right">
           <NavbarProfileCard
@@ -292,21 +297,6 @@ function TestApp() {
             <MainContent />
           </div>
         </div>
-        {/* <EnsRecordsForm
-          name={ENS_NAME}
-          resolverAddress={SEPOLIA_PUB_RES}
-          chainId={NAME_CHAIN_ID}
-          initialRecords={{
-            texts: [{ key: "avatar", value: "testvalue" }],
-            addresses: [
-              {
-                coinType: 60,
-                value: "0x0dcD506D1Be162E50A2b434028A9a148F2686444",
-              },
-            ],
-          }}
-        />
-        <ConnectButton /> */}
       </WalletConnect>
     </div>
   );

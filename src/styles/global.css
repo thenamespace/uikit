@@ -115,6 +115,7 @@ html {
   display: flex;
   flex: 1;
   background: var(--bg);
+  min-height: calc(100vh - 60px);
 }
 
 /* Main */
@@ -165,6 +166,8 @@ html {
 
 .ns-tabs span {
   cursor: pointer;
+  display: flex;
+  gap: 6px;
   padding: 6px 10px;
   border-radius: 6px;
   transition: all 0.2s ease;
@@ -208,14 +211,6 @@ html {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
-.ns-search input {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 14px;
-  outline: none;
-}
-
 /* ENS Grid */
 .ns-ens-grid {
   display: grid;
@@ -231,15 +226,32 @@ html {
 }
 
 .ns-sidebar {
-  width: 60px; /* slightly wider for icons */
+  width: 60px;
   background-color: #ffffff;
   border-right: 1px solid var(--border);
   padding: 12px 8px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* sidebar shadow */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  /* Full height minus navbar */
+  height: calc(100vh - 60px);
+  position: sticky;
+  top: 60px;
+
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.ns-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.ns-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
 }
 
 .ns-menu {
@@ -283,11 +295,16 @@ html {
   background-color: #ffffff;
   padding: 12px 20px;
   border-bottom: 1px solid var(--border);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* soft navbar shadow */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   position: sticky;
-  border-radius: var(--ns-radius-md);
   top: 0;
   z-index: 50;
+
+  width: calc(100% - 180px); /* full width minus sidebar */
+  margin-left: 100px; /* push it to the right */
+
+  /* Only round right corners so it connects with sidebar on the left */
+  border-radius: var(--ns-radius-md);
 }
 
 .ns-navbar-left {
@@ -301,7 +318,7 @@ html {
   font-size: 20px;
   background: #000;
   color: #fff;
-  border-radius: 50%;
+  border-radius: 20%;
   padding: 8px 14px;
   display: flex;
   align-items: center;
