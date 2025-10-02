@@ -17,7 +17,7 @@ import {
   XCircle,
   LogOut,
   Edit,
-  CopyIcon
+  CopyIcon,
 } from "lucide-react";
 import {
   DiscordIcon,

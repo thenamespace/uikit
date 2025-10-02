@@ -104,8 +104,6 @@ html {
   border-radius: 4px;
 }
 
-
-
 /* Body Layout */
 .ns-body {
   display: flex;
@@ -211,7 +209,7 @@ html {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;                /* allow children to shrink properly */
+  min-width: 0; /* allow children to shrink properly */
   gap: 16px;
 }
 
@@ -245,8 +243,6 @@ html {
   height: calc(100vh - 60px);
   position: sticky;
   top: 0px;
-
- 
 
   overflow-y: auto;
   scrollbar-width: thin;
@@ -305,9 +301,9 @@ html {
   position: sticky;
   top: 0;
   z-index: 50;
-  width: calc(100% - 100px); 
+  width: calc(100% - 100px);
   border-radius: var(--ns-radius-md);
-  margin-left: 20px ;
+  margin-left: 20px;
 }
 
 .ns-navbar-left {

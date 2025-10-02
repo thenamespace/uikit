@@ -192,7 +192,7 @@ function TestApp() {
               subnames={3}
               profit={6}
               volume={0}
-            // onFollowClick={() => console.log("Follow clicked")}
+              // onFollowClick={() => console.log("Follow clicked")}
             />
           </aside>
 
@@ -239,7 +239,6 @@ function TestApp() {
     return (
       <nav className="ns-navbar">
         <div className="ns-navbar-left">
-
           <Input size="lg" placeholder="Search ENS, addresses, txns..." />
         </div>
         <div className="ns-navbar-right">
@@ -266,11 +265,9 @@ function TestApp() {
             <Icon name="person" />
           </span>
 
-
           <span>
             <Icon name="search" />
           </span>
-
 
           <span>
             <Icon name="globe" />
@@ -305,15 +302,12 @@ function TestApp() {
         /> */}
         <div className="ns-layout">
           <div className="ns-body">
-
             <aside className="ns-sidebar">
               <Sidebar />
             </aside>
             <div className="ns-right-column">
-
               <Navbar />
               <MainContent />
-
             </div>
           </div>
         </div>

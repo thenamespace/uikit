@@ -4,17 +4,17 @@
   gap: 16px;
 }
 
-.ns-profile-info{
-   padding: 16px;
+.ns-profile-info {
+  padding: 16px;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 .ns-profile-section {
   padding: 16px;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -38,7 +38,6 @@
   position: relative;
   height: 150px;
   background: #eaeaea;
-  
 }
 
 .ns-profile-banner img {
@@ -249,7 +248,7 @@
   padding: 16px;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   gap: 8px;
 }
 .ns-footer-item {
