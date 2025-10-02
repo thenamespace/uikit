@@ -7,7 +7,7 @@ import { WalletConnect } from "./wallet-connect";
 
 import { mainnet } from "viem/chains";
 
-import { ENSNameCard, Input, Text } from "./components";
+import { ENSNameCard, Icon, Input, Text } from "./components";
 import { ProfileCard } from "./components";
 import { NavbarProfileCard } from "./components";
 import { UserRound, Settings } from "lucide-react";
@@ -192,7 +192,7 @@ function TestApp() {
               subnames={3}
               profit={6}
               volume={0}
-              // onFollowClick={() => console.log("Follow clicked")}
+            // onFollowClick={() => console.log("Follow clicked")}
             />
           </aside>
 
@@ -239,7 +239,7 @@ function TestApp() {
     return (
       <nav className="ns-navbar">
         <div className="ns-navbar-left">
-          <div className="ns-logo">NS</div>
+
           <Input size="lg" placeholder="Search ENS, addresses, txns..." />
         </div>
         <div className="ns-navbar-right">
@@ -258,12 +258,26 @@ function TestApp() {
     return (
       <aside className="ns-sidebar">
         <div className="ns-menu">
-          <span className="active">
-            <UserRound className="ns-icon" />
+          <span>
+            <div className="ns-logo">NS</div>
           </span>
 
           <span>
-            <Settings className="ns-icon" />
+            <Icon name="person" />
+          </span>
+
+
+          <span>
+            <Icon name="search" />
+          </span>
+
+
+          <span>
+            <Icon name="globe" />
+          </span>
+
+          <span>
+            <Icon name="globe" />
           </span>
         </div>
       </aside>
@@ -289,12 +303,18 @@ function TestApp() {
           expires="25/11/29"
           chainId={137}
         /> */}
-
         <div className="ns-layout">
-          <Navbar />
           <div className="ns-body">
-            <Sidebar />
-            <MainContent />
+
+            <aside className="ns-sidebar">
+              <Sidebar />
+            </aside>
+            <div className="ns-right-column">
+
+              <Navbar />
+              <MainContent />
+
+            </div>
           </div>
         </div>
       </WalletConnect>

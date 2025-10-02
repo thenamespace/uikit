@@ -1,17 +1,44 @@
 .ns-profile-card {
-  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ns-profile-info{
+   padding: 16px;
+  border-radius: 12px;
   background: #fff;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  font-family: sans-serif;
-  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.ns-profile-section {
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ns-address-box {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.ns-address-text {
+  font-size: 14px;
+  color: #333;
+  margin-right: 8px;
 }
 
 .ns-profile-banner {
   position: relative;
   height: 150px;
   background: #eaeaea;
+  
 }
 
 .ns-profile-banner img {
@@ -170,7 +197,7 @@
 .ns-profile-extra {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
+  gap: 8px;
   padding: 2px;
   border-radius: 12px;
   background: transparent;
@@ -217,16 +244,14 @@
 
 .ns-profile-footer {
   display: flex;
-  justify-items: center;
   align-items: center;
+  justify-content: center;
   padding: 16px;
-
-  background: #fff;
   border-radius: 12px;
-  margin-top: 16px;
-  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  gap: 8px;
 }
-
 .ns-footer-item {
   display: flex;
   justify-content: center;

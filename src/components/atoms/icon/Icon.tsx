@@ -17,6 +17,7 @@ import {
   XCircle,
   LogOut,
   Edit,
+  CopyIcon
 } from "lucide-react";
 import {
   DiscordIcon,
@@ -59,7 +60,8 @@ export type IconName =
   | "x-circle"
   | "rotate-circle"
   | "logout"
-  | "edit";
+  | "edit"
+  | "copy";
 
 const icons: Record<IconName, IconComponent> = {
   person: User,
@@ -87,6 +89,7 @@ const icons: Record<IconName, IconComponent> = {
   "rotate-circle": LucideIcons.CircleFadingPlus,
   logout: LogOut,
   edit: Edit,
+  copy: CopyIcon,
 };
 
 export interface IconProps {
