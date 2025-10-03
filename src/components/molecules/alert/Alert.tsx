@@ -13,7 +13,10 @@ export interface AlertProps {
   title?: string;
 }
 
-const variantConfig: Record<AlertVariant, { icon: IconName; colorClass: string }> = {
+const variantConfig: Record<
+  AlertVariant,
+  { icon: IconName; colorClass: string }
+> = {
   error: { icon: "x-circle", colorClass: "ns-alert-error" },
   warning: { icon: "alert-triangle", colorClass: "ns-alert-warning" },
   info: { icon: "info", colorClass: "ns-alert-info" },
@@ -29,7 +32,7 @@ export const Alert: React.FC<AlertProps> = ({
   title,
 }) => {
   const config = variantConfig[variant];
-  
+
   return (
     <div className={`ns-alert ${config.colorClass} ${className}`} role="alert">
       <div className="ns-alert-content">

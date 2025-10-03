@@ -24,10 +24,22 @@ const externals = [
 
 const aliasEntries = [
   { find: "@", replacement: path.resolve(__dirname, "src") },
-  { find: "@/components", replacement: path.resolve(__dirname, "src/components/index") },
-  { find: "@/atoms", replacement: path.resolve(__dirname, "src/components/atoms/index") },
-  { find: "@/molecules", replacement: path.resolve(__dirname, "src/components/molecules/index") },
-  { find: "@/constants", replacement: path.resolve(__dirname, "src/constants/index") },
+  {
+    find: "@/components",
+    replacement: path.resolve(__dirname, "src/components/index"),
+  },
+  {
+    find: "@/atoms",
+    replacement: path.resolve(__dirname, "src/components/atoms/index"),
+  },
+  {
+    find: "@/molecules",
+    replacement: path.resolve(__dirname, "src/components/molecules/index"),
+  },
+  {
+    find: "@/constants",
+    replacement: path.resolve(__dirname, "src/constants/index"),
+  },
   { find: "@/utils", replacement: path.resolve(__dirname, "src/utils/index") },
   { find: "@/types", replacement: path.resolve(__dirname, "src/types/index") },
   { find: "@/web3", replacement: path.resolve(__dirname, "src/web3/index") },
@@ -77,7 +89,7 @@ export default [
       postcss({
         // Extract to a physical CSS file used by consumers:
         extract: "index.css",
-        inject: false,         // <-- do NOT inject here (we have a separate injected build)
+        inject: false, // <-- do NOT inject here (we have a separate injected build)
         minimize: false,
         sourceMap: true,
         plugins: cssPlugins,
@@ -99,7 +111,7 @@ export default [
       commonjs(),
       json(),
       postcss({
-        extract: false, 
+        extract: false,
         inject: true,
         minimize: false,
         sourceMap: true,
@@ -113,9 +125,6 @@ export default [
     input: "dist/types/index.d.ts",
     output: { file: "dist/index.d.ts", format: "es" },
     plugins: [dts({ respectExternal: true })],
-    external: [
-      /\.css$/,
-      ...externals,
-    ],
+    external: [/\.css$/, ...externals],
   },
 ];

@@ -48,8 +48,6 @@ export const ChainIcon: React.FC<ChainIconProps> = ({
   };
 
   return (
-    <div className={`ns-chain-icon ${className || ""}`}>
-      {renderIcon()}
-    </div>
+    <div className={`ns-chain-icon ${className || ""}`}>{renderIcon()}</div>
   );
 };

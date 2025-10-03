@@ -1,5 +1,11 @@
-export * from "./pending-transaction/PendingTransaction";
+// re-export higher-level components (organisms/layout) here as they are added
+export { SelectRecordsForm } from "./select-records-form/SelectRecordsForm";
+export {
+  PendingTransaction,
+  TransactionState,
+} from "./pending-transaction/PendingTransaction";
+export { ENSNameCard } from "./ens-names-card/EnsNameCard";
+export { ProfileCard } from "./ens-profile-card/ProfileCard";
+export { NavbarProfileCard } from "./ens-navbar-profile-card/NavbarProfileCard";
 export * from "./atoms";
 export * from "./molecules";
-export * from "./ens-records-form/EnsRecordsForm";
-export * from "./select-records-form/SelectRecordsForm";

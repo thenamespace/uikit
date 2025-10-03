@@ -1,12 +1,11 @@
-import { usePublicClient, useWalletClient } from "wagmi"
+import { usePublicClient, useWalletClient } from "wagmi";
 
-export const useWeb3Client = ({chainId}: {chainId: number}) => {
+export const useWeb3Client = ({ chainId }: { chainId: number }) => {
+  const publicClient = usePublicClient({ chainId });
+  const { data: walletClient } = useWalletClient({ chainId });
 
-    const publicClient = usePublicClient({chainId})
-    const { data: walletClient } = useWalletClient({chainId})
-
-    return {
-        walletClient,
-        publicClient
-    }
-}
+  return {
+    walletClient,
+    publicClient,
+  };
+};

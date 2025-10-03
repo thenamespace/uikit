@@ -7,4 +7,4 @@ export type ChainName =
   | "op"
   | "sol"
   | "zora"
-  | "celo"
+  | "celo";

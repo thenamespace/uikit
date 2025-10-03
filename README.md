@@ -28,13 +28,13 @@ pnpm add @arti/ui-components
 
 ```tsx
 // Import the bundled CSS
-import '@arti/ui-components/styles';
+import "@arti/ui-components/styles";
 ```
 
 ### 2. Setup Theme Provider
 
 ```tsx
-import { ThemeProvider } from '@arti/ui-components';
+import { ThemeProvider } from "@arti/ui-components";
 
 function App() {
   return (
@@ -48,12 +48,14 @@ function App() {
 ### 3. Use Components
 
 ```tsx
-import { Button, Text, Input, Tooltip } from '@arti/ui-components';
+import { Button, Text, Input, Tooltip } from "@arti/ui-components";
 
 function MyComponent() {
   return (
     <div>
-      <Text size="lg" weight="bold">Welcome!</Text>
+      <Text size="lg" weight="bold">
+        Welcome!
+      </Text>
       <Button variant="solid" prefix={<Icon name="check-circle" />}>
         Get Started
       </Button>
@@ -69,6 +71,7 @@ function MyComponent() {
 ## Available Components
 
 ### Atoms
+
 - **Button** - Interactive button with variants and icons
 - **Input** - Form input with prefix/suffix support
 - **Text** - Typography component with size and weight options
@@ -77,11 +80,13 @@ function MyComponent() {
 - **Tooltip** - Contextual tooltip component
 
 ### Molecules
+
 - **Alert** - Notification alert component
 - **Dropdown** - Dropdown menu component
 - **Modal** - Modal dialog component
 
 ### Complex Components
+
 - **PendingTransaction** - Transaction status display
 - **SelectRecordsForm** - ENS records form
 - **EnsRecordsForm** - ENS management form
@@ -89,16 +94,20 @@ function MyComponent() {
 ## Hooks
 
 ```tsx
-import { useTheme, useWaitForTransaction, useWeb3Clients } from '@arti/ui-components';
+import {
+  useTheme,
+  useWaitForTransaction,
+  useWeb3Clients,
+} from "@arti/ui-components";
 
 function MyComponent() {
   const { theme, setTheme, toggleTheme } = useTheme();
-  const { data, isLoading } = useWaitForTransaction({ hash: '0x...' });
-  
+  const { data, isLoading } = useWaitForTransaction({ hash: "0x..." });
+
   return (
     <div>
       <Button onClick={toggleTheme}>
-        Switch to {theme === 'light' ? 'dark' : 'light'} mode
+        Switch to {theme === "light" ? "dark" : "light"} mode
       </Button>
     </div>
   );
@@ -108,45 +117,44 @@ function MyComponent() {
 ## Utils
 
 ```tsx
-import { 
-  formatAddress, 
-  parseRecords, 
+import {
+  formatAddress,
+  parseRecords,
   validateAddress,
   getCoinInfo,
-  getResolverAddress 
-} from '@arti/ui-components';
+  getResolverAddress,
+} from "@arti/ui-components";
 
 // Format Ethereum address
-const shortAddress = formatAddress('0x1234567890abcdef1234567890abcdef12345678');
+const shortAddress = formatAddress(
+  "0x1234567890abcdef1234567890abcdef12345678"
+);
 
 // Parse ENS records
 const records = parseRecords(recordData);
 
 // Validate address
-const isValid = validateAddress('0x123...');
+const isValid = validateAddress("0x123...");
 ```
 
 ## Types
 
 ```tsx
-import type { 
-  ButtonProps, 
-  TransactionState, 
+import type {
+  ButtonProps,
+  TransactionState,
   TooltipPosition,
-  ThemeName 
-} from '@arti/ui-components';
+  ThemeName,
+} from "@arti/ui-components";
 ```
 
 ## Web3 Integration
 
 ```tsx
-import { 
-  getResolverAddress,
-  resolverAbi 
-} from '@arti/ui-components';
+import { getResolverAddress, resolverAbi } from "@arti/ui-components";
 
 // Get resolver contract address
-const resolverAddress = getResolverAddress('mainnet');
+const resolverAddress = getResolverAddress("mainnet");
 
 // Use ABI for contract interactions
 const contract = new ethers.Contract(resolverAddress, resolverAbi, provider);

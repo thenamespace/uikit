@@ -78,20 +78,20 @@ export const PendingTransaction = ({
         <div className={`ns-pending-tx__icon ${getIconClass()}`}>
           {getStatusIcon()}
         </div>
-        
+
         <div className="ns-pending-tx__status">
           <Text>{getStatusMessage()}</Text>
         </div>
-        
+
         {transactionHash && (
           <p className="ns-pending-tx__message">
             Hash: {transactionHash.slice(0, 10)}...{transactionHash.slice(-8)}
           </p>
         )}
-        
-        <a 
-          href={blockExplorerUrl} 
-          target="_blank" 
+
+        <a
+          href={blockExplorerUrl}
+          target="_blank"
           rel="noopener noreferrer"
           className="ns-pending-tx__link"
         >

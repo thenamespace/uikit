@@ -12,13 +12,17 @@
 }
 
 .ns-pending-tx::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--ns-color-primary), var(--ns-color-muted));
+  background: linear-gradient(
+    90deg,
+    var(--ns-color-primary),
+    var(--ns-color-muted)
+  );
   border-radius: var(--ns-radius-lg) var(--ns-radius-lg) 0 0;
 }
 
@@ -89,7 +93,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
@@ -112,7 +117,8 @@
 }
 
 @keyframes error-shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
   25% {
@@ -201,11 +207,11 @@
     padding: 20px;
     margin: 0 16px;
   }
-  
+
   .ns-pending-tx__status {
     font-size: 14px;
   }
-  
+
   .ns-pending-tx__icon {
     width: 40px;
     height: 40px;

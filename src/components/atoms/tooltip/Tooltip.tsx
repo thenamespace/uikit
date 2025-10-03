@@ -1,7 +1,15 @@
-import React, { useState, useRef, useEffect, ReactNode } from 'react';
-import './Tooltip.css';
+import React, { useState, useRef, useEffect, ReactNode } from "react";
+import "./Tooltip.css";
 
-export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right' | 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
+export type TooltipPosition =
+  | "top"
+  | "bottom"
+  | "left"
+  | "right"
+  | "top-start"
+  | "top-end"
+  | "bottom-start"
+  | "bottom-end";
 
 export interface TooltipProps {
   children: ReactNode;
@@ -11,7 +19,7 @@ export interface TooltipProps {
   disabled?: boolean;
   className?: string;
   contentClassName?: string;
-  trigger?: 'hover' | 'click' | 'focus';
+  trigger?: "hover" | "click" | "focus";
   maxWidth?: number;
   offset?: number;
 }
@@ -19,12 +27,12 @@ export interface TooltipProps {
 export const Tooltip: React.FC<TooltipProps> = ({
   children,
   content,
-  position = 'top',
+  position = "top",
   delay = 200,
   disabled = false,
-  className = '',
-  contentClassName = '',
-  trigger = 'hover',
+  className = "",
+  contentClassName = "",
+  trigger = "hover",
   maxWidth = 200,
   offset = 8,
 }) => {
@@ -36,11 +44,11 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
   const showTooltip = () => {
     if (disabled) return;
-    
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     timeoutRef.current = setTimeout(() => {
       setIsVisible(true);
     }, delay);
@@ -72,35 +80,35 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
     // Calculate initial position based on the specified position
     switch (position) {
-      case 'top':
+      case "top":
         top = triggerRect.top - tooltipRect.height - baseOffset;
         left = triggerCenterX - tooltipRect.width / 2;
         break;
-      case 'bottom':
+      case "bottom":
         top = triggerRect.bottom + baseOffset;
         left = triggerCenterX - tooltipRect.width / 2;
         break;
-      case 'left':
+      case "left":
         top = triggerCenterY - tooltipRect.height / 2;
         left = triggerRect.left - tooltipRect.width - baseOffset;
         break;
-      case 'right':
+      case "right":
         top = triggerCenterY - tooltipRect.height / 2;
         left = triggerRect.right + baseOffset;
         break;
-      case 'top-start':
+      case "top-start":
         top = triggerRect.top - tooltipRect.height - baseOffset;
         left = triggerRect.left;
         break;
-      case 'top-end':
+      case "top-end":
         top = triggerRect.top - tooltipRect.height - baseOffset;
         left = triggerRect.right - tooltipRect.width;
         break;
-      case 'bottom-start':
+      case "bottom-start":
         top = triggerRect.bottom + baseOffset;
         left = triggerRect.left;
         break;
-      case 'bottom-end':
+      case "bottom-end":
         top = triggerRect.bottom + baseOffset;
         left = triggerRect.right - tooltipRect.width;
         break;
@@ -108,7 +116,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
     // Smart viewport boundary detection and adjustment
     const margin = 8;
-    
+
     // Horizontal adjustments
     if (left < margin) {
       left = margin;
@@ -119,14 +127,14 @@ export const Tooltip: React.FC<TooltipProps> = ({
     // Vertical adjustments
     if (top < margin) {
       // If tooltip would go above viewport, try to position it below
-      if (position.includes('top')) {
+      if (position.includes("top")) {
         top = triggerRect.bottom + baseOffset;
       } else {
         top = margin;
       }
     } else if (top + tooltipRect.height > viewport.height - margin) {
       // If tooltip would go below viewport, try to position it above
-      if (position.includes('bottom')) {
+      if (position.includes("bottom")) {
         top = triggerRect.top - tooltipRect.height - baseOffset;
       } else {
         top = viewport.height - tooltipRect.height - margin;
@@ -152,7 +160,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       const timeoutId = setTimeout(() => {
         calculatePosition();
       }, 0);
-      
+
       return () => clearTimeout(timeoutId);
     }
   }, [isVisible, position, offset]);
@@ -171,26 +179,26 @@ export const Tooltip: React.FC<TooltipProps> = ({
     };
 
     if (isVisible) {
-      window.addEventListener('scroll', handleScroll, true);
-      window.addEventListener('resize', handleResize);
+      window.addEventListener("scroll", handleScroll, true);
+      window.addEventListener("resize", handleResize);
     }
 
     return () => {
-      window.removeEventListener('scroll', handleScroll, true);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("resize", handleResize);
     };
   }, [isVisible]);
 
   const handleMouseEnter = () => {
-    if (trigger === 'hover') showTooltip();
+    if (trigger === "hover") showTooltip();
   };
 
   const handleMouseLeave = () => {
-    if (trigger === 'hover') hideTooltip();
+    if (trigger === "hover") hideTooltip();
   };
 
   const handleClick = () => {
-    if (trigger === 'click') {
+    if (trigger === "click") {
       if (isVisible) {
         hideTooltip();
       } else {
@@ -200,15 +208,15 @@ export const Tooltip: React.FC<TooltipProps> = ({
   };
 
   const handleFocus = () => {
-    if (trigger === 'focus') showTooltip();
+    if (trigger === "focus") showTooltip();
   };
 
   const handleBlur = () => {
-    if (trigger === 'focus') hideTooltip();
+    if (trigger === "focus") hideTooltip();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape' && isVisible) {
+    if (e.key === "Escape" && isVisible) {
       hideTooltip();
     }
   };
@@ -231,7 +239,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      tabIndex={trigger === 'focus' ? 0 : undefined}
+      tabIndex={trigger === "focus" ? 0 : undefined}
     >
       {children}
       {isVisible && content && (
@@ -246,9 +254,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
           role="tooltip"
           aria-live="polite"
         >
-          <div className="ns-tooltip__content">
-            {content}
-          </div>
+          <div className="ns-tooltip__content">{content}</div>
           <div className={`ns-tooltip__arrow ns-tooltip__arrow--${position}`} />
         </div>
       )}

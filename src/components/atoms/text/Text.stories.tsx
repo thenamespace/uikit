@@ -5,17 +5,18 @@ const meta: Meta<typeof Text> = {
   title: "Atoms/Text",
   component: Text,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
-        component: 'Text component with customizable size, weight, and color options.',
+        component:
+          "Text component with customizable size, weight, and color options.",
       },
     },
   },
   args: {
     children: "Sample text content",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 export default meta;
 
@@ -24,20 +25,37 @@ type Story = StoryObj<typeof Text>;
 // Component Documentation
 export const ComponentDocs: Story = {
   render: () => (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '24px' }}>
+    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "24px" }}>
       <h2>Component Documentation</h2>
-      
+
       <h3>Key Props</h3>
       <ul>
-        <li><code>size</code> - Text size: 'sm', 'md', 'lg', 'xl' (default: 'md')</li>
-        <li><code>weight</code> - Font weight: 'light', 'regular', 'medium', 'bold' (default: 'regular')</li>
-        <li><code>color</code> - Text color: 'primary', 'grey', 'white' (default: 'primary')</li>
-        <li><code>children</code> - Text content (ReactNode)</li>
+        <li>
+          <code>size</code> - Text size: 'sm', 'md', 'lg', 'xl' (default: 'md')
+        </li>
+        <li>
+          <code>weight</code> - Font weight: 'light', 'regular', 'medium',
+          'bold' (default: 'regular')
+        </li>
+        <li>
+          <code>color</code> - Text color: 'primary', 'grey', 'white' (default:
+          'primary')
+        </li>
+        <li>
+          <code>children</code> - Text content (ReactNode)
+        </li>
       </ul>
 
       <h3>Usage Examples</h3>
-      <pre style={{ backgroundColor: '#f5f5f5', padding: '16px', borderRadius: '8px', overflow: 'auto' }}>
-{`// Basic text
+      <pre
+        style={{
+          backgroundColor: "#f5f5f5",
+          padding: "16px",
+          borderRadius: "8px",
+          overflow: "auto",
+        }}
+      >
+        {`// Basic text
 <Text>Hello world</Text>
 
 // With custom styling
@@ -55,7 +73,7 @@ export const ComponentDocs: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Documentation for the Text component.',
+        story: "Documentation for the Text component.",
       },
     },
   },
@@ -73,7 +91,7 @@ export const Sizes: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Different text sizes.',
+        story: "Different text sizes.",
       },
     },
   },
@@ -91,7 +109,7 @@ export const Weights: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Different font weights.',
+        story: "Different font weights.",
       },
     },
   },

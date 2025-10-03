@@ -208,7 +208,7 @@ export const EnsRecordsForm = ({
       );
     } else if (!isDiffPresent) {
       return (
-        <Tooltip  content="No Records updated" position="top">
+        <Tooltip content="No Records updated" position="top">
           <Button style={style} size="lg" disabled={true}>
             Update
           </Button>

@@ -1,6 +1,11 @@
 import { encodeFunctionData, Hash, namehash, parseAbi, toHex } from "viem";
 import { EnsRecordsDiff } from "./records";
-import { EnsAddressRecord, EnsContenthashRecord, EnsRecords, EnsTextRecord } from "@/types";
+import {
+  EnsAddressRecord,
+  EnsContenthashRecord,
+  EnsRecords,
+  EnsTextRecord,
+} from "@/types";
 import { SET_ADDRESS_FUNC, SET_CONTENTHASH_FUNC, SET_TEXT_FUNC } from "@/web3";
 import { getCoderByCoinType } from "@ensdomains/address-encoder";
 import { encode } from "@ensdomains/content-hash";
@@ -15,8 +20,8 @@ export const convertToResolverData = (name: string, records: EnsRecords) => {
     addressesRemoved: [],
     contenthashRemoved: false,
     contenthashAdded: records.contenthash,
-  })
-}
+  });
+};
 
 export const convertToMulticallResolverData = (
   name: string,
@@ -125,7 +130,7 @@ const convertContenthashData = (
 
   if (contenthash !== undefined) {
     const { protocol, value } = contenthash;
-    const encodedValue = `0x${encode(protocol, value)}`
+    const encodedValue = `0x${encode(protocol, value)}`;
 
     const data = encodeFunctionData({
       functionName: "setContenthash",

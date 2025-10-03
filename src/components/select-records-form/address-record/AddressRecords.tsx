@@ -73,14 +73,12 @@ export const AddressRecords = ({
   };
 
   const filteredAddresses = useMemo(() => {
-
     return supportedAddresses.filter(record => filterAddress(record));
-  },[searchFilter])
+  }, [searchFilter]);
 
   if (filteredAddresses.length === 0) {
-    return <></>
+    return <></>;
   }
-
 
   return (
     <div className="ns-text-records">
