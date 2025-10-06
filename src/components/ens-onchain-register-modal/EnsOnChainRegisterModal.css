@@ -49,6 +49,7 @@
   align-items: center;
   justify-content: space-between;
   border: 1px solid #ddd;
+  background: #ffffff;
   border-radius: 10px;
   padding: 10px 14px;
   margin: 16px 0;
@@ -57,15 +58,123 @@
 .ns-onchain-register-input-row input,
 .ns-onchain-register-input-row .ns-input {
   border: none;
+  background: transparent;
   outline: none;
   flex: 1;
   font-size: 15px;
 }
 
+.ns-onchain-register-input-row input:focus{
+  border: none;
+}
 .ns-onchain-register-input-row span {
   font-weight: bold;
   margin-left: 6px;
 }
+
+
+
+.ns-onchain-register-name-exist {
+  border: 1px solid #e4e4e4;
+  border-radius: 16px;
+  background: #fff;
+  padding: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+/* Each name row */
+.ns-onchain-register-name-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.ns-onchain-register-name-item:hover {
+  background: #f8f8f8;
+}
+
+/* Selected (dark background) */
+.ns-onchain-register-name-item.selected {
+  background: #111;
+  color: #fff;
+}
+
+/* Left section (icon + name) */
+.ns-onchain-register-name-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ns-onchain-register-name-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+}
+
+.ns-onchain-register-name-avatar.blue {
+  background: #5b74f6;
+}
+
+.ns-onchain-register-name-avatar.purple {
+  background: #8b5cf6;
+}
+
+.ns-onchain-register-name-avatar.gold {
+  background: #fbbf24;
+}
+
+/* Name text */
+.ns-onchain-register-name-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+}
+
+/* Status labels */
+.status-unavailable {
+  background: #ffecec;
+  color: #e43c3c;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.status-price {
+  background: #333;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.status-free {
+  background: #f4f4f4;
+  color: #333;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+/* Scrollbar styling */
+.ns-onchain-register-name-exist::-webkit-scrollbar {
+  width: 4px;
+}
+.ns-onchain-register-name-exist::-webkit-scrollbar-thumb {
+  background: #000;
+  border-radius: 15px;
+}
+
 
 /* Actions */
 .ns-onchain-register-actions {

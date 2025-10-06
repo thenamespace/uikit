@@ -309,6 +309,9 @@ function TestApp() {
     );
   }
 
+  // State for EnsOnchainRegisterModal step
+  const [step, setStep] = useState(1);
+
   return (
     <div>
       <WalletConnect>
@@ -325,10 +328,10 @@ function TestApp() {
               </div>
               <MainContent /> */}
               <EnsOnchainRegisterModal
-                step={5}
+                step={step}
                 name={"Nikku"}
                 profileComplete={false}
-                onStepChange={(step) => console.log("Step changed:", step)}
+                onStepChange={(newStep) => setStep(newStep)}
                 onNameChange={(name) => console.log("Name changed:", name)}
                 onProfileCompleteChange={(complete) => console.log("Profile complete:", complete)}
                 onRegister={() => console.log("Register clicked")}

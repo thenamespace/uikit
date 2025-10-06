@@ -1,5 +1,5 @@
 import React from "react";
-import ensBanner from "../../assets/1.png";
+import ensBanner from "../../assets/banner.png";
 import ninjaLogo from "../../assets/ninja.png";
 import finishLogo from "../../assets/finish.png";
 import "./EnsOnchainRegisterModal.css";
@@ -58,8 +58,64 @@ export function EnsOnchainRegisterModal({
                                 value={name}
                                 onChange={(e) => onNameChange(e.target.value)}
                             />
-                            <span>.eth</span>
+                            <Text weight="bold">.eth</Text>
                         </div>
+                        <div className="ns-onchain-register-name-exist">
+                            {[
+                                { name: "magier.eth", status: "unavailable" },
+                                { name: "magier.miracool.eth", status: "unavailable" },
+                                { name: "magier.bitflip.eth", status: "free" },
+                                { name: "magier.basedsubs.eth", status: "free" },
+                                { name: "magier.fbwallet.eth", status: "free" },
+                                { name: "magier.bitflip.eth", status: "free" },
+                                { name: "magier.basedsubs.eth", status: "free" },
+                                { name: "magier.fbwallet.eth", status: "free" },
+                                { name: "magier.bitflip.eth", status: "free" },
+                                { name: "magier.basedsubs.eth", status: "free" },
+                                { name: "magier.fbwallet.eth", status: "free" },
+                                { name: "magier.bitflip.eth", status: "free" },
+                                { name: "magier.basedsubs.eth", status: "free" },
+                                { name: "magier.fbwallet.eth", status: "free" },
+                                { name: "magier.bitflip.eth", status: "free" },
+                                { name: "magier.basedsubs.eth", status: "free" },
+                                { name: "magier.fbwallet.eth", status: "free" },
+                                { name: "magier.basedsubs.eth", status: "free" },
+                                { name: "magier.fbwallet.eth", status: "free" },
+                                { name: "magier.bitflip.eth", status: "free" },
+                                { name: "magier.basedsubs.eth", status: "free" },
+                                { name: "magier.fbwallet.eth", status: "free" },
+                                { name: "magier.bitflip.eth", status: "price", value: "0.0025 ETH" },
+                                { name: "magier.basedsubs.eth", status: "free" },
+                                { name: "magier.fbwallet.eth", status: "free" },
+                            ].map((item, index) => (
+                                <div
+                                    key={index}
+                                    className={`ns-onchain-register-name-item ${item.status === "price" ? "selected" : ""
+                                        }`}
+                                >
+                                    <div className="ns-onchain-register-name-left">
+                                        <img
+                                            className={`ns-onchain-register-name-avatar`}
+                                            src={ninjaLogo}
+                                            alt="ENS Logo"
+                                            style={{ width: 24, height: 24, objectFit: "cover", borderRadius: "50%" }}
+                                        />
+                                        <Text className="ns-onchain-register-name-text">{item.name}</Text>
+                                    </div>
+
+                                    <div className="ns-onchain-register-name-status">
+                                        {item.status === "unavailable" && (
+                                            <Text className="status-unavailable">Unavailable</Text>
+                                        )}
+                                        {item.status === "price" && (
+                                            <Text className="status-price">{item.value}</Text>
+                                        )}
+                                        {item.status === "free" && <Text className="status-free">Free</Text>}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
                         <div className="ns-onchain-register-actions">
                             <Button className="cancel" onClick={handleCancel}>Cancel</Button>
                             <Button
