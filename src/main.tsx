@@ -310,7 +310,7 @@ function TestApp() {
   }
 
   // State for EnsOnchainRegisterModal step
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
 
   return (
     <div>

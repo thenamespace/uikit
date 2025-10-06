@@ -62,31 +62,31 @@ export function EnsOnchainRegisterModal({
                         </div>
                         <div className="ns-onchain-register-name-exist">
                             {[
-                                { name: "magier.eth", status: "unavailable" },
-                                { name: "magier.miracool.eth", status: "unavailable" },
-                                { name: "magier.bitflip.eth", status: "free" },
-                                { name: "magier.basedsubs.eth", status: "free" },
-                                { name: "magier.fbwallet.eth", status: "free" },
-                                { name: "magier.bitflip.eth", status: "free" },
-                                { name: "magier.basedsubs.eth", status: "free" },
-                                { name: "magier.fbwallet.eth", status: "free" },
-                                { name: "magier.bitflip.eth", status: "free" },
-                                { name: "magier.basedsubs.eth", status: "free" },
-                                { name: "magier.fbwallet.eth", status: "free" },
-                                { name: "magier.bitflip.eth", status: "free" },
-                                { name: "magier.basedsubs.eth", status: "free" },
-                                { name: "magier.fbwallet.eth", status: "free" },
-                                { name: "magier.bitflip.eth", status: "free" },
-                                { name: "magier.basedsubs.eth", status: "free" },
-                                { name: "magier.fbwallet.eth", status: "free" },
-                                { name: "magier.basedsubs.eth", status: "free" },
-                                { name: "magier.fbwallet.eth", status: "free" },
-                                { name: "magier.bitflip.eth", status: "free" },
-                                { name: "magier.basedsubs.eth", status: "free" },
-                                { name: "magier.fbwallet.eth", status: "free" },
-                                { name: "magier.bitflip.eth", status: "price", value: "0.0025 ETH" },
-                                { name: "magier.basedsubs.eth", status: "free" },
-                                { name: "magier.fbwallet.eth", status: "free" },
+                                { name: "nikku.eth", status: "unavailable" },
+                                { name: "nikku.miracool.eth", status: "unavailable" },
+                                { name: "nikku.bitflip.eth", status: "unavailable" },
+                                { name: "nikku.basedsubs.eth", status: "free" },
+                                { name: "nikku.fbwallet.eth", status: "free" },
+                                { name: "nikku.bitflip.eth", status: "unavailable" },
+                                { name: "nikku.basedsubs.eth", status: "free" },
+                                { name: "nikku.fbwallet.eth", status: "free" },
+                                { name: "nikku.bitflip.eth", status: "unavailable" },
+                                { name: "nikku.basedsubs.eth", status: "free" },
+                                { name: "nikku.fbwallet.eth", status: "unavailable" },
+                                { name: "nikku.bitflip.eth", status: "free" },
+                                { name: "nikku.basedsubs.eth", status: "unavailable" },
+                                { name: "nikku.fbwallet.eth", status: "free" },
+                                { name: "nikku.bitflip.eth", status: "unavailable" },
+                                { name: "nikku.basedsubs.eth", status: "free" },
+                                { name: "nikku.fbwallet.eth", status: "free" },
+                                { name: "nikku.basedsubs.eth", status: "unavailable" },
+                                { name: "nikku.fbwallet.eth", status: "free" },
+                                { name: "nikku.bitflip.eth", status: "free" },
+                                { name: "nikku.basedsubs.eth", status: "unavailable" },
+                                { name: "nikku.fbwallet.eth", status: "free" },
+                                { name: "nikku.bitflip.eth", status: "price", value: "0.0025 ETH" },
+                                { name: "nikku.basedsubs.eth", status: "free" },
+                                { name: "nikku.fbwallet.eth", status: "unavailable" },
                             ].map((item, index) => (
                                 <div
                                     key={index}
@@ -129,29 +129,6 @@ export function EnsOnchainRegisterModal({
                     </div>
                 );
             case 1:
-                return (
-                    <div className="ns-onchain-register-card">
-                        <div className="ns-onchain-register-banner">
-                            <img src={ensBanner} alt="ENS Banner" />
-                        </div>
-                        <div className="ns-onchain-register-header">
-                            <Text size="lg" weight="bold">Get your Web3 Username</Text>
-                        </div>
-                        <div className="ns-onchain-register-input-row">
-                            <Input type="text" value={name} readOnly />
-                            <span>.eth</span>
-                        </div>
-                        <div className="ns-onchain-register-actions">
-                            <Button className="cancel" onClick={handleCancel}>Cancel</Button>
-                            <Button className="primary" onClick={() => onStepChange(2)}>
-                                Register
-                            </Button>
-                        </div>
-                    </div>
-                );
-            case 2:
-            case 3:
-            case 4:
                 return (
                     <div className="ns-onchain-register-card">
                         <div className="ns-onchain-register-banner">
@@ -241,7 +218,7 @@ export function EnsOnchainRegisterModal({
                         </div>
                     </div>
                 );
-            case 5:
+            case 2:
                 return (
                     <div className="ns-onchain-register-card ns-onchain-register-success">
                         <div className="ns-onchain-register-finish-banner">
