@@ -13,7 +13,9 @@ export interface ENSNameCardProps {
   expires: string;
   chain?: ChainName;
   className?: string;
+  onClick?: () => void;
 }
+
 
 export const ENSNameCard = ({
   name,
@@ -21,8 +23,9 @@ export const ENSNameCard = ({
   expires,
   chain = "eth",
   className = "",
+  onClick,
 }: ENSNameCardProps) => (
-  <Card className={`ens-name-card ${className}`}>
+  <Card className={`ens-name-card ${className}`} onClick={onClick} style={onClick ? { cursor: "pointer" } : {}}>
     <div className="ens-card-image-container">
       <img src={imageUrl} alt={`${name} avatar`} className="ens-card-image" />
       <div className="ens-card-badge">

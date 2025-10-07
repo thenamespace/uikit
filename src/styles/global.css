@@ -134,12 +134,13 @@ html {
 /* Right ENS Section */
 .ns-right {
   flex: 1;
+  margin-top: 20px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 20px;
   margin: 16px;
-  height: 100%;
+  height: 80vh;
   display: flex;
   flex-direction: column;
 }
@@ -192,6 +193,23 @@ html {
   font-weight: 600;
   background: var(--bg);
 } */
+
+.ns-subname-banner {
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 30%;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+.ns-subname-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 20px;
+}
 
 .ns-tabs .count {
   background: #f0f0f0;
@@ -247,21 +265,21 @@ html {
   border-right: 1px solid var(--border);
   padding: 12px 8px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
   display: flex;
   flex-direction: column;
-  align-items: center;
-
-  /* Full height minus navbar */
   height: 70vh;
   position: sticky;
-  top: 0px;
-
+  top: 0;
   overflow-y: auto;
-  scrollbar-width: thin;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* smooth expand */
+  cursor: pointer;
 }
 
+.ns-sidebar.expanded {
+  width: 200px !important;
+}
+
+/* Scrollbar */
 .ns-sidebar::-webkit-scrollbar {
   width: 4px;
 }
@@ -270,11 +288,15 @@ html {
   border-radius: 4px;
 }
 
+/* Menu Styles */
 .ns-menu {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 16px;
   margin-top: 20px;
+  width: 100%;
 }
 
 .ns-menu span {
@@ -286,20 +308,21 @@ html {
   transition: all 0.25s ease-in-out;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
 }
 
-.ns-menu span:hover {
-  background: rgba(37, 99, 235, 0.08); /* light blue bg */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* hover shadow */
-  transform: translateY(-2px); /* subtle lift effect */
+
+/* Label appears only when expanded */
+.ns-menu-label {
+  font-size: 14px;
+  color: #333;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  white-space: nowrap;
 }
 
-.ns-menu .active {
-  background: rgba(37, 99, 235, 0.12);
-  color: var(--primary);
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2); /* highlight active */
+.ns-sidebar.expanded .ns-menu-label {
+  opacity: 1;
 }
 
 /* Navbar Styles */
