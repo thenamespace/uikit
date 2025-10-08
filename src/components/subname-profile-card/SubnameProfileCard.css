@@ -1,0 +1,111 @@
+.subname-profile-card {
+    background-color: #212121;
+    width: 100%;
+    max-width: 380px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.14), 0 1.5px 6px rgba(0,0,0,0.10);
+    color: #ffffff;
+    text-align: center;
+    transition: box-shadow 0.25s, transform 0.25s;
+    will-change: box-shadow, transform;
+    position: relative;
+}
+.subname-profile-card:hover, .subname-profile-card:focus-within {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 3px 12px rgba(0,0,0,0.13);
+    transform: translateY(-4px) scale(1.02);
+    z-index: 2;
+}
+.subname-profile-card {
+    background-color: #212121;
+    /* Dark gray base color for the card content */
+    width: 100%;
+    max-width: 380px;
+    border-radius: 24px;
+    /* Slightly larger radius for a modern look */
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    text-align: center;
+}
+
+/* Container for the top banner image */
+.subname-profile-card-banner {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    /* Ensures the image covers the area nicely */
+    display: block;
+}
+
+/* The main content area below the image */
+.subname-profile-card-content {
+    padding: 24px;
+    /* This section layers on top of the image to create the faded effect */
+    position: relative;
+    margin-top: -60px;
+    background: linear-gradient(180deg, rgba(33, 33, 33, 0) 0%, rgba(33, 33, 33, 0.7) 25%, #212121 60%);
+}
+
+/* The main name/title */
+.subname-profile-card-name {
+    font-weight: 500;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+    color: white;
+}
+
+/* Container for the social media icon links */
+.subname-profile-card-socials {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 10px;
+    margin-bottom: 24px;
+}
+
+/* Individual social media icon link */
+.subname-profile-card-social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #333333;
+    border: 1px solid #4d4d4d;
+    border-radius: 50%;
+    color: #e0e0e0;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.subname-profile-card-social-link:hover {
+    background-color: #4d4d4d;
+    transform: translateY(-2px);
+    /* Slight lift effect on hover */
+}
+
+/* Styling for the SVG icons within the links */
+.subname-profile-card-social-link svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+/* Container for the follower/following stats */
+.subname-profile-card-stats {
+    font-size: 16px;
+    color: #a0a0a0;
+    font-weight: 400;
+}
+
+/* Bolding the numbers and the main text */
+.subname-profile-card-stats strong {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+/* The separator dot between stats */
+.subname-profile-card-separator {
+    margin: 0 8px;
+}

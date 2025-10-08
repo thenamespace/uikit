@@ -7,7 +7,7 @@ import { WalletConnect } from "./wallet-connect";
 
 import { mainnet } from "viem/chains";
 
-import { Button, ENSNameCard, Icon, Input, Text } from "./components";
+import { Button, ENSNameCard, Icon, Input, SubnameProfileCard, Text } from "./components";
 import { ProfileCard } from "./components";
 import { NavbarProfileCard } from "./components";
 
@@ -219,6 +219,18 @@ function TestApp() {
               volume={0}
             // onFollowClick={() => console.log("Follow clicked")}
             />
+            {/* <SubnameProfileCard
+              bannerUrl={selectedENS?.imageUrl ? selectedENS.imageUrl : "https://t3.ftcdn.net/jpg/07/32/10/90/360_F_732109080_4lXwGofazqAiysUpcCnrbflsNOl9EMdW.jpg"}
+              name={selectedENS?.name ? selectedENS.name : "thecap.eth"}
+              followers={120}
+              following={34}
+              socials={{
+                x: "thecap_eth",
+                github: "thecap",
+                discord: "thecap_channel",
+                website: "https://thecap.eth.limo"
+              }}
+            /> */}
           </aside>
 
           <section className="ns-right">
@@ -240,7 +252,7 @@ function TestApp() {
 
             </div>
             <div className="ns-header">
-              <Text size="xl" weight="bold">{selectedENS ? "Sub Names": "ENS Names"}</Text>
+              <Text size="xl" weight="bold">{selectedENS ? "Sub Names" : "ENS Names"}</Text>
               <div className="ns-search">
                 <Input
                   size="lg"
