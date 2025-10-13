@@ -7,7 +7,7 @@ import { WalletConnect } from "./wallet-connect";
 
 import { mainnet } from "viem/chains";
 
-import { Button, ENSNameCard, Icon, Input, SubnameProfileCard, Text } from "./components";
+import { Button, ENSNameCard, Icon, Input, SubnameBannerMint, SubnameProfileCard, Text } from "./components";
 import { ProfileCard } from "./components";
 import { NavbarProfileCard } from "./components";
 
@@ -263,10 +263,9 @@ function TestApp() {
               </div>
             </div>
 
-            {selectedENS && <div className="ns-subname-banner">
-              <img src="https://t3.ftcdn.net/jpg/07/32/10/90/360_F_732109080_4lXwGofazqAiysUpcCnrbflsNOl9EMdW.jpg" alt={`${selectedENS.name} banner`} className="ns-subname-banner-image" />
+            {selectedENS && <div>
+              <SubnameBannerMint />
             </div>}
-
             <div className="ns-ens-grid">
               {selectedENS && !selectedENS.isSubname && Array.isArray((selectedENS as any).subnames) && (selectedENS as any).subnames.length > 0
                 ? (selectedENS as any).subnames.map((sub: any) => (

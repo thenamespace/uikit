@@ -1,0 +1,144 @@
+.subname-banner-mint-page-container {
+    background-color: #ffffff;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.subname-banner-mint-card {
+    background-color: #f3f4f6;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    width: 100%;
+    text-align: center;
+}
+
+.subname-banner-mint-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 2rem;
+    line-height: 1.25;
+}
+
+.subname-banner-mint-content-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 80%;
+}
+
+
+
+.subname-banner-mint-hand-illustration-container {
+    flex-shrink: 0;
+    display: none;
+}
+
+.subname-banner-mint-hand-illustration-container.mirrored {
+    transform: scaleX(-1);
+}
+
+.subname-banner-mint-search-bar-wrapper {
+    width: 100%;
+    max-width: 42rem;
+}
+
+.subname-banner-mint-search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 0.5rem;
+    border-radius: 20px;
+    width: 70%;
+}
+
+.subname-banner-mint-search-icon {
+    color: #9ca3af;
+    margin: 0 0.75rem;
+    flex-shrink: 0;
+}
+
+.subname-banner-mint-search-input {
+    flex-grow: 1;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    color: #374151;
+    font-size: 0.875rem;
+}
+
+.subname-banner-mint-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.subname-banner-mint-domain-text {
+    color: #1f2937;
+    margin: 0 0.5rem;
+    display: none;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.subname-banner-mint-button {
+    background-color: #1f2937;
+    color: #ffffff;
+    border-radius: 9999px;
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    flex-shrink: 0;
+    font-size: 0.875rem;
+}
+
+.subname-banner-mint-button:hover {
+    background-color: #374151;
+}
+
+.subname-banner-mint-button:focus {
+    outline: 2px solid #1f2937;
+    outline-offset: 2px;
+}
+
+/* Responsive Breakpoints */
+@media (min-width: 640px) {
+    .subname-banner-mint-card {
+        padding: 2.5rem;
+    }
+
+    .subname-banner-mint-card-title {
+        font-size: 2rem;
+    }
+
+    .subname-banner-mint-search-input,
+    .subname-banner-mint-domain-text,
+    .subname-banner-mint-button {
+        font-size: 1rem;
+    }
+
+    .subname-banner-mint-domain-text {
+        display: block;
+    }
+
+    .subname-banner-mint-button {
+        padding: 0.75rem 1.75rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .subname-banner-mint-card-title {
+        font-size: 3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .subname-banner-mint-hand-illustration-container {
+        display: block;
+    }
+}
