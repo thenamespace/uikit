@@ -87,21 +87,31 @@
 }
 
 @theme inline {
+	--font-satoshi: "Satoshi", ui-sans-serif, system-ui, -apple-system, Segoe UI,
+		Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+
 	--color-background: var(--ns-color-bg);
 	--color-foreground: var(--ns-color-fg);
 
 	--color-primary: var(--ns-color-primary);
 	--color-primary-foreground: var(--ns-color-primary-contrast);
 
+	--color-accent: var(--ns-color-bg-accent);
+	--color-accent-hover: var(--ns-color-bg-accent-hover);
+
+	--color-muted: var(--ns-color-muted);
+
 	--color-border: var(--ns-color-border);
 
 	--color-sidebar: var(--ns-color-bg);
 	--color-sidebar-foreground: var(--ns-color-fg);
+
 	--color-sidebar-primary: var(--ns-color-primary);
 	--color-sidebar-primary-foreground: var(--ns-color-primary-contrast);
 
-	--color-sidebar-accent: var(--ns-color-bg-accent);
-	--color-sidebar-accent-foreground: var(--ns-color-fg);
+	--color-sidebar-accent: #1f1f1f0d;
+	--color-sidebar-accent-foreground: #1F1F1F;
+
 	--color-sidebar-border: var(--ns-color-border);
 	--color-sidebar-ring: var(--ns-color-bg-accent);
 }

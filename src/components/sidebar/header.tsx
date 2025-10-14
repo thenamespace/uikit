@@ -1,57 +1,42 @@
 import {
 	SidebarHeader as SidebarHeaderCore,
 	SidebarMenu,
-	SidebarMenuButton,
 	SidebarMenuItem,
+	SidebarSeparator,
+	SidebarTrigger,
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/utils";
+import { ChevronRight } from "lucide-react";
 
 export const SidebarHeader = () => {
 	const { open, setOpen, isMobile, setOpenMobile } = useSidebar();
 
 	return (
-		<SidebarHeaderCore className="!pt-3">
+		<SidebarHeaderCore className="!pt-4 relative" data-open={open}>
 			<SidebarMenu>
-				<SidebarMenuItem
-					className={cn(
-						"flex items-center gap-4",
-						open ? "justify-between" : "justify-center",
-					)}
-				>
-					<a className="group/header-icon flex flex-row items-center" href="/">
-						<SidebarMenuButton className="!p-0 !m-0 !size-16 flex cursor-pointer items-center justify-center bg-transparent transition-all duration-300 ease-in-out hover:bg-transparent group-hover/header-icon:rotate-3 group-hover/header-icon:scale-[107%] group-data-[collapsible=icon]:size-12! [&>svg]:size-8">
-							{/* <KoraLogo bodyColor="#fff" eyesColor="#000" /> */}
-						</SidebarMenuButton>
+				<SidebarMenuItem className={cn("flex items-center gap-4")}>
+					<a className="group/header-icon" href="/">
 						<div
 							className={cn(
-								"font-comic text-3xl text-white uppercase transition-all duration-300 ease-in-out",
-								open ? "inline-flex" : "hidden",
+								"bg-black text-white rounded-xl flex items-center justify-center p-2",
+								open ? "h-10 w-full" : "size-10",
 							)}
 						>
-							Kora
+							<div
+								className="group font-satoshi text-4xl font-medium inline-flex items-center justify-center leading-none pb-2"
+								data-open={open}
+							>
+								<span className="">n</span>
+								<span className="group-data-[open=false]:hidden">amespace</span>
+							</div>
 						</div>
 					</a>
-					{/* {open && (
-						<button
-							type="button"
-							className="justify-self-end"
-							onClick={() => {
-								if (isMobile) {
-									setOpenMobile(false);
-								} else {
-									setOpen(false);
-								}
-							}}
-						>
-							<SidebarLeftIcon
-								className="size-5 text-white"
-								strokeWidth={2.5}
-							/>
-						</button>
-					)} */}
 				</SidebarMenuItem>
 			</SidebarMenu>
+			<SidebarTrigger className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 border size-5 bg-sidebar border-border flex items-center justify-center rounded-lg">
+				<ChevronRight className="size-4" />
+			</SidebarTrigger>
 		</SidebarHeaderCore>
 	);
 };

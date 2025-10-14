@@ -1,15 +1,25 @@
-import { Sidebar as SidebarCore } from "@/components/ui/sidebar";
+import {
+	SidebarContent,
+	Sidebar as SidebarCore,
+	SidebarSeparator,
+} from "@/components/ui/sidebar";
 
 import { SidebarHeader } from "./header";
+import { MainGroup } from "./main-group";
+import { SideGroup } from "./side-group";
 
 export const Sidebar = () => {
 	return (
 		<SidebarCore
-			className="m-6 h-[75%] overflow-clip px-1 py-0"
 			collapsible="icon"
 			variant="floating"
+			className="m-2 h-[75svh] flex items-center"
 		>
 			<SidebarHeader />
+			<SidebarSeparator className="my-2" />
+			<MainGroup />
+			<SidebarSeparator className="my-2" />
+			<SideGroup />
 		</SidebarCore>
 	);
 };
