@@ -94,6 +94,16 @@
 	--color-primary-foreground: var(--ns-color-primary-contrast);
 
 	--color-border: var(--ns-color-border);
+
+	--color-sidebar: var(--ns-color-bg);
+	--color-sidebar-foreground: var(--ns-color-fg);
+	--color-sidebar-primary: var(--ns-color-primary);
+	--color-sidebar-primary-foreground: var(--ns-color-primary-contrast);
+
+	--color-sidebar-accent: var(--ns-color-bg-accent);
+	--color-sidebar-accent-foreground: var(--ns-color-fg);
+	--color-sidebar-border: var(--ns-color-border);
+	--color-sidebar-ring: var(--ns-color-bg-accent);
 }
 
 html {

@@ -21,7 +21,7 @@ export const SidebarHeader = () => {
 				>
 					<a className="group/header-icon flex flex-row items-center" href="/">
 						<SidebarMenuButton className="!p-0 !m-0 !size-16 flex cursor-pointer items-center justify-center bg-transparent transition-all duration-300 ease-in-out hover:bg-transparent group-hover/header-icon:rotate-3 group-hover/header-icon:scale-[107%] group-data-[collapsible=icon]:size-12! [&>svg]:size-8">
-							<KoraLogo bodyColor="#fff" eyesColor="#000" />
+							{/* <KoraLogo bodyColor="#fff" eyesColor="#000" /> */}
 						</SidebarMenuButton>
 						<div
 							className={cn(
@@ -32,7 +32,7 @@ export const SidebarHeader = () => {
 							Kora
 						</div>
 					</a>
-					{open && (
+					{/* {open && (
 						<button
 							type="button"
 							className="justify-self-end"
@@ -49,7 +49,7 @@ export const SidebarHeader = () => {
 								strokeWidth={2.5}
 							/>
 						</button>
-					)}
+					)} */}
 				</SidebarMenuItem>
 			</SidebarMenu>
 		</SidebarHeaderCore>

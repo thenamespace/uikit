@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles/index.css";
-import { EnsAddressRecord, EnsRecords, EnsTextRecord } from "@/types";
+import type { EnsAddressRecord, EnsRecords, EnsTextRecord } from "@/types";
 import { zeroAddress } from "viem";
-import { WalletConnect } from "./providers/wallet-connect";
 
 import { Sidebar } from "./components/sidebar";
 
@@ -12,14 +11,13 @@ import { mainnet } from "viem/chains";
 import {
 	Button,
 	ENSNameCard,
-	Icon,
 	Input,
 	SubnameBannerMint,
-	SubnameProfileCard,
 	Text,
 } from "./components";
 import { ProfileCard } from "./components";
 import { NavbarProfileCard } from "./components";
+import { ProviderTree } from "./providers";
 
 export const dummyENSNames = [
 	{
@@ -212,6 +210,7 @@ function TestApp() {
 				);
 			},
 		);
+
 		return (
 			<main className="ns-main">
 				<div className="ns-page">
@@ -361,26 +360,22 @@ function TestApp() {
 	}
 
 	return (
-		<div>
-			<WalletConnect>
-				<div className="ns-layout">
-					<div className="ns-body">
-						<Sidebar />
-
-						<div className="ns-right-column">
-							<Navbar />
-							<div className="ns-actions-buttons">
-								<Button variant="outline" size="md">
-									Account Page
-								</Button>
-								{/* <Button variant="outline" size="md">ENS Name Page</Button> */}
-							</div>
-							<MainContent />
+		<ProviderTree>
+			<div className="ns-layout">
+				<div className="ns-body flex flex-row gap-4">
+					<Sidebar />
+					<div className="ns-right-column">
+						<Navbar />
+						<div className="ns-actions-buttons">
+							<Button variant="outline" size="md">
+								Account Page
+							</Button>
 						</div>
+						<MainContent />
 					</div>
 				</div>
-			</WalletConnect>
-		</div>
+			</div>
+		</ProviderTree>
 	);
 }
 
