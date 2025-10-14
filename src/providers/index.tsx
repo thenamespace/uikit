@@ -7,9 +7,7 @@ export const ProviderTree = ({ children }: PropsWithChildren) => {
 	return (
 		<ThemeProvider>
 			<WalletConnect>
-				<SidebarProvider>
-					<div>{children}</div>
-				</SidebarProvider>
+				<SidebarProvider>{children}</SidebarProvider>
 			</WalletConnect>
 		</ThemeProvider>
 	);

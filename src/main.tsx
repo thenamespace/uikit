@@ -361,18 +361,16 @@ function TestApp() {
 
 	return (
 		<ProviderTree>
-			<div className="ns-layout">
-				<div className="ns-body flex flex-row gap-4">
-					<Sidebar />
-					<div className="ns-right-column">
-						<Navbar />
-						<div className="ns-actions-buttons">
-							<Button variant="outline" size="md">
-								Account Page
-							</Button>
-						</div>
-						<MainContent />
+			<div className="flex flex-row gap-4 w-full">
+				<Sidebar />
+				<div className="flex flex-col gap-4 w-full">
+					<Navbar />
+					<div className="ns-actions-buttons">
+						<Button variant="outline" size="md">
+							Account Page
+						</Button>
 					</div>
+					<MainContent />
 				</div>
 			</div>
 		</ProviderTree>
