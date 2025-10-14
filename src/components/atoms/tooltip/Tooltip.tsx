@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, ReactNode } from "react";
+import type React from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react"
 import "./Tooltip.css";
 
 export type TooltipPosition =

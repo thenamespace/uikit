@@ -28,6 +28,7 @@ export const EndGroup = () => {
 							asChild={true}
 							className={cn(
 								"",
+								// @ts-ignore
 								pathname === item.href &&
 									"!bg-black !text-white hover:!bg-black hover:!text-white",
 							)}
