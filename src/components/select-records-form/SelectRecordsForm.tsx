@@ -13,6 +13,7 @@ import { ContenthashRecord } from "./contenthash-records/ContenthashRecord";
 import "./SelectRecordsForm.css";
 import { RecordsAddedParams } from "./records-selector/RecordsSelector";
 import { ImageRecords } from "./image-records/ImageRecords";
+import { AvatarRecords } from "./avatar-records/AvatarRecords";
 import { deepCopy } from "@/utils";
 import { TextRecordCategory } from "@/constants";
 
@@ -21,16 +22,27 @@ enum RecordsSidebarItem {
   Social = "Social",
   Addresses = "Addresses",
   Website = "Website",
+  Avatar = "Avatar",
 }
+
+import type { WalletClient } from "viem";
 
 export interface SelectRecordsFormProps {
   records: EnsRecords;
   onRecordsUpdated: (records: EnsRecords) => void;
+  name?: string;
+  walletClient?: WalletClient;
+  network?: "mainnet" | "sepolia";
+  domain?: string;
 }
 
 export const SelectRecordsForm = ({
   records,
   onRecordsUpdated,
+  name,
+  walletClient,
+  network,
+  domain,
 }: SelectRecordsFormProps) => {
   const [initialRecords] = useState<EnsRecords>(deepCopy(records));
 
@@ -38,6 +50,7 @@ export const SelectRecordsForm = ({
   const socialCategoryRef = useRef<HTMLDivElement | null>(null);
   const addressesCategoryRef = useRef<HTMLDivElement | null>(null);
   const websiteCategoryRef = useRef<HTMLDivElement | null>(null);
+  const avatarCategoryRef = useRef<HTMLDivElement | null>(null);
   const [searchFilter, setSearchFilter] = useState("");
 
   const [currentNav, setCurrentNav] = useState<RecordsSidebarItem>(
@@ -61,6 +74,7 @@ export const SelectRecordsForm = ({
       Social: socialCategoryRef,
       Website: websiteCategoryRef,
       Addresses: addressesCategoryRef,
+      Avatar: avatarCategoryRef,
     };
 
     const currentRef = references[category];
@@ -256,6 +270,20 @@ export const SelectRecordsForm = ({
                 onContenthashRemoved={() => handleContenthashRemoved()}
                 onContenthashAdded={e => handleContenthashAdded(e)}
                 searchFilter={searchFilter}
+              />
+            </div>
+            {/* Avatar Records */}
+            <div ref={avatarCategoryRef} className="ns-mb-2">
+              <AvatarRecords
+                avatar={avatar}
+                onAvatarChanged={(value: string) =>
+                  handleImageRecordAdded("avatar", value)
+                }
+                searchFilter={searchFilter}
+                name={name}
+                walletClient={walletClient}
+                network={network}
+                domain={domain}
               />
             </div>
           </div>

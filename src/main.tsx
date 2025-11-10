@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles/index.css";
 import { EnsAddressRecord, EnsRecords, EnsTextRecord } from "@/types";
@@ -10,6 +10,8 @@ import { mainnet } from "viem/chains";
 import { Button, ENSNameCard, Icon, Input, Text } from "./components";
 import { ProfileCard } from "./components";
 import { NavbarProfileCard } from "./components";
+import { Modal } from "./components/molecules";
+import { EnsRecordsForm } from "./components/ens-records-form/EnsRecordsForm";
 
 export const dummyENSNames = [
   {
@@ -186,6 +188,7 @@ function TestApp() {
     texts: [..._texts],
     addresses: [..._addrs],
   });
+  const [isRecordsFormOpen, setIsRecordsFormOpen] = useState(false);
 
   const handleRecordsUpdated = (newRecords: EnsRecords) => {
     setRecords(newRecords);
@@ -321,9 +324,31 @@ function TestApp() {
               <div className="ns-actions-buttons">
                 <Button variant="outline" size="md">Account Page</Button>
                 <Button variant="outline" size="md">ENS Name Page</Button>
+                <Button variant="outline" size="md" onClick={() => setIsRecordsFormOpen(true)}>
+                  Edit Records
+                </Button>
               </div>
               <MainContent />
             </div>
+            <Modal
+              isOpen={isRecordsFormOpen}
+              onClose={() => setIsRecordsFormOpen(false)}
+              title="Edit ENS Records"
+              size="lg"
+              footer={null}
+            >
+              <EnsRecordsForm
+                name={ENS_NAME}
+                resolverAddress={SEPOLIA_PUB_RES as `0x${string}`}
+                initialRecords={records}
+                chainId={NAME_CHAIN_ID}
+                onCancel={() => setIsRecordsFormOpen(false)}
+                onSuccess={(txHash) => {
+                  console.log("Transaction successful:", txHash);
+                  setIsRecordsFormOpen(false);
+                }}
+              />
+            </Modal>
           </div>
         </div>
       </WalletConnect>
