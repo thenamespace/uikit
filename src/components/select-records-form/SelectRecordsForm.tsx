@@ -21,7 +21,7 @@ enum RecordsSidebarItem {
   General = "General",
   Social = "Social",
   Addresses = "Addresses",
-  Website = "Website",
+  ContentHash = "ContentHash",
   Avatar = "Avatar",
 }
 
@@ -45,7 +45,7 @@ export const SelectRecordsForm = ({
   const generalCategoryRef = useRef<HTMLDivElement | null>(null);
   const socialCategoryRef = useRef<HTMLDivElement | null>(null);
   const addressesCategoryRef = useRef<HTMLDivElement | null>(null);
-  const websiteCategoryRef = useRef<HTMLDivElement | null>(null);
+  const contentHashCategoryRef = useRef<HTMLDivElement | null>(null);
   const avatarCategoryRef = useRef<HTMLDivElement | null>(null);
   const [searchFilter, setSearchFilter] = useState("");
 
@@ -68,7 +68,7 @@ export const SelectRecordsForm = ({
     > = {
       General: generalCategoryRef,
       Social: socialCategoryRef,
-      Website: websiteCategoryRef,
+      ContentHash: contentHashCategoryRef,
       Addresses: addressesCategoryRef,
       Avatar: avatarCategoryRef,
     };
@@ -264,7 +264,7 @@ export const SelectRecordsForm = ({
               />
             </div>
             {/* Contenthash Records */}
-            <div ref={websiteCategoryRef} className="ns-mb-2">
+            <div ref={contentHashCategoryRef} className="ns-mb-2">
               <ContenthashRecord
                 contenthash={records.contenthash}
                 onContenthashChanged={e => handleContenthashUpdated(e)}

@@ -60,7 +60,7 @@ export const ContenthashRecord = ({
   return (
     <div className="ns-text-records">
       <Text className="ns-mb-2" weight="bold">
-        Website
+        Content Hash
       </Text>
       {!contenthash && (
         <div className="row g-2">
