@@ -56,30 +56,35 @@ export const supportedTexts: SupportedTextRecord[] = [
     key: "com.twitter",
     category: TextRecordCategory.Social,
     label: "Twitter",
+    socialRecordPrefix: "https://x.com/",
   },
   {
     icon: "discord",
     key: "com.discord",
     category: TextRecordCategory.Social,
     label: "Discord",
+    socialRecordPrefix: "",
   },
   {
     icon: "github",
     key: "com.github",
     category: TextRecordCategory.Social,
     label: "Github",
+    socialRecordPrefix: "https://github.com/",
   },
   {
     icon: "telegram",
     key: "org.telegram",
     category: TextRecordCategory.Social,
     label: "Telegram",
+    socialRecordPrefix: "https://t.me/",
   },
   {
     icon: "youtube",
     key: "com.youtube",
     category: TextRecordCategory.Social,
     label: "Youtube",
+    socialRecordPrefix: "https://youtube.com/@",
   },
 ];
 

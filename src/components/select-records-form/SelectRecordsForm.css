@@ -126,6 +126,53 @@
   padding: 2px;
 }
 
+/* Split input design for social records */
+.ns-social-input-split {
+  background: #fcfcfc;
+  border: 1px solid var(--ns-color-border);
+  border-radius: var(--ns-radius-md);
+  padding: 0 8px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.ns-social-input-split:focus-within {
+  border-color: var(--ns-color-primary);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--ns-color-primary) 15%, transparent);
+}
+
+.ns-social-input-split .ns-social-input-prefix {
+  user-select: none;
+  font-weight: 400;
+}
+
+.ns-social-input-split .ns-input__wrapper {
+  flex: 0 1 auto;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.ns-social-input-split .ns-input__wrapper .ns-input {
+  border: none;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  height: 100%;
+}
+
+.ns-social-input-split .ns-input__wrapper .ns-input:focus {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
 @media screen and (max-width: 600px) {
   .ns-select-records-form {
     width: 100%;

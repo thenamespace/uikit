@@ -45,11 +45,80 @@ export const TextRecords = ({
     }
   }, [texts, lastAddedKey]);
 
+  // Helper function to extract username from a full URL
+  const extractUsername = (url: string, prefix: string): string => {
+    if (!prefix || !url) return url; // For Discord and other platforms without prefix
+    
+    // If it starts with the prefix, extract the username part
+    if (url.startsWith(prefix)) {
+      return url.slice(prefix.length);
+    }
+    
+    // Try to extract from various URL formats
+    try {
+      // Handle URLs with or without protocol
+      const urlToParse = url.startsWith('http://') || url.startsWith('https://') 
+        ? url 
+        : `https://${url}`;
+      
+      const urlObj = new URL(urlToParse);
+      const pathname = urlObj.pathname;
+      
+      // For Twitter/X, GitHub, Telegram - extract from pathname
+      if (prefix.includes('x.com') || prefix.includes('twitter.com') || prefix.includes('github.com') || prefix.includes('t.me')) {
+        const username = pathname.replace(/^\//, '').split('/')[0];
+        return username || url;
+      }
+      
+      // For YouTube with @ handle
+      if (prefix.includes('youtube.com/@')) {
+        const match = pathname.match(/^\/@(.+)/);
+        if (match) {
+          return match[1].split('/')[0]; // Get just the handle, ignore any additional path
+        }
+        // Fallback: try to extract from pathname
+        const username = pathname.replace(/^\//, '').split('/')[0];
+        return username || url;
+      }
+    } catch {
+      // If URL parsing fails, return as is (might be partial input)
+    }
+    
+    return url;
+  };
+
+  // Helper function to form full link from username
+  const formFullLink = (input: string, prefix: string): string => {
+    if (!prefix) return input; // For Discord and other platforms without prefix
+    
+    // If it's already a full URL, return as is
+    if (input.startsWith('http://') || input.startsWith('https://')) {
+      return input;
+    }
+    
+    // If it starts with the prefix, return as is
+    if (input.startsWith(prefix)) {
+      return input;
+    }
+    
+    // Otherwise, prepend the prefix
+    return prefix + input;
+  };
+
   const handleTextChanged = (key: string, value: string) => {
+    const record = supportedTexts.find(r => r.key === key);
+    const prefix = record?.socialRecordPrefix || "";
+    
+    // For social records, form the full link from username
+    let finalValue = value;
+    if (record?.category === TextRecordCategory.Social && prefix) {
+      finalValue = formFullLink(value, prefix);
+    }
+    
     const _texts = [...texts];
     for (const text of _texts) {
       if (text.key === key) {
-        text.value = value;
+        text.value = finalValue;
       }
     }
     onTextsChanged(_texts);
@@ -104,6 +173,20 @@ export const TextRecords = ({
         .filter(record => existingTextsMap[record.key] !== undefined)
         .map(record => {
           const current = existingTextsMap[record.key];
+          const prefix = record.socialRecordPrefix || "";
+          
+          // For social records, display username instead of full link in input
+          // but store the full link in the value
+          const displayValue = 
+            record.category === TextRecordCategory.Social && prefix && current.value
+              ? extractUsername(current.value, prefix)
+              : current.value;
+
+          // Check if this is a social record with prefix (should show split input)
+          const isSocialWithPrefix = 
+            record.category === TextRecordCategory.Social && 
+            prefix && 
+            prefix.length > 0;
 
           return (
             <div key={record.key} style={{ marginBottom: 10 }}>
@@ -119,16 +202,46 @@ export const TextRecords = ({
                 style={{ width: "100%" }}
                 className="d-flex align-items-center"
               >
-                <Input
-                  ref={(el: HTMLInputElement | null) => {
-                    inputRefs.current[record.key] = el;
-                  }}
-                  style={{ width: "100%" }}
-                  onChange={e => handleTextChanged(record.key, e.target.value)}
-                  prefix={<Icon name={record.icon} size={18} color="grey" />}
-                  value={current.value}
-                  placeholder={record.placeholder}
-                />
+                {isSocialWithPrefix ? (
+                  // Split input design for social records with prefix
+                  <div className="ns-social-input-split d-flex align-items-center" style={{ width: "100%", height: "32px" }}>
+                    <div className="ns-social-input-icon" style={{ marginRight: "8px", display: "flex", alignItems: "center" }}>
+                      <Icon name={record.icon} size={18} color="grey" />
+                    </div>
+                    <div className="ns-social-input-prefix" style={{ 
+                      padding: "0 4px",
+                      fontSize: "0.875rem",
+                      color: "var(--ns-color-muted)",
+                      whiteSpace: "nowrap",
+                      display: "flex",
+                      alignItems: "center"
+                    }}>
+                      {prefix}
+                    </div>
+                    <Input
+                      ref={(el: HTMLInputElement | null) => {
+                        inputRefs.current[record.key] = el;
+                      }}
+                      style={{ flex: "0 1 auto", height: "100%" , fontWeight: "bold" }}
+                      onChange={e => handleTextChanged(record.key, e.target.value)}
+                      value={displayValue}
+                      placeholder="username"
+                      size="sm"
+                    />
+                  </div>
+                ) : (
+                  // Regular input for non-social or social without prefix
+                  <Input
+                    ref={(el: HTMLInputElement | null) => {
+                      inputRefs.current[record.key] = el;
+                    }}
+                    style={{ width: "100%" }}
+                    onChange={e => handleTextChanged(record.key, e.target.value)}
+                    prefix={<Icon name={record.icon} size={18} color="grey" />}
+                    value={displayValue}
+                    placeholder={record.placeholder}
+                  />
+                )}
                 <div
                   onClick={() => handleRemoveText(record.key)}
                   className="ns-close-icon ns-ms-1"
