@@ -164,15 +164,40 @@ export const TextRecords = ({
     return <></>;
   }
 
+  const recordsInOrder = useMemo(() => {
+    const shownTextCategory = [category];
+    if (category === TextRecordCategory.General) {
+      shownTextCategory.push(TextRecordCategory.Image);
+    }
+    
+    return texts
+      .map(text => {
+        const record = supportedTexts.find(r => r.key === text.key);
+        return record && shownTextCategory.includes(record.category) ? { text, record } : null;
+      })
+      .filter((item): item is { text: EnsTextRecord; record: SupportedTextRecord } => {
+        if (!item) return false;
+        // Apply search filter if present
+        if (searchFilter && searchFilter.length > 0) {
+          const lowercase = searchFilter.toLocaleLowerCase();
+          const label = item.record.label || "";
+          return (
+            item.record.key.toLocaleLowerCase().includes(lowercase) ||
+            label.toLocaleLowerCase().includes(lowercase)
+          );
+        }
+        return true;
+      });
+  }, [texts, category, searchFilter]);
+
   return (
     <div className="ns-text-records">
       <Text className="ns-mb-2" weight="bold">
         {capitalize(category)}
       </Text>
-      {filteredItems
-        .filter(record => existingTextsMap[record.key] !== undefined)
-        .map(record => {
-          const current = existingTextsMap[record.key];
+      {recordsInOrder
+        .map(({ text, record }) => {
+          const current = text;
           const prefix = record.socialRecordPrefix || "";
           
           // For social records, display username instead of full link in input
@@ -206,7 +231,7 @@ export const TextRecords = ({
                   // Split input design for social records with prefix
                   <div className="ns-social-input-split d-flex align-items-center" style={{ width: "100%", height: "32px" }}>
                     <div className="ns-social-input-icon" style={{ marginRight: "8px", display: "flex", alignItems: "center" }}>
-                      <Icon name={record.icon} size={18} color="grey" />
+                      <Icon name={record.icon} size={14} color="grey" />
                     </div>
                     <div className="ns-social-input-prefix" style={{ 
                       padding: "0 4px",
@@ -230,7 +255,6 @@ export const TextRecords = ({
                     />
                   </div>
                 ) : (
-                  // Regular input for non-social or social without prefix
                   <Input
                     ref={(el: HTMLInputElement | null) => {
                       inputRefs.current[record.key] = el;
@@ -246,7 +270,7 @@ export const TextRecords = ({
                   onClick={() => handleRemoveText(record.key)}
                   className="ns-close-icon ns-ms-1"
                 >
-                  <Icon name="x" size={18} />
+                  <Icon name="x" size={14} />
                 </div>
               </div>
             </div>

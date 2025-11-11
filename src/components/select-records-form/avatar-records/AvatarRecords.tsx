@@ -1,15 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import { Icon, Input, Text, Button } from "@/components/atoms";
 import { createAvatarClient } from "@thenamespace/avatar";
-import type { WalletClient } from "viem";
 import "./AvatarRecords.css";
+import { useWalletClient } from "wagmi";
+import { mainnet, sepolia } from "viem/chains";
 
 interface AvatarRecordsProps {
   avatar?: string;
   onAvatarChanged: (value: string) => void;
   searchFilter?: string;
   name?: string;
-  walletClient?: WalletClient;
   network?: "mainnet" | "sepolia";
   domain?: string;
 }
@@ -19,7 +19,6 @@ export const AvatarRecords = ({
   onAvatarChanged,
   searchFilter = "",
   name,
-  walletClient,
   network = "mainnet",
   domain = "myapp.com",
 }: AvatarRecordsProps) => {
@@ -27,8 +26,9 @@ export const AvatarRecords = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const currentChainId = network === "mainnet" ? mainnet.id : sepolia.id;
+  const { data: walletClient } = useWalletClient({ chainId: currentChainId });
 
-  // Sync with prop changes
   useEffect(() => {
     setAvatarUrl(avatar || "");
   }, [avatar]);
@@ -188,6 +188,7 @@ export const AvatarRecords = ({
             type="text"
             placeholder="Paste image URL here (e.g., https://example.com/image.png)"
             value={avatarUrl}
+            size="sm"
             onChange={e => handleUrlChange(e.target.value)}
             prefix={<Icon name="globe" size={18} />}
           />
@@ -204,11 +205,11 @@ export const AvatarRecords = ({
           />
           <Button
             variant="outline"
-            size="md"
+            size="sm"
             onClick={handleUploadClick}
             disabled={isUploading || !walletClient || !name}
           >
-            <Icon name="image" size={16} />
+            <Icon name="image" size={14} />
             {isUploading
               ? `Uploading... ${uploadProgress}%`
               : walletClient && name
@@ -217,10 +218,10 @@ export const AvatarRecords = ({
           </Button>
           <Button
             variant="outline"
-            size="md"
+            size="sm"
             onClick={handlePasteFromClipboard}
           >
-            <Icon name="copy" size={16} />
+            <Icon name="copy" size={14} />
             Paste from Clipboard
           </Button>
         </div>

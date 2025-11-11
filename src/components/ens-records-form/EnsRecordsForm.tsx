@@ -237,7 +237,6 @@ export const EnsRecordsForm = ({
         records={records}
         onRecordsUpdated={records => setRecords(records)}
         name={name}
-        walletClient={walletClient}
         network={currentChainId === mainnet.id ? "mainnet" : "sepolia"}
         domain={
           typeof window !== "undefined" ? window.location.hostname : "myapp.com"

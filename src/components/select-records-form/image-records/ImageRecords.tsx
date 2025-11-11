@@ -50,6 +50,8 @@ export const ImageRecords = ({
         <div className="ns-bot-grad"></div>
         {!headerRecordSet && (
           <Dropdown
+            placement="bottom"
+            align="end"
             trigger={
               <div className="ns-header-handle">
                 <Icon color="white" name="rotate-circle"></Icon>
@@ -82,6 +84,8 @@ export const ImageRecords = ({
         <div style={avatarStyles} className="ns-avatar-record-cont">
           {!avatarRecordSet && (
             <Dropdown
+              placement="bottom"
+              align="center"
               trigger={
                 <div className="ns-image-handle">
                   <Icon color="grey" name="rotate-circle"></Icon>

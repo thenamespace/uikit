@@ -4,6 +4,8 @@
   width: 500px;
   border-radius: 15px;
   min-height: 400px;
+  overflow: visible;
+  position: relative;
 }
 
 .ns-select-records-form .ns-records-wrapper {

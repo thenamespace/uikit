@@ -1,6 +1,7 @@
 .ns-image-records {
   position: relative;
   z-index: 15;
+  overflow: visible;
 }
 
 .ns-image-records .ns-cover-record-cont {
@@ -11,6 +12,7 @@
   justify-content: end;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
+  overflow: visible;
 }
 
 .ns-top-grad {
@@ -73,7 +75,10 @@
 }
 
 .ns-upload-options {
-  padding: 5px;
+  padding: 8px;
+  min-width: 180px;
+  background: var(--ns-color-bg);
+  border-radius: var(--ns-radius-md);
 }
 
 .ns-upload-options .option {

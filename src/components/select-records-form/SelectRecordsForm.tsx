@@ -25,13 +25,10 @@ enum RecordsSidebarItem {
   Avatar = "Avatar",
 }
 
-import type { WalletClient } from "viem";
-
 export interface SelectRecordsFormProps {
   records: EnsRecords;
   onRecordsUpdated: (records: EnsRecords) => void;
   name?: string;
-  walletClient?: WalletClient;
   network?: "mainnet" | "sepolia";
   domain?: string;
 }
@@ -40,7 +37,6 @@ export const SelectRecordsForm = ({
   records,
   onRecordsUpdated,
   name,
-  walletClient,
   network,
   domain,
 }: SelectRecordsFormProps) => {
@@ -286,7 +282,6 @@ export const SelectRecordsForm = ({
                 }
                 searchFilter={searchFilter}
                 name={name}
-                walletClient={walletClient}
                 network={network}
                 domain={domain}
               />
