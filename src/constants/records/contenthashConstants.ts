@@ -9,7 +9,7 @@ export interface SupportedContenthashRecord {
 export const supportedContenthashRecords: SupportedContenthashRecord[] = [
   {
     protocol: ContenthashProtocol.Ipfs,
-    label: "Ipfs",
+    label: "IPFS",
   },
   {
     protocol: ContenthashProtocol.Onion,

@@ -65,7 +65,7 @@ export const ContenthashRecord = ({
       {!contenthash && (
         <div className="row g-2">
           {filteredSuggestions.map(record => (
-            <div key={record.protocol} className="col col-lg-3 col-sm-6">
+            <div key={record.protocol} className="col col-lg-3 col-sm-6 col-6">
               <div
                 className="ns-text-suggestion"
                 onClick={() => onContenthashAdded(record.protocol)}
