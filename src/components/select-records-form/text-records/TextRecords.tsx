@@ -5,7 +5,7 @@ import {
   TextRecordCategory,
 } from "@/constants";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Icon, Input, Text } from "@/components/atoms";
+import { Icon, Input, Text, Textarea } from "@/components/atoms";
 import { capitalize } from "@/utils";
 
 interface TextRecordsProps {
@@ -32,7 +32,7 @@ export const TextRecords = ({
   }, [texts]);
 
   const [lastAddedKey, setLastAddedKey] = useState<string | null>(null);
-  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const inputRefs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>({});
 
   useEffect(() => {
     if (lastAddedKey && inputRefs.current[lastAddedKey]) {
@@ -213,6 +213,8 @@ export const TextRecords = ({
             prefix && 
             prefix.length > 0;
 
+          const isDescription = record.key === "description";
+
           return (
             <div key={record.key} style={{ marginBottom: 10 }}>
               <Text
@@ -227,33 +229,19 @@ export const TextRecords = ({
                 style={{ width: "100%" }}
                 className="d-flex align-items-center"
               >
-                {isSocialWithPrefix ? (
-                  // Split input design for social records with prefix
-                  <div className="ns-social-input-split d-flex align-items-center" style={{ width: "100%", height: "32px" }}>
-                    <div className="ns-social-input-icon" style={{ marginRight: "8px", display: "flex", alignItems: "center" }}>
-                      <Icon name={record.icon} size={14} color="grey" />
-                    </div>
-                    <div className="ns-social-input-prefix" style={{ 
-                      padding: "0 4px",
-                      fontSize: "0.875rem",
-                      color: "var(--ns-color-muted)",
-                      whiteSpace: "nowrap",
-                      display: "flex",
-                      alignItems: "center"
-                    }}>
-                      {prefix}
-                    </div>
-                    <Input
-                      ref={(el: HTMLInputElement | null) => {
-                        inputRefs.current[record.key] = el;
-                      }}
-                      style={{ flex: "0 1 auto", height: "100%" , fontWeight: "bold" }}
-                      onChange={e => handleTextChanged(record.key, e.target.value)}
-                      value={displayValue}
-                      placeholder="username"
-                      size="sm"
-                    />
-                  </div>
+                {isDescription ? (
+                  <Textarea
+                    size="sm"
+                    ref={(el: HTMLTextAreaElement | null) => {
+                      inputRefs.current[record.key] = el;
+                    }}
+                    style={{ width: "100%", flex: 1, height: 70 }}
+                    onChange={e => handleTextChanged(record.key, e.target.value)}
+                    prefix={<Icon name={record.icon} size={18} color="grey" />}
+                    value={current.value}
+                    placeholder={record.placeholder}
+                    rows={4}
+                  />
                 ) : (
                   <Input
                     ref={(el: HTMLInputElement | null) => {
@@ -262,13 +250,14 @@ export const TextRecords = ({
                     style={{ width: "100%" }}
                     onChange={e => handleTextChanged(record.key, e.target.value)}
                     prefix={<Icon name={record.icon} size={18} color="grey" />}
-                    value={displayValue}
+                    value={current.value}
                     placeholder={record.placeholder}
                   />
                 )}
                 <div
                   onClick={() => handleRemoveText(record.key)}
                   className="ns-close-icon ns-ms-1"
+                  style={{ marginTop: isDescription ? "8px" : "0" }}
                 >
                   <Icon name="x" size={14} />
                 </div>
@@ -285,7 +274,7 @@ export const TextRecords = ({
               filterSuggestions(record)
           )
           .map(record => (
-            <div key={record.key} className="col col-lg-3 col-sm-6">
+            <div key={record.key} className="col col-lg-3 col-sm-6 col-6">
               <div
                 className="ns-text-suggestion"
                 onClick={() => handleTextAdded(record.key)}
