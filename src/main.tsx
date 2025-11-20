@@ -7,7 +7,16 @@ import { WalletConnect } from "./wallet-connect";
 
 import { mainnet } from "viem/chains";
 
-import { Button, ENSNameCard, Icon, Input, Text } from "./components";
+import {
+  ENSNameCard,
+  EnsOnChainRegisterModal,
+  EnsOffChainRegisterModal,
+  Icon,
+  Input,
+  Text,
+  ENSNamesRegisterComponent,
+  Button,
+} from "./components";
 import { ProfileCard } from "./components";
 import { NavbarProfileCard } from "./components";
 
@@ -39,7 +48,7 @@ export const dummyENSNames = [
   {
     name: "cryptoqueen.eth",
     imageUrl:
-      "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
+      "https://gratisography.com/wp-contefnt/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
     expires: "2026-01-20",
     chain: "eth",
     isSubname: false,
@@ -192,7 +201,9 @@ function TestApp() {
   };
 
   function filterENSNames(list, showSubnames) {
-    return list.filter((item) => (showSubnames ? item.isSubname : !item.isSubname));
+    return list.filter(item =>
+      showSubnames ? item.isSubname : !item.isSubname
+    );
   }
 
   function MainContent() {
@@ -218,23 +229,29 @@ function TestApp() {
               subnames={3}
               profit={6}
               volume={0}
-            // onFollowClick={() => console.log("Follow clicked")}
+              // onFollowClick={() => console.log("Follow clicked")}
             />
           </aside>
 
           <section className="ns-right">
             <div className="ns-header">
               <div className="ns-tabs">
-                <span className={!showSubnames ? "active" : ""} onClick={() => setShowSubnames(false)}>
+                <span
+                  className={!showSubnames ? "active" : ""}
+                  onClick={() => setShowSubnames(false)}
+                >
                   <Text>ENS Names</Text>{" "}
                   <Text weight="bold" color="primary">
-                    {dummyENSNames.filter((item) => !item.isSubname).length}
+                    {dummyENSNames.filter(item => !item.isSubname).length}
                   </Text>
                 </span>
-                <span className={showSubnames ? "active" : ""} onClick={() => setShowSubnames(true)}>
+                <span
+                  className={showSubnames ? "active" : ""}
+                  onClick={() => setShowSubnames(true)}
+                >
                   <Text>Subnames</Text>{" "}
                   <Text weight="bold" color="primary">
-                    {dummyENSNames.filter((item) => item.isSubname).length}
+                    {dummyENSNames.filter(item => item.isSubname).length}
                   </Text>
                 </span>
                 <span>
@@ -308,6 +325,13 @@ function TestApp() {
     );
   }
 
+  const [onchainStep, setOnchainStep] = useState(0);
+  const [offchainStep, setOffchainStep] = useState(0);
+  const [offchainName, setOffchainName] = useState("");
+  const [onchainName, setOnchainName] = useState("");
+  const [offchainProfileComplete, setOffchainProfileComplete] = useState(false);
+  const [onchainProfileComplete, setOnchainProfileComplete] = useState(false);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
   return (
     <div>
       <WalletConnect>
@@ -318,11 +342,131 @@ function TestApp() {
             </aside>
             <div className="ns-right-column">
               <Navbar />
-              <div className="ns-actions-buttons">
+              {/* <div className="ns-actions-buttons">
                 <Button variant="outline" size="md">Account Page</Button>
                 <Button variant="outline" size="md">ENS Name Page</Button>
               </div>
-              <MainContent />
+              <MainContent /> */}
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "20px",
+                  padding: "20px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  className="primary"
+                  onClick={() => setActiveModal("onchain")}
+                  style={{ minWidth: "150px" }}
+                >
+                  On-Chain Mint
+                </Button>
+                <Button
+                  className="primary"
+                  onClick={() => setActiveModal("offchain")}
+                  style={{ minWidth: "150px" }}
+                >
+                  Off-Chain Mint
+                </Button>
+                <Button
+                  className="primary"
+                  onClick={() => setActiveModal("ens-register")}
+                  style={{ minWidth: "150px" }}
+                >
+                  ENS Register
+                </Button>
+              </div>
+
+              {activeModal === "onchain" && (
+                <EnsOnChainRegisterModal
+                  step={onchainStep}
+                  name={onchainName}
+                  profileComplete={onchainProfileComplete}
+                  domainSuffix="bitflip.eth"
+                  onStepChange={setOnchainStep}
+                  onNameChange={setOnchainName}
+                  onProfileCompleteChange={setOnchainProfileComplete}
+                  onRegister={() => console.log("Register clicked")}
+                  onCancel={() => console.log("Cancel clicked")}
+                  onClose={() => {
+                    setActiveModal(null);
+                    setOnchainStep(0);
+                    setOnchainName("");
+                    console.log("Close clicked");
+                  }}
+                  onCompleteProfile={() => {
+                    setOnchainProfileComplete(true);
+                    console.log("Complete Profile clicked");
+                  }}
+                />
+              )}
+
+              {activeModal === "offchain" && (
+                <EnsOffChainRegisterModal
+                  step={offchainStep}
+                  name={offchainName}
+                  onStepChange={setOffchainStep}
+                  onNameChange={setOffchainName}
+                  onRegister={() => console.log("Offchain Register clicked")}
+                  onCancel={() => console.log("Offchain Cancel clicked")}
+                  onClose={() => {
+                    setActiveModal(null);
+                    setOffchainStep(0);
+                    setOffchainName("");
+                    console.log("Offchain Close clicked");
+                  }}
+                  onCompleteProfile={() => {
+                    setOffchainProfileComplete(true);
+                    console.log("Offchain Complete Profile clicked");
+                  }}
+                  onOpenWallet={() =>
+                    console.log("Offchain Open Wallet clicked")
+                  }
+                  onCompleteRegistration={() =>
+                    console.log("Offchain Complete Registration clicked")
+                  }
+                  onRegisterAnother={() => {
+                    setOffchainName("");
+                    setOffchainProfileComplete(false);
+                    console.log("Offchain Register Another clicked");
+                  }}
+                  onViewName={() => console.log("Offchain View Name clicked")}
+                />
+              )}
+
+              {activeModal === "ens-register" && (
+                <div className="ens-names-register-modal-wrapper">
+                  <ENSNamesRegisterComponent
+                    name="brightwave"
+                    duration={1}
+                    onNameChange={name => console.log("Name changed:", name)}
+                    onDurationChange={duration =>
+                      console.log("Duration changed:", duration)
+                    }
+                    onBack={() => console.log("Back clicked")}
+                    onClose={() => {
+                      setActiveModal(null);
+                      console.log("Close clicked");
+                    }}
+                    onNext={() => console.log("Next clicked")}
+                    onCompleteProfile={() =>
+                      console.log("Complete profile clicked")
+                    }
+                    onOpenWallet={() => console.log("Open wallet clicked")}
+                    onCompleteRegistration={() =>
+                      console.log("Complete registration clicked")
+                    }
+                    onRegisterAnother={() => {
+                      setActiveModal(null);
+                      console.log("Register another clicked");
+                    }}
+                    onViewName={() => console.log("View name clicked")}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -336,4 +480,3 @@ if (container) {
   const root = createRoot(container);
   root.render(<TestApp />);
 }
-
