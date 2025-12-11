@@ -1,6 +1,15 @@
 import { MintClient, createMintClient } from "@namespacesdk/mint-manager";
 import { AppEnv } from "@/environment";
-import { base, baseSepolia, optimism } from "viem/chains";
+import { base, baseSepolia, optimism, mainnet, sepolia } from "viem/chains";
+
+// Build Sepolia RPC URL - use custom RPC if provided, otherwise use public endpoint
+const getSepoliaRpcUrl = (): string => {
+    if (AppEnv.testnetRpcUrl) {
+        return AppEnv.testnetRpcUrl;
+    }
+    // Use public Sepolia RPC endpoint as fallback
+    return "https://rpc.sepolia.org";
+};
 
 const mintClient = createMintClient({
     environment: AppEnv.isTestnet ? "staging" : "production",
@@ -9,9 +18,10 @@ const mintClient = createMintClient({
     cursomRpcUrls: {
         [base.id]: "/rpc/base",
         [optimism.id]: "/rpc/optimism",
-        [baseSepolia.id]: "/rpc/baseSepolia"
+        [baseSepolia.id]: "/rpc/baseSepolia",
+        [mainnet.id]: "/rpc/mainnet",
+        [sepolia.id]: getSepoliaRpcUrl()
     }
-   
 })
 
 export const useMintClient = (): MintClient => {
