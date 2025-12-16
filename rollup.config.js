@@ -75,23 +75,36 @@ export default [
       format: "es",
       sourcemap: true,
       inlineDynamicImports: true,
+      interop: "esModule",
+      externalLiveBindings: false,
     },
     plugins: [
       alias({ entries: aliasEntries }),
       nodeResolve(nodeResolveOpts),
-      commonjs({
-        exclude: ["**/node_modules/viem/**", "viem/**"],
-        transformMixedEsModules: true,
-        defaultIsModuleExports: false,
-      }),
-      json(),
-      image(),
       esbuild({
         include: /\.[jt]sx?$/,
         target: "es2020",
         tsconfig: "tsconfig.json",
         jsx: "automatic",
       }),
+      commonjs({
+        exclude: [
+          "**/node_modules/viem/**",
+          "viem",
+          "viem/**",
+          "viem/*",
+          "viem/chains",
+          "viem/chains/**",
+          "**/node_modules/viem/chains/**",
+        ],
+        transformMixedEsModules: false,
+        defaultIsModuleExports: false,
+        requireReturnsDefault: false,
+        strictRequires: false,
+        ignore: ["viem", "viem/**", "viem/chains", "viem/chains/**"],
+      }),
+      json(),
+      image(),
       postcss({
         // Extract to a physical CSS file used by consumers:
         extract: "index.css",
@@ -115,9 +128,20 @@ export default [
       alias({ entries: aliasEntries }),
       nodeResolve(nodeResolveOpts),
       commonjs({
-        exclude: ["**/node_modules/viem/**", "viem/**"],
-        transformMixedEsModules: true,
+        exclude: [
+          "**/node_modules/viem/**",
+          "viem",
+          "viem/**",
+          "viem/*",
+          "viem/chains",
+          "viem/chains/**",
+          "**/node_modules/viem/chains/**",
+        ],
+        transformMixedEsModules: false,
         defaultIsModuleExports: false,
+        requireReturnsDefault: false,
+        strictRequires: false,
+        ignore: ["viem", "viem/**", "viem/chains", "viem/chains/**"],
       }),
       json(),
       image(),
@@ -130,8 +154,6 @@ export default [
       }),
     ],
   },
-
-  // 3) DTS bundling
   {
     input: "dist/types/index.d.ts",
     output: { file: "dist/index.d.ts", format: "es" },
