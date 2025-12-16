@@ -21,6 +21,16 @@ const externals = [
   /^@tanstack\/react-query($|\/)/,
   /^wagmi($|\/)/,
   /^viem($|\/)/,
+  // Node.js built-in modules (should be externalized for browser builds)
+  /^node:/,
+  /^zlib$/,
+  /^http2$/,
+  /^stream$/,
+  /^https$/,
+  /^http$/,
+  /^crypto$/,
+  /^url$/,
+  /^assert$/,
 ];
 
 const aliasEntries = [
@@ -66,6 +76,36 @@ const cssPlugins = [
   }),
 ];
 
+// Plugin to replace Node.js built-in modules with empty modules for browser builds
+const nodeBuiltinsPlugin = () => {
+  const nodeBuiltins = new Set([
+    "zlib",
+    "http2",
+    "stream",
+    "https",
+    "http",
+    "crypto",
+    "url",
+    "assert",
+  ]);
+
+  return {
+    name: "node-builtins",
+    resolveId(id) {
+      if (nodeBuiltins.has(id)) {
+        return { id: `\0${id}`, moduleSideEffects: false };
+      }
+      return null;
+    },
+    load(id) {
+      if (id.startsWith("\0") && nodeBuiltins.has(id.slice(1))) {
+        return "export default {};";
+      }
+      return null;
+    },
+  };
+};
+
 export default [
   {
     input: "src/index.tsx",
@@ -80,6 +120,7 @@ export default [
     },
     plugins: [
       alias({ entries: aliasEntries }),
+      nodeBuiltinsPlugin(),
       nodeResolve(nodeResolveOpts),
       esbuild({
         include: /\.[jt]sx?$/,
@@ -98,8 +139,8 @@ export default [
           "**/node_modules/viem/chains/**",
         ],
         transformMixedEsModules: false,
-        defaultIsModuleExports: false,
-        requireReturnsDefault: false,
+        defaultIsModuleExports: "auto",
+        requireReturnsDefault: "auto",
         strictRequires: false,
         ignore: ["viem", "viem/**", "viem/chains", "viem/chains/**"],
       }),
@@ -126,6 +167,7 @@ export default [
     },
     plugins: [
       alias({ entries: aliasEntries }),
+      nodeBuiltinsPlugin(),
       nodeResolve(nodeResolveOpts),
       commonjs({
         exclude: [
@@ -138,8 +180,8 @@ export default [
           "**/node_modules/viem/chains/**",
         ],
         transformMixedEsModules: false,
-        defaultIsModuleExports: false,
-        requireReturnsDefault: false,
+        defaultIsModuleExports: "auto",
+        requireReturnsDefault: "auto",
         strictRequires: false,
         ignore: ["viem", "viem/**", "viem/chains", "viem/chains/**"],
       }),

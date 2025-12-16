@@ -1,4 +1,3 @@
-"use client";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { http, WagmiProvider, createStorage } from "wagmi";
 import { mainnet, sepolia, base, baseSepolia, optimism } from "wagmi/chains";

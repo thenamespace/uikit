@@ -1,5 +1,3 @@
-"use client";
-
 import { TransactionProvider, TransactionModal } from "ethereum-identity-kit";
 import { PropsWithChildren } from "react";
 

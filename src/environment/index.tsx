@@ -1,6 +1,3 @@
-
-'use client'
-
 interface AppEnvironment {
     listManagerApi: string
     isTestnet: boolean

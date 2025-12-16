@@ -1,4 +1,3 @@
-"use client";
 // import { showErrorModal } from "@/components";
 import { useListingManager, useMainChain, useNamespaceIndexer } from "@/hooks";
 import { useEnsFullNameProfile } from "@/hooks/ens/use-ens-name-profile";
