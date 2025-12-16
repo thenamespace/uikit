@@ -79,7 +79,11 @@ export default [
     plugins: [
       alias({ entries: aliasEntries }),
       nodeResolve(nodeResolveOpts),
-      commonjs(),
+      commonjs({
+        exclude: ["**/node_modules/viem/**", "viem/**"],
+        transformMixedEsModules: true,
+        defaultIsModuleExports: false,
+      }),
       json(),
       image(),
       esbuild({
@@ -110,7 +114,11 @@ export default [
     plugins: [
       alias({ entries: aliasEntries }),
       nodeResolve(nodeResolveOpts),
-      commonjs(),
+      commonjs({
+        exclude: ["**/node_modules/viem/**", "viem/**"],
+        transformMixedEsModules: true,
+        defaultIsModuleExports: false,
+      }),
       json(),
       image(),
       postcss({
