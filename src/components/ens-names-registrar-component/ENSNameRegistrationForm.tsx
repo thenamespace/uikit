@@ -5,7 +5,6 @@ import { RegistrationForm } from "./sub-components/RegistrationForm";
 import { RegistrationProcess } from "./sub-components/RegistrationProcess";
 import { SuccessScreen } from "./sub-components/SuccessScreen";
 
-import { normalise } from "@ensdomains/ensjs/utils";
 import { debounce } from "lodash";
 import { EnsRecords } from "@/types";
 
@@ -98,7 +97,7 @@ export function ENSNameRegistrationForm({
         return;
       }
 
-      const normalizedName = normalise(name.trim());
+      // const normalizedName = normalise(name.trim());
 
       try {
         setIsLoadingPrice(true);
@@ -250,7 +249,7 @@ export function ENSNameRegistrationForm({
       ensName.length >= 3 &&
       newDuration > 0
     ) {
-      const normalizedName = normalise(ensName.trim());
+      const normalizedName = ensName.trim();
       if (
         normalizedName !== lastFetchedName ||
         newDuration !== lastFetchedDuration

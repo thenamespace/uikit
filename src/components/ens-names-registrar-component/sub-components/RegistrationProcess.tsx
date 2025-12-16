@@ -5,16 +5,9 @@ import { Header } from "./Header";
 import { StepItem } from "./StepItem";
 import { ProgressBar } from "./ProgressBar";
 import { Timer } from "./Timer";
-import {
-  EnsRegistrationContext,
-  useErrorModal,
-  useEthRegistrarController,
-  useMainChain,
-} from "@/hooks";
-import { useWaitForTransaction } from "@/hooks/web3/use-wait-for-transaction";
 
 interface RegistrationProcessProps {
-  registrations: EnsRegistrationContext[];
+  registrations: any[];
   onBack: () => void;
   onClose?: () => void;
   onCompleteProfile?: () => void;
@@ -49,13 +42,6 @@ export function RegistrationProcess({
   const [timerProgress, setTimerProgress] = useState(0);
   const [waitingForWallet, setWaitingForWallet] = useState(false);
   const [waitingForTx, setWaitingForTx] = useState(false);
-
-  const { bulkCommitment, bulkRegister } = useEthRegistrarController();
-  const { showErrorModal } = useErrorModal();
-  const { networkId } = useMainChain();
-  const { waitForTransactionReceipt } = useWaitForTransaction({
-    chainId: networkId,
-  });
 
   // Timer countdown effect
   useEffect(() => {
@@ -123,16 +109,16 @@ export function RegistrationProcess({
   const sendCommitmentTx = async () => {
     let tx: Hash;
 
-    try {
-      setWaitingForWallet(true);
-      tx = await bulkCommitment(registrations);
-    } catch (err) {
-      showErrorModal(err);
-      setWaitingForWallet(false);
-      return;
-    } finally {
-      setWaitingForWallet(false);
-    }
+    // try {
+    //   setWaitingForWallet(true);
+    //   tx = await bulkCommitment(registrations);
+    // } catch (err) {
+    //   showErrorModal(err);
+    //   setWaitingForWallet(false);
+    //   return;
+    // } finally {
+    //   setWaitingForWallet(false);
+    // }
 
     try {
       setStep(RegistrationStep.CommitmentSent);
@@ -140,7 +126,7 @@ export function RegistrationProcess({
       setProgress(0);
       setWaitingForTx(true);
 
-      await waitForTransactionReceipt(tx, 2);
+      // await waitForTransactionReceipt(tx, 2);
 
       setWaitingForTx(false);
       setIsTransactionInProgress(false);
@@ -150,7 +136,7 @@ export function RegistrationProcess({
       setTimerSeconds(60);
       setTimerProgress(0);
     } catch (err) {
-      showErrorModal(err);
+      // showErrorModal(err);
       setWaitingForTx(false);
       setIsTransactionInProgress(false);
       setStep(RegistrationStep.RegistrationBegin);
@@ -161,10 +147,10 @@ export function RegistrationProcess({
     let tx: Hash;
 
     try {
-      setWaitingForWallet(true);
-      tx = await bulkRegister(registrations);
+      // setWaitingForWallet(true);
+      // tx = await bulkRegister(registrations);
     } catch (err) {
-      showErrorModal(err);
+      // showErrorModal(err);
       setWaitingForWallet(false);
       return;
     } finally {
@@ -176,7 +162,7 @@ export function RegistrationProcess({
       setWaitingForTx(true);
       setRegistrationProgress(0);
 
-      await waitForTransactionReceipt(tx, 2);
+      // await waitForTransactionReceipt(tx, 2);
 
       setWaitingForTx(false);
       setRegistrationProgress(100);
@@ -185,7 +171,7 @@ export function RegistrationProcess({
       onRegistrationComplete?.();
     } catch (err) {
       console.log(err);
-      showErrorModal(err);
+      // showErrorModal(err);
       setWaitingForTx(false);
       setRegistrationProgress(0);
       setStep(RegistrationStep.TimerCompleted);
