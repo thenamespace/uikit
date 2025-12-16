@@ -21,7 +21,6 @@ const externals = [
   /^@tanstack\/react-query($|\/)/,
   /^wagmi($|\/)/,
   /^viem($|\/)/,
-  // Node.js built-in modules (should be externalized for browser builds)
   /^node:/,
   /^zlib$/,
   /^http2$/,
@@ -87,6 +86,17 @@ const nodeBuiltinsPlugin = () => {
     "assert",
   ]);
 
+  const polyfills = {
+    crypto: `export default Object.create(null); export const randomBytes = () => new Uint8Array(32); export const createHash = () => ({ update: () => ({}), digest: () => '' });`,
+    url: `export default Object.create(null); export const URL = globalThis.URL || class URL {}; export const URLSearchParams = globalThis.URLSearchParams || class URLSearchParams {};`,
+    http: `export default Object.create(null); export const request = () => ({}); export const get = () => ({}); export const createServer = () => ({});`,
+    https: `export default Object.create(null); export const request = () => ({}); export const get = () => ({}); export const createServer = () => ({});`,
+    stream: `export default Object.create(null); class Readable {}; class Writable {}; class Transform extends Readable {}; export { Readable, Writable, Transform };`,
+    zlib: `export default Object.create(null); export const createGzip = () => ({}); export const createGunzip = () => ({});`,
+    http2: `export default Object.create(null); export const connect = () => ({});`,
+    assert: `export default function assert() {}; export function equal() {}; export function strictEqual() {};`,
+  };
+
   return {
     name: "node-builtins",
     resolveId(id) {
@@ -96,17 +106,17 @@ const nodeBuiltinsPlugin = () => {
       return null;
     },
     load(id) {
-      if (id.startsWith("\0") && nodeBuiltins.has(id.slice(1))) {
-        return "export default {};";
+      if (id.startsWith("\0")) {
+        const moduleName = id.slice(1);
+        if (nodeBuiltins.has(moduleName)) {
+          return polyfills[moduleName] || "export default {};";
+        }
       }
       return null;
     },
   };
 };
-
-// Process polyfill for browser builds
 const processPolyfill = `if (typeof process === 'undefined') { var process = { env: {}, version: '', versions: {}, platform: 'browser', nextTick: function(fn) { setTimeout(fn, 0); } }; }`;
-
 export default [
   {
     input: "src/index.tsx",
@@ -144,13 +154,26 @@ export default [
         defaultIsModuleExports: "auto",
         requireReturnsDefault: "auto",
         strictRequires: false,
-        ignore: ["viem", "viem/**", "viem/chains", "viem/chains/**"],
+        ignore: [
+          "viem",
+          "viem/**",
+          "viem/chains",
+          "viem/chains/**",
+          "crypto",
+          "url",
+          "http",
+          "https",
+          "stream",
+          "zlib",
+          "http2",
+          "assert",
+        ],
       }),
       json(),
       image(),
       postcss({
         extract: "index.css",
-        inject: false, // <-- do NOT inject here (we have a separate injected build)
+        inject: false,
         minimize: false,
         sourceMap: true,
         plugins: cssPlugins,
@@ -184,7 +207,20 @@ export default [
         defaultIsModuleExports: "auto",
         requireReturnsDefault: "auto",
         strictRequires: false,
-        ignore: ["viem", "viem/**", "viem/chains", "viem/chains/**"],
+        ignore: [
+          "viem",
+          "viem/**",
+          "viem/chains",
+          "viem/chains/**",
+          "crypto",
+          "url",
+          "http",
+          "https",
+          "stream",
+          "zlib",
+          "http2",
+          "assert",
+        ],
       }),
       json(),
       image(),
