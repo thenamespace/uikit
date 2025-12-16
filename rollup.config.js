@@ -16,8 +16,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const externals = [
+  // React
   /^react($|\/)/,
   /^react-dom($|\/)/,
+  // Web3
   /^@tanstack\/react-query($|\/)/,
   /^wagmi($|\/)/,
   /^viem($|\/)/,
@@ -134,6 +136,15 @@ export default [
       alias({ entries: aliasEntries }),
       nodeBuiltinsPlugin(),
       nodeResolve(nodeResolveOpts),
+<<<<<<< Updated upstream
+=======
+      commonjs({
+        esmExternals: true,
+        requireReturnsDefault: "auto",
+      }),
+      json(),
+      image(),
+>>>>>>> Stashed changes
       esbuild({
         include: /\.[jt]sx?$/,
         target: "es2020",
@@ -194,6 +205,7 @@ export default [
       nodeBuiltinsPlugin(),
       nodeResolve(nodeResolveOpts),
       commonjs({
+<<<<<<< Updated upstream
         exclude: [
           "**/node_modules/viem/**",
           "viem",
@@ -221,6 +233,10 @@ export default [
           "http2",
           "assert",
         ],
+=======
+        esmExternals: true,
+        requireReturnsDefault: "auto",
+>>>>>>> Stashed changes
       }),
       json(),
       image(),
