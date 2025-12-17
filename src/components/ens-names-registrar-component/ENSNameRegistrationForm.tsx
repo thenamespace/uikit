@@ -29,6 +29,12 @@ export interface ENSNameRegistrationFormProps {
   onViewName?: () => void;
 }
 
+export const EnsNameRegistrationForm = () => {
+
+  return <div></div>
+}
+
+
 export function ENSNameRegistrationForm({
   name = "brightwave",
   duration: initialDuration = 1,
