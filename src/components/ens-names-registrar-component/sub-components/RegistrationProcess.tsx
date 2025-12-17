@@ -5,16 +5,9 @@ import { Header } from "./Header";
 import { StepItem } from "./StepItem";
 import { ProgressBar } from "./ProgressBar";
 import { Timer } from "./Timer";
-import {
-  EnsRegistrationContext,
-  useErrorModal,
-  useEthRegistrarController,
-  useMainChain,
-} from "@/hooks";
-import { useWaitForTransaction } from "@/hooks/web3/use-wait-for-transaction";
 
 interface RegistrationProcessProps {
-  registrations: EnsRegistrationContext[];
+  registrations: any[];
   onBack: () => void;
   onClose?: () => void;
   onCompleteProfile?: () => void;
@@ -37,7 +30,9 @@ export function RegistrationProcess({
   onCompleteProfile,
   onRegistrationComplete,
 }: RegistrationProcessProps) {
-  const [step, setStep] = useState<RegistrationStep>(RegistrationStep.RegistrationBegin);
+  const [step, setStep] = useState<RegistrationStep>(
+    RegistrationStep.RegistrationBegin
+  );
   const [expandedStep, setExpandedStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isTransactionInProgress, setIsTransactionInProgress] = useState(false);
@@ -48,16 +43,11 @@ export function RegistrationProcess({
   const [waitingForWallet, setWaitingForWallet] = useState(false);
   const [waitingForTx, setWaitingForTx] = useState(false);
 
-  const { bulkCommitment, bulkRegister } = useEthRegistrarController();
-  const { showErrorModal } = useErrorModal();
-  const { networkId } = useMainChain();
-  const { waitForTransactionReceipt } = useWaitForTransaction({ chainId: networkId });
-
   // Timer countdown effect
   useEffect(() => {
     if (step === RegistrationStep.TimerStarted && timerSeconds > 0) {
       const interval = setInterval(() => {
-        setTimerSeconds((prev) => {
+        setTimerSeconds(prev => {
           if (prev <= 1) {
             clearInterval(interval);
             setStep(RegistrationStep.TimerCompleted);
@@ -79,7 +69,7 @@ export function RegistrationProcess({
   useEffect(() => {
     if (isTransactionInProgress && step === RegistrationStep.CommitmentSent) {
       const interval = setInterval(() => {
-        setProgress((prev) => {
+        setProgress(prev => {
           if (prev >= 100) {
             clearInterval(interval);
             setIsTransactionInProgress(false);
@@ -103,7 +93,7 @@ export function RegistrationProcess({
     if (waitingForTx && step === RegistrationStep.RegistrationSent) {
       setRegistrationProgress(0);
       const interval = setInterval(() => {
-        setRegistrationProgress((prev) => {
+        setRegistrationProgress(prev => {
           if (prev >= 100) {
             clearInterval(interval);
             return 100;
@@ -116,20 +106,19 @@ export function RegistrationProcess({
     }
   }, [waitingForTx, step]);
 
-
   const sendCommitmentTx = async () => {
     let tx: Hash;
 
-    try {
-      setWaitingForWallet(true);
-      tx = await bulkCommitment(registrations);
-    } catch (err) {
-      showErrorModal(err);
-      setWaitingForWallet(false);
-      return;
-    } finally {
-      setWaitingForWallet(false);
-    }
+    // try {
+    //   setWaitingForWallet(true);
+    //   tx = await bulkCommitment(registrations);
+    // } catch (err) {
+    //   showErrorModal(err);
+    //   setWaitingForWallet(false);
+    //   return;
+    // } finally {
+    //   setWaitingForWallet(false);
+    // }
 
     try {
       setStep(RegistrationStep.CommitmentSent);
@@ -137,7 +126,7 @@ export function RegistrationProcess({
       setProgress(0);
       setWaitingForTx(true);
 
-      await waitForTransactionReceipt(tx, 2);
+      // await waitForTransactionReceipt(tx, 2);
 
       setWaitingForTx(false);
       setIsTransactionInProgress(false);
@@ -147,7 +136,7 @@ export function RegistrationProcess({
       setTimerSeconds(60);
       setTimerProgress(0);
     } catch (err) {
-      showErrorModal(err);
+      // showErrorModal(err);
       setWaitingForTx(false);
       setIsTransactionInProgress(false);
       setStep(RegistrationStep.RegistrationBegin);
@@ -158,10 +147,10 @@ export function RegistrationProcess({
     let tx: Hash;
 
     try {
-      setWaitingForWallet(true);
-      tx = await bulkRegister(registrations);
+      // setWaitingForWallet(true);
+      // tx = await bulkRegister(registrations);
     } catch (err) {
-      showErrorModal(err);
+      // showErrorModal(err);
       setWaitingForWallet(false);
       return;
     } finally {
@@ -173,7 +162,7 @@ export function RegistrationProcess({
       setWaitingForTx(true);
       setRegistrationProgress(0);
 
-      await waitForTransactionReceipt(tx, 2);
+      // await waitForTransactionReceipt(tx, 2);
 
       setWaitingForTx(false);
       setRegistrationProgress(100);
@@ -182,7 +171,7 @@ export function RegistrationProcess({
       onRegistrationComplete?.();
     } catch (err) {
       console.log(err);
-      showErrorModal(err);
+      // showErrorModal(err);
       setWaitingForTx(false);
       setRegistrationProgress(0);
       setStep(RegistrationStep.TimerCompleted);
@@ -239,16 +228,18 @@ export function RegistrationProcess({
   const isCommitmentNotStarted = step === RegistrationStep.RegistrationBegin;
   const isCommitmentInProgress = step === RegistrationStep.CommitmentSent;
   const isCommitmentCompleted = step >= RegistrationStep.TimerStarted;
-  
+
   const isTimerNotStarted = step < RegistrationStep.TimerStarted;
   const isTimerInProgress = step === RegistrationStep.TimerStarted;
   const isTimerCompleted = step >= RegistrationStep.TimerCompleted;
-  
+
   const isRegistrationNotStarted = step < RegistrationStep.TimerCompleted;
   const isRegistrationInProgress = step === RegistrationStep.RegistrationSent;
-  const isRegistrationCompleted = step === RegistrationStep.RegistrationCompleted;
+  const isRegistrationCompleted =
+    step === RegistrationStep.RegistrationCompleted;
 
-  const nameBeingRegistered = registrations.length > 0 ? registrations[0].label : "";
+  const nameBeingRegistered =
+    registrations.length > 0 ? registrations[0].label : "";
 
   return (
     <div className="ens-names-register-container">
@@ -257,7 +248,7 @@ export function RegistrationProcess({
 
         <div className="ens-names-register-title-section">
           <Text size="xl" weight="bold" className="ens-names-register-title">
-          {nameBeingRegistered}.eth
+            {nameBeingRegistered}.eth
           </Text>
           <Text size="md" color="grey" className="ens-names-register-subtitle">
             Registration Consists of 3 Steps
@@ -324,7 +315,8 @@ export function RegistrationProcess({
                 color="grey"
                 className="ens-names-register-step-content-description"
               >
-                Your commitment transaction has been confirmed. The timer has started.
+                Your commitment transaction has been confirmed. The timer has
+                started.
               </Text>
             </>
           )}
@@ -368,9 +360,9 @@ export function RegistrationProcess({
                 color="grey"
                 className="ens-names-register-step-content-description"
               >
-                This wait prevents others from front running your transaction. You
-                will be prompted to complete a second transaction when the timer is
-                complete.
+                This wait prevents others from front running your transaction.
+                You will be prompted to complete a second transaction when the
+                timer is complete.
               </Text>
               <Timer seconds={timerSeconds} progress={timerProgress} />
             </>
@@ -388,7 +380,8 @@ export function RegistrationProcess({
                 color="grey"
                 className="ens-names-register-step-content-description"
               >
-                The waiting period has completed. You can now complete your registration.
+                The waiting period has completed. You can now complete your
+                registration.
               </Text>
             </>
           )}
@@ -432,7 +425,8 @@ export function RegistrationProcess({
                 color="grey"
                 className="ens-names-register-step-content-description"
               >
-                Your transaction has been sent! Once the progress bar completes, your registration will be confirmed.
+                Your transaction has been sent! Once the progress bar completes,
+                your registration will be confirmed.
               </Text>
               <ProgressBar progress={registrationProgress} />
             </>
@@ -468,8 +462,8 @@ export function RegistrationProcess({
                 className="ens-names-register-step-content-description"
               >
                 Your name is not registered until you've completed the second
-                transaction. You have {remainingHours} hours remaining to complete
-                it.
+                transaction. You have {remainingHours} hours remaining to
+                complete it.
               </Text>
               {getActionButton()}
             </>

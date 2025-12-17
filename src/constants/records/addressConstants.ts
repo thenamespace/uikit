@@ -1,23 +1,7 @@
 import { ChainName } from "@/types";
 import { convertEVMChainIdToCoinType } from "@/utils";
-import { getCoderByCoinName } from "@ensdomains/address-encoder";
 import { isAddress } from "viem";
-import nameIcon from "@/assets/icons/texts/nickname.svg";
-import websiteIcon from "@/assets/icons/texts/website.svg";
-import emailIcon from "@/assets/icons/texts/email.svg";
-import descIcon from "@/assets/icons/texts/bio.svg";
-import locationIcon from "@/assets/icons/texts/location.svg";
-import twitterIcon from "@/assets/icons/texts/x_color.svg";
-import youtubeIcon from "@/assets/icons/texts/youtube_color.svg";
-import telegramIcon from "@/assets/icons/texts/tg_color.svg";
-import warpcastIcon from "@/assets/icons/texts/farcaster_color.svg";
-import githubIcon from "@/assets/icons/texts/github_color.svg";
-import discordIcon from "@/assets/icons/texts/discord_color.svg";
-import ipfsIcon from "@/assets/icons/contenthash/ipfs.svg";
-import onionIcon from "@/assets/icons/contenthash/onion.svg";
-import skynetIcon from "@/assets/icons/contenthash/skynet.svg";
-import swarmIcon from "@/assets/icons/contenthash/swarm.svg";
-import arweaveIcon from "@/assets/icons/contenthash/arweave.svg";
+
 import {
   base,
   arbitrum,
@@ -43,23 +27,19 @@ const isValidEmvAddress = (value: string): boolean => {
   return isAddress(value);
 };
 
-const verifyAddress = (value: string, coinName: string): boolean => {
-  try {
-    const coder = getCoderByCoinName(coinName);
-    coder.decode(value);
-    return true;
-  } catch (err) {
-    console.log(`Failed to decode value: ${coinName}`, err);
-    return false;
-  }
-};
-
+// Simple BTC address validation (P2PKH, P2SH, Bech32, Bech32m)
 const isValidBtcAddress = (value: string): boolean => {
-  return verifyAddress(value, "btc");
+  if (!value || value.length < 26 || value.length > 62) return false;
+  // P2PKH (starts with 1), P2SH (starts with 3), Bech32/Bech32m (starts with bc1)
+  const btcRegex = /^(1[a-km-zA-HJ-NP-Z1-9]{25,34}|3[a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[a-zA-HJ-NP-Z0-9]{39,59})$/;
+  return btcRegex.test(value);
 };
 
+// Simple Solana address validation (base58, 32-44 chars)
 const isValidSolAddress = (value: string): boolean => {
-  return verifyAddress(value, "sol");
+  if (!value || value.length < 32 || value.length > 44) return false;
+  const solRegex = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  return solRegex.test(value);
 };
 
 export const supportedAddresses: SupportedEnsAddress[] = [
@@ -172,7 +152,7 @@ export const getSupportedAddressByName = (
 };
 export type TextCategory = "profile" | "social";
 export interface SupportedText {
-  iconUrl: string ;
+  iconUrl: string;
   key: string;
   category: TextCategory;
   label: string;
@@ -180,103 +160,3 @@ export interface SupportedText {
   iconName?: IconName;
   hidden?: boolean;
 }
-
-export const SupportedTexts: SupportedText[] = [
-  {
-    key: "header",
-    category: "profile",
-    iconUrl: nameIcon,
-    label: "Header",
-    placeholder: "Your header image url: https://..",
-  },
-  {
-    key: "avatar",
-    category: "profile",
-    iconUrl: nameIcon,
-    label: "Avatar",
-    placeholder: "Your avatar image url: https://",
-  },
-  {
-    key: "name",
-    category: "profile",
-    iconUrl: nameIcon,
-    label: "Name",
-    placeholder: "ex. John Doe",
-  },
-  {
-    key: "url",
-    category: "profile",
-    iconUrl: websiteIcon,
-    label: "Website",
-    placeholder: "ex. https://example.com",
-  },
-  {
-    key: "mail",
-    category: "profile",
-    iconUrl: emailIcon,
-    label: "Email",
-    placeholder: "ex. john@example",
-  },
-  {
-    key: "description",
-    category: "profile",
-    iconUrl: descIcon,
-    label: "Description",
-    placeholder: "ex. I like butterflies",
-  },
-  {
-    key: "location",
-    category: "profile",
-    iconUrl: locationIcon,
-    label: "Location",
-    placeholder: "ex. Japan/Tokyo",
-  },
-  {
-    key: "com.twitter",
-    category: "social",
-    iconUrl: twitterIcon,
-    label: "Twitter",
-    placeholder: "ex. johndoe",
-    iconName: "twitter"
-  },
-  {
-    key: "com.github",
-    category: "social",
-    iconUrl: githubIcon,
-    label: "Github",
-    placeholder: "ex. johndoe",
-    iconName: "github"
-  },
-  {
-    key: "com.discord",
-    category: "social",
-    iconUrl: discordIcon,
-    label: "Discord",
-    placeholder: "ex. johndoe",
-    iconName: "discord"
-  },
-  {
-    key: "org.telegram",
-    category: "social",
-    iconUrl: telegramIcon,
-    label: "Telegram",
-    placeholder: "ex. @johndoe",
-    iconName: "telegram"
-  },
-    {
-    key: "com.warpcast",
-    category: "social",
-    iconUrl: warpcastIcon,
-    label: "Farcaster",
-    placeholder: "ex. johndoe",
-    iconName: "globe"
-  },
-  {
-    key: "com.youtube",
-    category: "social",
-    iconUrl: youtubeIcon,
-    label: "Youtube",
-    placeholder: "ex. @johndoe",
-    iconName: "youtube"
-  }
-];

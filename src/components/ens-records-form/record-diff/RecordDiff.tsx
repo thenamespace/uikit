@@ -1,5 +1,4 @@
 import { Text } from "@/components/atoms";
-import { SupportedTextRecord } from "@/constants";
 import { EnsRecordsDiff } from "@/utils";
 
 interface RecordDiffProps {

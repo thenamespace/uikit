@@ -1,5 +1,3 @@
-import { EnsRegistrationContext } from "@/hooks";
-
 export interface NameRegistration {
   label: string;
   durationInYears: number;
@@ -11,8 +9,8 @@ export interface NameRegistration {
 }
 
 export interface NameRegistrationProcessCache {
-    currentStep: number
-    registrations: EnsRegistrationContext[]
+  currentStep: number;
+  registrations: any[];
 }
 
 export const formatPrice = (value: number) => {
@@ -20,12 +18,11 @@ export const formatPrice = (value: number) => {
 };
 
 export enum EnsRegistrationSteps {
-    SelectNames,
-    RegistrationBegin,
-    CommitmentSent,
-    TimerStarted,
-    TimerCompleted,
-    RegistrationSent,
-    RegistrationCompleted
-
+  SelectNames,
+  RegistrationBegin,
+  CommitmentSent,
+  TimerStarted,
+  TimerCompleted,
+  RegistrationSent,
+  RegistrationCompleted,
 }
