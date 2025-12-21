@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Hash } from "viem";
 import { Text } from "../../atoms";
-import { ProgressBar } from "../sub-components/ProgressBar";
+import { ProgressBar } from "./ProgressBar";
 
 interface TransactionPendingScreenProps {
   message?: string;
