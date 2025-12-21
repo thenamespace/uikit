@@ -40,12 +40,25 @@ export const Accordion: React.FC<AccordionProps> = ({
     }
   }, [controlledIsOpen, onToggle]);
 
+  // Close accordion when disabled
+  useEffect(() => {
+    if (disabled && internalIsOpen) {
+      setInternalIsOpen(false);
+      if (onToggle) {
+        onToggle(false);
+      }
+    }
+  }, [disabled, internalIsOpen, onToggle]);
+
   // Use controlled state if provided AND onToggle is provided (fully controlled)
   // Otherwise, if controlledIsOpen is provided but no onToggle, use internal state for user clicks (hybrid mode)
   // If not controlled at all, use internal state (uncontrolled)
-  const isOpen = (controlledIsOpen !== undefined && onToggle) 
-    ? controlledIsOpen 
-    : internalIsOpen;
+  // When disabled, always force closed
+  const isOpen = disabled 
+    ? false 
+    : (controlledIsOpen !== undefined && onToggle) 
+      ? controlledIsOpen 
+      : internalIsOpen;
 
   // Initialize height for defaultOpen - use layout effect to prevent flash
   useLayoutEffect(() => {

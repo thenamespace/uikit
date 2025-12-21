@@ -21,7 +21,7 @@ export const useWaitTransaction = ({ isTestnet }: { isTestnet?: boolean }) => {
       hash,
       retries = 3,
       retryDelay = 2000,
-      timeout = 120000, // 2 minutes default timeout
+      timeout = 60000, // 1 minute default timeout
     } = options;
 
     let lastError: Error | null = null;

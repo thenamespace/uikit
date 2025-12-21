@@ -53,7 +53,6 @@ export function SuccessScreen({
   return (
     <div
       ref={containerRef}
-      className="ens-names-register-container"
       style={{ position: "relative", overflow: "hidden", minHeight: "100vh" }}
     >
       {containerSize.width > 0 && containerSize.height > 0 && (
@@ -110,7 +109,6 @@ export function SuccessScreen({
 
         <div className="ens-names-register-success-actions">
           <Button
-            className="ens-names-register-register-another-btn"
             variant="outline"
             size="lg"
             onClick={onRegisterAnother}
@@ -118,7 +116,6 @@ export function SuccessScreen({
             Register another
           </Button>
           <Button
-            className="ens-names-register-view-name-btn"
             variant="solid"
             size="lg"
             onClick={onViewName}

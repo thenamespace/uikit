@@ -5,7 +5,8 @@ import { SetNameRecords } from "./SetNameRecords";
 import { EnsRecords } from "@/types";
 import { deepCopy } from "@/utils";
 import { useAccount } from "wagmi";
-import { RegistrationProcess, ProcessSteps } from "./RegistrationProcess";
+import { RegistrationProcess } from "./RegistrationProcess";
+import { ProcessSteps} from "./registration/types";
 
 export interface EnsNameRegistrationFormProps {
   name?: string;
@@ -68,6 +69,15 @@ export const EnsNameRegistrationForm = (
     setShowProfile(false);
   };
 
+  const clearInputState = () => {
+    setLabel("");
+    setYears(0);
+    setEnsRecords({ addresses: [], texts: []})
+    setEnsRecordsTemplate({addresses: [], texts: []})
+    setNameValidation({ isChecking: false, isTaken: false})
+    setPrice({ isChecking: false, wei: 0n, eth: 0})
+  }
+
   return (
     <div className="ens-registration-form-container">
       {step === RegistrationSteps.Summary && (
@@ -103,7 +113,14 @@ export const EnsNameRegistrationForm = (
           label={label}
           expiryInYears={years}
           records={ensRecords}
-          onBack={() => setStep(RegistrationSteps.Summary)}
+          onBack={(clearState?: boolean) => {
+
+            if (clearState) {
+              clearInputState();
+            }
+
+            setStep(RegistrationSteps.Summary)
+          }}
         />
       )}
     </div>

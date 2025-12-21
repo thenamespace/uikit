@@ -28,7 +28,7 @@ const ENS_REFERRER = createEnsReferer(NAMESPACE_REFERRER_ADDRESS);
 const ENS_REGISTRY_ABI = parseAbi([
   "function owner(bytes32) view returns (address)",
 ]);
-export interface CommitmentRequest {
+export interface RegistrationRequest {
   label: string;
   owner: Address;
   expiryInYears: number;
@@ -83,7 +83,7 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
     return equalsIgnoreCase(ownerAddress, zeroAddress);
   };
 
-  const makeCommitment = async (request: CommitmentRequest): Promise<Hash> => {
+  const makeCommitment = async (request: RegistrationRequest): Promise<Hash> => {
     const fullName = `${request.label}.eth`;
     const resolverData = convertToResolverData(fullName, request.records);
 
@@ -111,7 +111,7 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
   };
 
   const sendCommitmentTx = async (
-    request: CommitmentRequest
+    request: RegistrationRequest
   ): Promise<Hash> => {
     if (!walletClient || !walletClient.account) {
       throw new Error("Wallet client is not available");
@@ -128,11 +128,44 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
     return walletClient.writeContract(contractRequest);
   };
 
-  const getRegistrationCommitment = async (): Promise<Hash> => {
-    return "0x";
-  };
+  const sendRegisterTx = async (request: RegistrationRequest): Promise<Hash> => {
+    if (!walletClient || !walletClient.account) {
+      throw new Error("Wallet client is not available");
+    }
 
-  const sendRegisterTx = async () => {};
+    const fullName = `${request.label}.eth`;
+    const resolverData = convertToResolverData(fullName, request.records);
+
+    const registration: EnsRegistration = {
+      label: request.label,
+      owner: request.owner,
+      duration: BigInt(yearsToSeconds(request.expiryInYears)),
+      secret: keccak256(toBytes(request.secret)),
+      resolver: getPublicResolver(),
+      data: resolverData,
+      reverseRecord: 0,
+      referrer: ENS_REFERRER,
+    };
+
+    // Get the price for the registration
+    const price = await getRegistrationPrice(
+      request.label,
+      request.expiryInYears
+    );
+
+    // Simulate the transaction
+    const { request: contractRequest } = await publicClient!.simulateContract({
+      address: getEthController(),
+      abi: ABIS.ETH_REGISTRAR_CONTOLLER,
+      functionName: "register",
+      args: [registration],
+      account: walletClient.account,
+      value: price.wei,
+    });
+
+    // Send the transaction
+    return walletClient.writeContract(contractRequest);
+  };
 
   const getEthController = () => {
     return getEnsContracts(isTestnet).ethRegistrarController;
@@ -150,5 +183,6 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
     isEnsAvailable,
     getRegistrationPrice,
     sendCommitmentTx,
+    sendRegisterTx
   };
 };
