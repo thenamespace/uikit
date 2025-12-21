@@ -1,9 +1,10 @@
 import { createRoot } from "react-dom/client";
 import "./styles/index.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { SelectRecordsForm, ENSNameRegistrationForm, EnsNameRegistrationForm, Modal, Button } from "./components";
+import { SelectRecordsForm, EnsNameRegistrationForm, Modal, Button } from "./components";
 import { WalletConnectProvider } from "./web3/wallet-connect";
 import { useState } from "react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function TestApp() {
   // This is a test app. Its not bundled as component library!!
@@ -12,7 +13,8 @@ function TestApp() {
   return (
     <div>
       <WalletConnectProvider>
-      <EnsNameRegistrationForm/>
+        <ConnectButton/>
+      <EnsNameRegistrationForm isTestnet={true} name="21323122312fdsklfds"/>
       </WalletConnectProvider>
 
     </div>

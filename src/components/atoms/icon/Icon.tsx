@@ -66,7 +66,10 @@ export type IconName =
   | "copy"
   | "clock"
   | "image"
-  | "xSocial";
+  | "xSocial"
+  | "chevron-up"
+  | "chevron-down"
+  | "chevron-left";
 
 const icons: Record<IconName, IconComponent> = {
   person: User,
@@ -97,6 +100,9 @@ const icons: Record<IconName, IconComponent> = {
   copy: CopyIcon,
   clock: Clock,
   xSocial: XIcon,
+  "chevron-up": LucideIcons.ChevronUp,
+  "chevron-down": LucideIcons.ChevronDown,
+  "chevron-left": LucideIcons.ChevronLeft,
 };
 
 export interface IconProps {

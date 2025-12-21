@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import "./ENSNamesRegistrarComponent.css";
 import { RegistrationSummary } from "./RegistrationSummary";
 import { SetNameRecords } from "./SetNameRecords";
 import { EnsRecords } from "@/types";
 import { deepCopy } from "@/utils";
 import { useAccount } from "wagmi";
-import { ProgressBar } from "./sub-components/ProgressBar";
+import { RegistrationProcess, ProcessSteps } from "./RegistrationProcess";
 
 export interface EnsNameRegistrationFormProps {
   name?: string;
@@ -14,12 +14,19 @@ export interface EnsNameRegistrationFormProps {
 
 enum RegistrationSteps {
   Summary = 0,
+  Progress = 1,
 }
 
 export const EnsNameRegistrationForm = (
   props: EnsNameRegistrationFormProps
 ) => {
   const [label, setLabel] = useState<string>(props.name || "");
+  const [step, setStep] = useState<RegistrationSteps>(
+    RegistrationSteps.Progress
+  );
+  const [progressStep, setProgressStep] = useState<ProcessSteps>(
+    ProcessSteps.Start
+  );
   const [years, setYears] = useState(1);
   const [price, setPrice] = useState<{
     isChecking: boolean;
@@ -63,26 +70,40 @@ export const EnsNameRegistrationForm = (
 
   return (
     <div className="ens-registration-form-container">
-      {showProfile && (
-        <SetNameRecords
-          records={ensRecords}
-          onRecordsChange={setEnsRecords}
-          onCancel={handleCancelRecords}
-          onSave={handleSaveRecords}
-        />
+      {step === RegistrationSteps.Summary && (
+        <>
+          {showProfile && (
+            <SetNameRecords
+              records={ensRecords}
+              onRecordsChange={setEnsRecords}
+              onCancel={handleCancelRecords}
+              onSave={handleSaveRecords}
+            />
+          )}
+          {!showProfile && (
+            <RegistrationSummary
+              label={label}
+              years={years}
+              price={price}
+              nameValidation={nameValidation}
+              isTestnet={props.isTestnet || false}
+              onLabelChange={setLabel}
+              onYearsChange={setYears}
+              onPriceChange={setPrice}
+              onNameValidationChange={setNameValidation}
+              onSetProfile={() => setShowProfile(true)}
+              onStart={() => setStep(RegistrationSteps.Progress)}
+            />
+          )}
+        </>
       )}
-      {!showProfile && (
-        <RegistrationSummary
+      {step === RegistrationSteps.Progress && (
+        <RegistrationProcess
+          isTestnet={props.isTestnet || false}
           label={label}
-          years={years}
-          price={price}
-          nameValidation={nameValidation}
-          isTestnet={props.isTestnet}
-          onLabelChange={setLabel}
-          onYearsChange={setYears}
-          onPriceChange={setPrice}
-          onNameValidationChange={setNameValidation}
-          onSetProfile={() => setShowProfile(true)}
+          expiryInYears={years}
+          records={ensRecords}
+          onBack={() => setStep(RegistrationSteps.Summary)}
         />
       )}
     </div>

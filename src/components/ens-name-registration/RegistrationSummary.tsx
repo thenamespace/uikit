@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import "./RegistrationSummary.css";
 import { normalize } from "viem/ens";
 
-import { debounce } from "lodash";
+import { debounce } from "@/utils";
 import { Button, Icon, Input, Text, ShurikenSpinner } from "@/components";
 import ninjaImage from "../../assets/banner.png";
 import shurikenImage from "../../assets/shuriken.svg";
@@ -29,6 +29,7 @@ export interface RegistrationSummaryProps {
   onPriceChange: (price: { isChecking: boolean; wei: bigint; eth: number }) => void;
   onNameValidationChange: (validation: { isChecking: boolean; isTaken: boolean; reason?: string }) => void;
   onSetProfile?: () => void;
+  onStart?: () => void;
 }
 
 export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
@@ -42,6 +43,7 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
   onPriceChange,
   onNameValidationChange,
   onSetProfile,
+  onStart
 }) => {
   const { isEnsAvailable, getRegistrationPrice } = useRegisterENS({
     isTestnet,
@@ -284,6 +286,7 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
         size="lg"
         className="mt-2"
         disabled={nextBtnDisabled}
+        onClick={() => onStart?.()}
       >
         Next
       </Button>
