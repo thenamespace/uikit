@@ -40,6 +40,19 @@ export const EnsNameRegistrationForm = (
     RegistrationSteps.Summary
   );
   const [years, setYears] = useState(1);
+  // TODO: Implement gas prices, Currently its hardcoded!
+  const [regTxFees, setRegTxFees] = useState<{
+    isChecking: boolean
+    estimatedGas: number
+    price: { wei: bigint, eth: number }
+  }>({
+    estimatedGas: 0,
+    isChecking: false,
+    price: {
+      wei: 0n,
+      eth: 0.0001
+    }
+  })
   const [price, setPrice] = useState<{
     isChecking: boolean;
     wei: bigint;
@@ -120,6 +133,7 @@ export const EnsNameRegistrationForm = (
               price={price}
               nameValidation={nameValidation}
               isTestnet={props.isTestnet || false}
+              transactionFees={regTxFees}
               onLabelChange={setLabel}
               onYearsChange={setYears}
               onPriceChange={setPrice}

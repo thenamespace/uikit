@@ -14,6 +14,7 @@ import {
 } from "../../molecules";
 import { useAccount } from "wagmi";
 import { TransactionPendingScreen } from "./TransactionPendingScreen";
+import { formatFloat } from "@/utils";
 
 interface RegistrationSuccessData {
   expiryInYears: number;
@@ -65,6 +66,7 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
   const handleRegistration = async () => {
     setError(null);
     let tx: Hash | null = null;
+    let registrationPrice: number = 0;
 
     try {
       setBtnState({ ...btnState, waitingWallet: true });
@@ -78,7 +80,9 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
         referrer: state.referrer,
       };
 
-      tx = await sendRegisterTx(request);
+      const regData = await sendRegisterTx(request);
+      tx = regData.txHash;
+      registrationPrice = formatFloat(regData.price.eth, 5);
       setCommitTxStatus({ sent: true, completed: false, hash: tx });
 
       onStateUpdated({
@@ -114,13 +118,6 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
       const receipt = await waitTx({ hash: tx });
 
       setCommitTxStatus({ sent: true, completed: true, hash: tx });
-
-      // Get registration price (transaction value)
-      const registrationPrice = await getRegistrationPrice(
-        state.label,
-        state.expiryInYears
-      );
-
       // Calculate gas fees (gasUsed * gasPrice)
       const gasUsed = receipt.gasUsed;
       const gasPrice = receipt.effectiveGasPrice || BigInt(0);
@@ -129,7 +126,7 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
 
       // Calculate total cost
       const totalCost = (
-        registrationPrice.eth + parseFloat(transactionFeesEth)
+        registrationPrice + parseFloat(transactionFeesEth)
       ).toString();
 
       // Calculate expiry date (current date + expiryInYears)
@@ -150,7 +147,7 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
         setCommitTxStatus({ sent: false, completed: false, hash: "" });
         onSuccess?.({
           expiryInYears: state.expiryInYears,
-          registrationCost: registrationPrice.eth.toString(),
+          registrationCost: registrationPrice.toString(),
           transactionFees: transactionFeesEth,
           total: totalCost,
           expiryDate: formattedExpiryDate,
