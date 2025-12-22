@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import "./ENSNamesRegistrarComponent.css";
 import { RegistrationSummary } from "./RegistrationSummary";
 import { SetNameRecords } from "./SetNameRecords";
 import { EnsRecords } from "@/types";
-import { deepCopy } from "@/utils";
+import { deepCopy, getEnsRecordsDiff } from "@/utils";
 import { useAccount } from "wagmi";
 import { RegistrationProcess } from "./RegistrationProcess";
 import { SuccessScreen } from "./registration";
@@ -12,9 +12,9 @@ import { Address } from "viem";
 export interface EnsNameRegistrationFormProps {
   name?: string;
   isTestnet?: boolean;
-  referrer?: Address
-  noBorder?: boolean
-  className?: string
+  referrer?: Address;
+  noBorder?: boolean;
+  className?: string;
 }
 
 enum RegistrationSteps {
@@ -69,7 +69,12 @@ export const EnsNameRegistrationForm = (
     texts: [],
   });
 
-  const [successData, setSuccessData] = useState<RegistrationSuccessData | null>(null);
+  const hasRecordsDifference = useMemo(() => {
+    return getEnsRecordsDiff(ensRecords, ensRecordTemplate).isDifferent;
+  }, [ensRecords, ensRecordTemplate]);
+
+  const [successData, setSuccessData] =
+    useState<RegistrationSuccessData | null>(null);
 
   const handleSaveRecords = () => {
     setEnsRecords(deepCopy(ensRecordTemplate));
@@ -83,15 +88,21 @@ export const EnsNameRegistrationForm = (
 
   const clearInputState = () => {
     setLabel("");
-    setYears(0);
-    setEnsRecords({ addresses: [], texts: []})
-    setEnsRecordsTemplate({addresses: [], texts: []})
-    setNameValidation({ isChecking: false, isTaken: false})
-    setPrice({ isChecking: false, wei: 0n, eth: 0})
-  }
+    setYears(1);
+    setEnsRecords({ addresses: [], texts: [] });
+    setEnsRecordsTemplate({ addresses: [], texts: [] });
+    setNameValidation({ isChecking: false, isTaken: false });
+    setPrice({ isChecking: false, wei: 0n, eth: 0 });
+  };
+
+  console.log(hasRecordsDifference, "HAS RECORD DIFFERENCE", ensRecordTemplate, ensRecords)
+
+
 
   return (
-    <div className={`ens-registration-form-container ${props.className || ""} ${props.noBorder ? "no-boder" : ""}`}>
+    <div
+      className={`ens-registration-form-container ${props.className || ""} ${props.noBorder ? "no-boder" : ""}`}
+    >
       {step === RegistrationSteps.Summary && (
         <>
           {showProfile && (
@@ -100,6 +111,7 @@ export const EnsNameRegistrationForm = (
               onRecordsChange={setEnsRecordsTemplate}
               onCancel={handleCancelRecords}
               onSave={handleSaveRecords}
+              hasChanges={hasRecordsDifference}
             />
           )}
           {!showProfile && (
