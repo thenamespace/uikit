@@ -49,10 +49,6 @@ export const getEnsRecordsDiff = (
     isDifferent: isChashDifferent,
   } = getEnsContenthashDiff(oldRecords.contenthash, newRecords.contenthash);
 
-  console.log(
-    `txt diff: ${isTxtDifferent}, addr diff: ${isAddrDifferent}, chash: ${isChashDifferent}`
-  );
-
   return {
     addressesAdded: addressesAdded as EnsAddressRecord[],
     addressesModified: addressesModified as EnsAddressRecord[],

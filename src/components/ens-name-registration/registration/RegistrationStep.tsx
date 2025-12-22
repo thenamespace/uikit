@@ -1,8 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { Button, Text, Icon } from "../../atoms";
 import { ProcessSteps, RegistrationState } from "./types";
-import { useRegisterENS, useWaitTransaction } from "@/hooks";
-import { ContractFunctionExecutionError, Hash, formatEther } from "viem";
+import {
+  RegistrationRequest,
+  useRegisterENS,
+  useWaitTransaction,
+} from "@/hooks";
+import { Address, ContractFunctionExecutionError, Hash, formatEther } from "viem";
 import {
   ContractErrorLabel,
   Accordion,
@@ -30,7 +34,7 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
   state,
   isTestnet,
   onStateUpdated,
-  onSuccess,
+  onSuccess
 }) => {
   const [btnState, setBtnState] = useState<{
     waitingWallet: boolean;
@@ -54,7 +58,9 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
     hash: "",
   });
 
-  const { sendRegisterTx, getRegistrationPrice } = useRegisterENS({ isTestnet });
+  const { sendRegisterTx, getRegistrationPrice } = useRegisterENS({
+    isTestnet,
+  });
 
   const handleRegistration = async () => {
     setError(null);
@@ -63,15 +69,16 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
     try {
       setBtnState({ ...btnState, waitingWallet: true });
 
-      console.log("Sending tx with records", state.records);
-
-      tx = await sendRegisterTx({
+      const request: RegistrationRequest = {
         label: state.label,
         owner: address!,
         expiryInYears: state.expiryInYears,
         secret: state.secret,
         records: state.records,
-      });
+        referrer: state.referrer,
+      };
+
+      tx = await sendRegisterTx(request);
       setCommitTxStatus({ sent: true, completed: false, hash: tx });
 
       onStateUpdated({
@@ -121,7 +128,9 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
       const transactionFeesEth = formatEther(transactionFees);
 
       // Calculate total cost
-      const totalCost = (registrationPrice.eth + parseFloat(transactionFeesEth)).toString();
+      const totalCost = (
+        registrationPrice.eth + parseFloat(transactionFeesEth)
+      ).toString();
 
       // Calculate expiry date (current date + expiryInYears)
       const expiryDate = new Date();
@@ -131,13 +140,6 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
         month: "long",
         day: "numeric",
       });
-
-      // Print registration completion details
-      console.log("=== Registration Completed ===");
-      console.log("1. Expiration Years:", state.expiryInYears);
-      console.log("2. Transaction Value:", registrationPrice.eth, "ETH");
-      console.log("3. Transaction Fees:", transactionFeesEth, "ETH");
-      console.log("==============================");
 
       setTimeout(() => {
         onStateUpdated({
@@ -162,14 +164,16 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
 
   const { isCurrentStep, isDisabled, isPending, isCompleted } = useMemo(() => {
     const isPending = state.step < ProcessSteps.TimerCompleted;
-    const isCurrentStep = state.step >= ProcessSteps.TimerCompleted && state.step < ProcessSteps.RegistrationCompleted;
+    const isCurrentStep =
+      state.step >= ProcessSteps.TimerCompleted &&
+      state.step < ProcessSteps.RegistrationCompleted;
     const isCompleted = state.step >= ProcessSteps.RegistrationCompleted;
     const isDisabled = state.step < ProcessSteps.TimerCompleted;
     return {
       isCurrentStep,
       isDisabled,
       isPending,
-      isCompleted
+      isCompleted,
     };
   }, [state]);
 

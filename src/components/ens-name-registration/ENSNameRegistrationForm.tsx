@@ -15,6 +15,7 @@ export interface EnsNameRegistrationFormProps {
   referrer?: Address;
   noBorder?: boolean;
   className?: string;
+  onRegistrationSuccess?: () => void
 }
 
 enum RegistrationSteps {
@@ -94,8 +95,6 @@ export const EnsNameRegistrationForm = (
     setNameValidation({ isChecking: false, isTaken: false });
     setPrice({ isChecking: false, wei: 0n, eth: 0 });
   };
-
-  console.log(hasRecordsDifference, "HAS RECORD DIFFERENCE", ensRecordTemplate, ensRecords)
 
 
 

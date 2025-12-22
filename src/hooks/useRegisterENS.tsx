@@ -137,8 +137,6 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
     const fullName = `${request.label}.eth`;
     const resolverData = convertToResolverData(fullName, request.records);
 
-    console.log("Generating resolver data for name: " + fullName, resolverData);
-
     const registration: EnsRegistration = {
       label: request.label,
       owner: request.owner,
