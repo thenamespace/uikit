@@ -13,6 +13,7 @@ import {
   TimerStep,
   RegistrationStep,
 } from "./registration";
+import { generateEnsRegistrationSecret } from "./ensRegistrationUtils";
 import { Address } from "viem";
 
 interface RegistrationSuccessData {
@@ -30,8 +31,31 @@ interface RegistrationProcessProps {
   records: EnsRecords;
   onBack?: (clearState?: boolean) => void;
   onSuccess?: (data: RegistrationSuccessData) => void;
-  referrer?: Address
+  referrer?: Address;
 }
+
+const getBlankRegistrationState = (
+  label: string,
+  exiryInYears: number,
+  records: EnsRecords,
+  isTestnet: boolean,
+  referrer?: Address
+) => {
+  const blankRegistrationState: RegistrationState = {
+    step: ProcessSteps.Start,
+    label: label,
+    commitment: { completed: false, time: 0 },
+    registration: { completed: false },
+    timerStartedAt: 0,
+    expiryInYears: exiryInYears,
+    secret: generateEnsRegistrationSecret(),
+    records: records,
+    isTestnet: isTestnet,
+    referrer: referrer,
+  };
+  return blankRegistrationState;
+};
+
 export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
   label,
   expiryInYears,
@@ -39,7 +63,7 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
   records,
   onBack,
   onSuccess,
-  referrer
+  referrer,
 }) => {
   const { chain } = useAccount();
   const { switchChain } = useSwitchChain();
@@ -47,28 +71,20 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
   const expectedChainId = isTestnet ? sepolia.id : mainnet.id;
   const isOnCorrectNetwork = chain?.id === expectedChainId;
   const shouldSwitchNetwork = chain && !isOnCorrectNetwork;
-
   const [registrationState, setRegistrationState] = useState<RegistrationState>(
-    {
-      step: ProcessSteps.Start,
-      label: label,
-      commitment: { completed: false, time: 0 },
-      registration: { completed: false },
-      timerStartedAt: 0,
-      expiryInYears: expiryInYears,
-      secret: "0x0",
-      records: records,
-      isTestnet: isTestnet,
-      referrer: referrer
-    }
+    getBlankRegistrationState(
+      label,
+      expiryInYears,
+      records,
+      isTestnet,
+      referrer
+    )
   );
 
   useEffect(() => {
-
     // TODO: Remove ugly useEffect!
-    setRegistrationState({...registrationState, records})
-
-  },[records])
+    setRegistrationState({ ...registrationState, records });
+  }, [records]);
 
   const handleSwitchNetwork = () => {
     if (switchChain) {
@@ -77,10 +93,11 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
   };
 
   const handleTimerPassed = () => {
-    setRegistrationState({
+    const newState = {
       ...registrationState,
       step: ProcessSteps.TimerCompleted,
-    });
+    };
+    setRegistrationState(newState);
   };
 
   const networkName = isTestnet ? "Sepolia" : "Mainnet";
@@ -133,14 +150,18 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
             <CommitmentStep
               state={registrationState}
               isTestnet={isTestnet}
-              onStateUpdated={(state) => setRegistrationState(state)}
+              onStateUpdated={state => {
+                setRegistrationState(state);
+              }}
             />
           </div>
 
           <div className="mt-2">
             <TimerStep
               state={registrationState}
-              onTimerCompleted={handleTimerPassed}
+              onTimerCompleted={() => {
+                handleTimerPassed();
+              }}
             />
           </div>
 
@@ -148,7 +169,9 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
             <RegistrationStep
               state={registrationState}
               isTestnet={isTestnet}
-              onStateUpdated={(state) => setRegistrationState(state)}
+              onStateUpdated={state => {
+                setRegistrationState(state);
+              }}
               onSuccess={onSuccess}
             />
           </div>
