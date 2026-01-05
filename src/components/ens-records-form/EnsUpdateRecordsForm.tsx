@@ -2,9 +2,15 @@ import { EnsRecords, TxProgress } from "@/types";
 import { SelectRecordsForm } from "../select-records-form/SelectRecordsForm";
 import { Address, ContractFunctionExecutionError, Hash, zeroHash } from "viem";
 import { useMemo, useState } from "react";
-import { deepCopy, EnsRecordsDiff, getEnsRecordsDiff, validateEnsRecords } from "@/utils";
+import {
+  deepCopy,
+  diffToEnsRecords,
+  EnsRecordsDiff,
+  getEnsRecordsDiff,
+  validateEnsRecords,
+} from "@/utils";
 import { Button } from "../atoms";
-import { Alert, ContractErrorLabel, isUserDeniedError } from "../molecules";
+import { Alert, isUserDeniedError } from "../molecules";
 import "./EnsUpdateRecordsForm.css";
 import RecordUpdateSummary from "./RecordUpdateSummary";
 import { RecordUpdateProgress } from "./RecordUpdateProgress";
@@ -19,8 +25,10 @@ interface EnsUpdateRecordsForm {
   // Full ens name
   name: string;
   existingRecords: EnsRecords;
-  onRecordsUpdated: (diff: EnsRecordsDiff) => void;
+  onCancel?: () => void;
+  onRecordsUpdated?: (diff: EnsRecordsDiff) => void;
   onGreat?: () => void;
+  onTransactionSent?: (hash: Hash) => void;
 }
 
 enum UpdateSteps {
@@ -37,12 +45,17 @@ export const EnsUpdateRecordsForm = ({
   isTestnet,
   onGreat,
   onRecordsUpdated,
+  onCancel,
+  onTransactionSent,
 }: EnsUpdateRecordsForm) => {
   const [recordsTemplate, setRecordsTemplate] = useState<EnsRecords>(
     deepCopy(existingRecords)
   );
   const { setUpdateRecordsTx } = useENSResolver({ resolverChainId, isTestnet });
-  const { waitTx } = useWaitTransaction({isTestnet, chainId: resolverChainId})
+  const { waitTx } = useWaitTransaction({
+    isTestnet,
+    chainId: resolverChainId,
+  });
   const [step, setStep] = useState<UpdateSteps>(UpdateSteps.SetRecords);
   const [updateTx, setUpdateTx] = useState<{
     hash: Hash;
@@ -52,7 +65,9 @@ export const EnsUpdateRecordsForm = ({
     status: TxProgress.Pending,
   });
 
-  const [error, setError] = useState<ContractFunctionExecutionError | null>(null);
+  const [error, setError] = useState<ContractFunctionExecutionError | null>(
+    null
+  );
   const [isUpdating, setIsUpdating] = useState<{
     waitingWallet: boolean;
     waitingTx: boolean;
@@ -100,7 +115,7 @@ export const EnsUpdateRecordsForm = ({
         resolver: resolverAddress,
         diff: diff,
       });
-      setUpdateTx({ hash: tx, status: TxProgress.Pending })
+      setUpdateTx({ hash: tx, status: TxProgress.Pending });
       setIsUpdating({ waitingWallet: false, waitingTx: true });
       setStep(UpdateSteps.UpdateTxSent);
     } catch (err: any) {
@@ -125,13 +140,14 @@ export const EnsUpdateRecordsForm = ({
     }
 
     try {
-      await waitTx({ hash: tx })
-      setUpdateTx({ hash: tx, status: TxProgress.Success })
+      onTransactionSent?.(tx);
+      await waitTx({ hash: tx });
+      setUpdateTx({ hash: tx, status: TxProgress.Success });
       setIsUpdating({ waitingWallet: false, waitingTx: false });
-      onRecordsUpdated?.(diff)
-    } catch(err) {
+      onRecordsUpdated?.(diff);
+    } catch (err) {
       console.error("failed transaction", err);
-      setUpdateTx({ hash: tx, status: TxProgress.Failed })
+      setUpdateTx({ hash: tx, status: TxProgress.Failed });
       setIsUpdating({ waitingWallet: false, waitingTx: false });
     }
   };
@@ -145,12 +161,16 @@ export const EnsUpdateRecordsForm = ({
           actionButtons={
             <div style={{ padding: 10, paddingTop: 0 }}>
               {validationError && (
-                <div>
+                <div style={{marginTop: -12}}>
                   <Alert variant="error">{validationError}</Alert>
                 </div>
               )}
               <div className="ens-update-records-form-actions">
-                <Button variant="outline" size="lg">
+                <Button
+                  onClick={() => onCancel?.()}
+                  variant="outline"
+                  size="lg"
+                >
                   Cancel
                 </Button>
                 <Button
@@ -175,7 +195,7 @@ export const EnsUpdateRecordsForm = ({
             setStep(UpdateSteps.SetRecords);
           }}
           onConfirm={() => {
-            handleRecordUpdate()
+            handleRecordUpdate();
           }}
         />
       )}

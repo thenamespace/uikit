@@ -273,3 +273,19 @@ export const validateEnsRecords = (
     errors: validationErrs,
   };
 };
+
+export const diffToEnsRecords = (diff: EnsRecordsDiff): EnsRecords => {
+  const records: EnsRecords = {
+    addresses: [],
+    texts: [],
+  };
+
+  records.addresses = [...diff.addressesAdded, ...diff.addressesModified];
+  records.texts = [...diff.textsAdded, ...diff.textsModified];
+
+  if (diff.contenthashAdded || diff.contenthashModified) {
+    records.contenthash = diff.contenthashAdded || diff.contenthashModified;
+  }
+
+  return records;
+};

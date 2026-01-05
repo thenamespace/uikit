@@ -1,7 +1,7 @@
 import { useENSResolver } from "@/hooks";
 import { EnsRecords } from "@/types";
 import { useEffect, useState } from "react";
-import { Address, zeroAddress } from "viem";
+import { Address, Hash, zeroAddress } from "viem";
 import { mainnet, sepolia } from "viem/chains";
 import { useAccount } from "wagmi";
 import { ConnectAndSetChain, Alert } from "@/components/molecules";
@@ -23,6 +23,10 @@ export interface EnsRecordsFormProps {
   existingRecords: EnsRecords;
   noBorder?: boolean;
   className?: string;
+  onCancel?: () => void
+  onRecordsUpdated?: (newRecords: EnsRecordsDiff) => void
+  onGreat?: () => void
+  onTransactionSent?: (hash: Hash) => void
 }
 
 export const EnsRecordsForm = ({
@@ -33,6 +37,10 @@ export const EnsRecordsForm = ({
   resolverAddress,
   noBorder,
   className,
+  onCancel,
+  onGreat,
+  onRecordsUpdated,
+  onTransactionSent
 }: EnsRecordsFormProps) => {
   const mainnetChainId = isTestnet ? sepolia.id : mainnet.id;
   const resolverChain = resolverChainId ? resolverChainId : mainnetChainId;
@@ -136,9 +144,12 @@ export const EnsRecordsForm = ({
             isTestnet={isTestnet}
             resolverAddress={resolverState.address!}
             resolverChainId={resolverChain}
-            onRecordsUpdated={(recordsDiff: EnsRecordsDiff) => {
-              console.log("records updated")
+            onRecordsUpdated={(records: EnsRecordsDiff) => {
+              onRecordsUpdated?.(records)
             }}
+            onGreat={onGreat}
+            onCancel={onCancel}
+            onTransactionSent={onTransactionSent}
           />
         )}
     </div>
