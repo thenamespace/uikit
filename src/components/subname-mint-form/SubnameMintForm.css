@@ -1,5 +1,4 @@
 .ns-subname-mint-form {
-    padding: 15px;
     border: 1px solid var(--ns-color-border);
     border-radius: 15px;
     width: 100%;
@@ -36,12 +35,27 @@
     max-width: 50%;
 }
 
+.ens-update-records-form-actions .ns-mint-action-tooltip {
+    flex: 1;
+    max-width: 50%;
+}
+
+.ens-update-records-form-actions .ns-mint-action-tooltip button {
+    width: 100%;
+    max-width: 100%;
+}
+
 @media screen and (max-width: 600px) {
     .ens-update-records-form-actions {
         flex-direction: column;
     }
 
     .ens-update-records-form-actions button {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .ens-update-records-form-actions .ns-mint-action-tooltip {
         max-width: 100%;
         width: 100%;
     }

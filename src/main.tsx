@@ -11,14 +11,12 @@ function TestApp() {
   // This is a test app. Its not bundled as component library!!
   const [open, setOpen] = useState(false);
 
-  const name = "myrandomname1337.eth"
-
   return (
     <div>
       <WalletConnectProvider>
         <ConnectButton />
           <EnsNameRegistrationForm />
-         <SubnameMintForm parentName="in-box.eth" label="hello"/>
+         <SubnameMintForm parentName="thenamespace.eth" label="hello"/>
       </WalletConnectProvider>
     </div>
   );
