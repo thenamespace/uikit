@@ -1,18 +1,22 @@
-import { useCallback, useMemo, useState } from "react";
-import { Text, ShurikenSpinner, Input, Icon, Button } from "@/components/atoms";
-import {
-  Alert,
-  Accordion,
-} from "@/components/molecules";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Text, Button } from "@/components/atoms";
+import { Alert } from "@/components/molecules";
 import { normalize } from "viem/ens";
 import { debounce, deepCopy, getEnsRecordsDiff, validateEnsRecords } from "@/utils";
 import { useOffchainManager } from "@/hooks";
 import { EnsRecords } from "@/types";
 import { SetSubnameRecords } from "../subname-mint-form/SetSubnameRecords";
 import { ProfileSelector } from "../subname-mint-form/ProfileSelector";
-import { Address } from "viem";
-import { CreateSubnameRequest, ChainName } from "@thenamespace/offchain-manager";
-import { getSupportedAddressByCoin } from "@/constants/records/addressConstants";
+import { CreateSubnameRequest } from "@thenamespace/offchain-manager";
+import { offchainRecordsToEnsRecords } from "./utils";
+import { SuccessScreen } from "./SuccessScreen";
+import { FormHeader } from "./FormHeader";
+import { SubnameInput } from "./SubnameInput";
+import { OwnerAddressInput } from "./OwnerAddressInput";
+import { useOwnerValidation } from "./useSubnameValidation";
+import { useSubnameChecker } from "./useSubnameChecker";
+import { buildSubnameRequest } from "./requestBuilder";
+import "./OffchainSubnameForm.css";
 
 enum CreateStep {
   Form = "form",
@@ -30,7 +34,8 @@ export interface OffchainSubnameCreatedData {
 
 interface OffchainSubnameFormProps {
   apiKeyOrToken: string;
-  name: string;
+  name: string; 
+  label?: string;
   hideTitle?: boolean;
   onCancel?: () => void;
   onSuccess?: (data: OffchainSubnameCreatedData) => void;
@@ -41,18 +46,21 @@ const MIN_ENS_LEN = 1;
 export const OffchainSubnameForm = ({
   apiKeyOrToken,
   name,
+  label: propLabel,
   hideTitle = false,
   onCancel,
   onSuccess,
 }: OffchainSubnameFormProps) => {
   const client = useOffchainManager(name, apiKeyOrToken);
 
-  const [label, setLabel] = useState<string>("");
+  const [label, setLabel] = useState<string>(propLabel || "");
   const [showProfile, setShowProfile] = useState(false);
   const [createStep, setCreateStep] = useState<CreateStep>(CreateStep.Form);
   const [successData, setSuccessData] = useState<OffchainSubnameCreatedData | null>(null);
 
-  const [error, setError] = useState<string | null>(null);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [initialOwner, setInitialOwner] = useState<string>("");
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const [ensRecordTemplate, setEnsRecordsTemplate] = useState<EnsRecords>({
     addresses: [],
@@ -60,6 +68,12 @@ export const OffchainSubnameForm = ({
   });
 
   const [ensRecords, setEnsRecords] = useState<EnsRecords>({
+    addresses: [],
+    texts: [],
+  });
+
+  // Baseline records from API (never modified by user, only updated when fetching)
+  const [baselineRecords, setBaselineRecords] = useState<EnsRecords>({
     addresses: [],
     texts: [],
   });
@@ -77,27 +91,66 @@ export const OffchainSubnameForm = ({
   });
 
   // Owner address state
-  const [showOwnerAddress, setShowOwnerAddress] = useState(false);
   const [ownerAddress, setOwnerAddress] = useState<string>("");
-  const [ownerAddressError, setOwnerAddressError] = useState<string | null>(null);
+  const { ownerAddressError, validateOwnerAddress, clearError: clearOwnerError } = useOwnerValidation();
 
   // Creating state
   const [isCreating, setIsCreating] = useState(false);
 
-  const checkIsAvailable = async (fullName: string) => {
+  // Subname checker hook
+  const { isLoadingSubname, error: checkError, setError: setCheckError, checkSubname } = useSubnameChecker(client, name);
+
+  // Check if subname exists and determine create/update mode
+  const checkSubnameExists = async (subnameLabel: string) => {
+    setAvailability({ isAvailable: false, isChecking: false });
+    
     try {
-      const available = await client.isSubnameAvailable(fullName);
-      setAvailability({ isAvailable: available.isAvailable, isChecking: false });
-    } catch (err) {
-      console.error("Error checking availability:", err);
+      const result = await checkSubname(subnameLabel);
+      
+      if (!result.exists) {
+        // Subname doesn't exist - CREATE mode (available)
+        setIsUpdateMode(false);
+        setAvailability({ isAvailable: true, isChecking: false });
+        // Clear records and owner when switching to create mode
+        setEnsRecords({ addresses: [], texts: [] });
+        setEnsRecordsTemplate({ addresses: [], texts: [] });
+        setBaselineRecords({ addresses: [], texts: [] });
+        setOwnerAddress("");
+        setInitialOwner("");
+        setShowProfile(false);
+        return;
+      }
+
+      // Subname exists - UPDATE mode
+      setIsUpdateMode(true);
       setAvailability({ isAvailable: false, isChecking: false });
+      
+      const records = result.records || { addresses: [], texts: [] };
+      const owner = result.owner || "";
+
+      setEnsRecords(records);
+      setEnsRecordsTemplate(deepCopy(records));
+      setBaselineRecords(deepCopy(records));
+      setOwnerAddress(owner);
+      setInitialOwner(owner);
+    } catch (err) {
+      setAvailability({ isAvailable: false, isChecking: false });
+      setIsUpdateMode(false);
     }
   };
 
-  const debouncedCheckAvailability = useCallback(
-    debounce((fullName: string) => checkIsAvailable(fullName), 500),
-    []
+
+  const debouncedCheckSubnameExists = useCallback(
+    debounce((subnameLabel: string) => checkSubnameExists(subnameLabel), 500),
+    [client, name]
   );
+
+  // Check if propLabel is provided on mount
+  useEffect(() => {
+    if (propLabel && propLabel.length >= MIN_ENS_LEN) {
+      checkSubnameExists(propLabel);
+    }
+  }, [propLabel]);
 
   const handleNameChanged = async (value: string) => {
     const _value = value.toLowerCase().trim();
@@ -114,9 +167,12 @@ export const OffchainSubnameForm = ({
 
     setLabel(_value);
 
+    // Set checking state immediately when user starts typing
     if (_value.length >= MIN_ENS_LEN) {
       setAvailability({ isAvailable: false, isChecking: true });
-      debouncedCheckAvailability(`${_value}.${name}`);
+      debouncedCheckSubnameExists(_value);
+    } else {
+      setAvailability({ isAvailable: false, isChecking: false });
     }
   };
 
@@ -131,34 +187,21 @@ export const OffchainSubnameForm = ({
     setShowProfile(false);
   };
 
-  const validateOwnerAddress = (address: string): boolean => {
-    if (!address) return true; // Empty is valid (optional field)
-    
-    // Basic ethereum address validation
-    if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
-      setOwnerAddressError("Invalid Ethereum address");
-      return false;
-    }
-    
-    setOwnerAddressError(null);
-    return true;
-  };
-
   const handleOwnerAddressChange = (value: string) => {
     setOwnerAddress(value);
     if (value) {
       validateOwnerAddress(value);
     } else {
-      setOwnerAddressError(null);
+      clearOwnerError();
     }
   };
 
   const handleCreate = async () => {
-    setError(null);
+    setCreateError(null);
     setIsCreating(true);
 
     // Validate owner address if provided
-    if (showOwnerAddress && ownerAddress && !validateOwnerAddress(ownerAddress)) {
+    if (ownerAddress && !validateOwnerAddress(ownerAddress)) {
       setIsCreating(false);
       return;
     }
@@ -168,7 +211,7 @@ export const OffchainSubnameForm = ({
       if (ensRecords.addresses.length > 0 || ensRecords.texts.length > 0) {
         const validation = validateEnsRecords(ensRecords);
         if (validation.validationFailed) {
-          setError(
+          setCreateError(
             validation.errors?.length > 0
               ? validation.errors[0].reason
               : "Invalid records"
@@ -178,80 +221,109 @@ export const OffchainSubnameForm = ({
         }
       }
 
-      // Convert EnsRecords addresses to offchain-manager format
-      const addresses = ensRecords.addresses.map((addr) => {
-        // Map coinType to ChainName
-        const supportedAddr = getSupportedAddressByCoin(addr.coinType);
-        if (!supportedAddr) {
-          throw new Error(`Unsupported coin type: ${addr.coinType}`);
-        }
-        return {
-          chain: supportedAddr.chainName as ChainName,
-          value: addr.value,
+      // Build request using helper function
+      const requestData = buildSubnameRequest(ensRecords, ownerAddress);
+
+      // Create or Update subname
+      if (isUpdateMode) {
+        const fullSubname = `${label}.${name}`;
+        await client.updateSubname(fullSubname, requestData);
+      } else {
+        const createRequest: CreateSubnameRequest = {
+          parentName: name,
+          label,
+          ...requestData,
         };
-      });
+        await client.createSubname(createRequest);
+      }
 
-      // Texts are already in the correct format
-      const texts = ensRecords.texts.map((text) => ({
-        key: text.key,
-        value: text.value,
-      }));
-
-      // Prepare CreateSubnameRequest
-      const request: CreateSubnameRequest = {
-        parentName: name,
-        label,
-        ...(addresses.length > 0 && { addresses }),
-        ...(texts.length > 0 && { texts }),
-        ...(showOwnerAddress && ownerAddress && { owner: ownerAddress }),
-      };
-
-      // Create subname using offchain manager
-      await client.createSubname(request);
-
-      const data: OffchainSubnameCreatedData = {
-        label,
-        parentName: name,
-        fullSubname: `${label}.${name}`,
-        records: ensRecords,
-        ownerAddress: showOwnerAddress && ownerAddress ? ownerAddress : undefined,
-      };
-
-      setSuccessData(data);
-      setCreateStep(CreateStep.Success);
-      onSuccess?.(data);
+      // Fetch the created/updated subname to get the latest data
+      await refreshSubnameData();
     } catch (err: any) {
-      console.error("Create error:", err);
-      setError(err?.message || "Failed to create subname");
+      console.error("Create/Update error:", err);
+      setCreateError(err?.message || `Failed to ${isUpdateMode ? 'update' : 'create'} subname`);
     } finally {
       setIsCreating(false);
     }
   };
 
-  const handleCreateAnother = () => {
-    setLabel("");
-    setEnsRecords({ addresses: [], texts: [] });
-    setEnsRecordsTemplate({ addresses: [], texts: [] });
-    setSuccessData(null);
-    setError(null);
-    setShowOwnerAddress(false);
-    setOwnerAddress("");
-    setOwnerAddressError(null);
-    setCreateStep(CreateStep.Form);
+  // Refresh subname data after create/update
+  const refreshSubnameData = async () => {
+    const fullSubname = `${label}.${name}`;
+    const updatedSubname = await client.getSingleSubname(fullSubname);
+    
+    const latestRecords = updatedSubname 
+      ? offchainRecordsToEnsRecords(updatedSubname)
+      : ensRecords;
+
+    // Update all record states
+    setBaselineRecords(deepCopy(latestRecords));
+    setEnsRecords(latestRecords);
+    setEnsRecordsTemplate(deepCopy(latestRecords));
+    
+    // Update owner
+    const latestOwner = updatedSubname?.owner || (ownerAddress && ownerAddress.trim() !== "" ? ownerAddress : "");
+    setInitialOwner(latestOwner);
+    setOwnerAddress(latestOwner);
+
+    // Prepare success data
+    const data: OffchainSubnameCreatedData = {
+      label,
+      parentName: name,
+      fullSubname: `${label}.${name}`,
+      records: latestRecords,
+      ownerAddress: latestOwner || undefined,
+    };
+
+    setSuccessData(data);
+    setCreateStep(CreateStep.Success);
+    onSuccess?.(data);
   };
 
+  const handleCreateAnother = () => {
+    setSuccessData(null);
+    setCreateError(null);
+    setCreateStep(CreateStep.Form);
+    
+    // Fetch the subname data to populate the form in update mode
+    if (label && label.length >= MIN_ENS_LEN) {
+      checkSubnameExists(label);
+    }
+  };
+
+  // Check if there are any changes in update mode
+  const hasRecordChanges = useMemo(() => {
+    if (!isUpdateMode) return true; // Always allow create
+    
+    // Check if owner changed - if so, return true immediately
+    if (ownerAddress !== initialOwner) {
+      return true;
+    }
+    
+    // Only check record difference if owner hasn't changed
+    const diff = getEnsRecordsDiff(ensRecords, baselineRecords);
+    return diff.isDifferent;
+  }, [isUpdateMode, ensRecords, baselineRecords, ownerAddress, initialOwner]);
+
   const isAvailableForCreate = useMemo(() => {
+    if (isUpdateMode) {
+      // For update mode, need label, data loaded, and changes made
+      return label.length >= MIN_ENS_LEN && !isLoadingSubname && hasRecordChanges;
+    }
+    
+    // For create mode, need availability check
     return (
       label.length >= MIN_ENS_LEN &&
       availability.isAvailable &&
       !availability.isChecking
     );
-  }, [label, availability]);
+  }, [label, availability, isUpdateMode, isLoadingSubname, hasRecordChanges]);
 
   // Show SetSubnameRecords when profile editing is active
   if (showProfile) {
     return (
       <SetSubnameRecords
+        key={`${label}-${isUpdateMode ? 'update' : 'create'}`}
         records={ensRecordTemplate}
         onRecordsChange={setEnsRecordsTemplate}
         onCancel={handleCancelRecords}
@@ -264,191 +336,72 @@ export const OffchainSubnameForm = ({
   // Show success screen
   if (createStep === CreateStep.Success && successData) {
     return (
-      <div style={{ padding: 15 }}>
-        <div className="ns-text-center">
-          <Text size="lg" weight="bold" className="mb-2">
-            Success!
-          </Text>
-          <Text size="sm" color="grey" className="mb-3">
-            You've created {successData.fullSubname}
-          </Text>
-
-          <div className="mt-3">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <Text size="sm" color="grey">
-                Subname
-              </Text>
-              <Text size="sm" weight="medium">
-                {successData.fullSubname}
-              </Text>
-            </div>
-            {successData.ownerAddress && (
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <Text size="sm" color="grey">
-                  Owner
-                </Text>
-                <Text size="xs" weight="medium" style={{ fontFamily: "monospace" }}>
-                  {successData.ownerAddress.slice(0, 6)}...{successData.ownerAddress.slice(-4)}
-                </Text>
-              </div>
-            )}
-            {(successData.records.addresses.length > 0 || successData.records.texts.length > 0) && (
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <Text size="sm" color="grey">
-                  Records set
-                </Text>
-                <Text size="sm" weight="medium">
-                  {successData.records.addresses.length + successData.records.texts.length}
-                </Text>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-3 d-flex" style={{ gap: "8px" }}>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={handleCreateAnother}
-              style={{ flex: 1 }}
-            >
-              Create Another
-            </Button>
-            {onCancel && (
-              <Button
-                variant="solid"
-                size="lg"
-                onClick={onCancel}
-                style={{ flex: 1 }}
-              >
-                Done
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
+      <SuccessScreen
+        fullSubname={successData.fullSubname}
+        isUpdateMode={isUpdateMode}
+        onContinue={handleCreateAnother}
+      />
     );
   }
 
   // Main form
-  return (
-    <div style={{ padding: 15 }}>
-      {!hideTitle && (
-        <Text className="ns-text-center mb-3" weight="bold">
-          Create Offchain Subname
-        </Text>
-      )}
+  const showFullName = isUpdateMode || (!isUpdateMode && label.length >= MIN_ENS_LEN);
+  const actionButtonText = isUpdateMode ? "Update" : "Create";
+  const errorMessage = createError || checkError;
 
-      {/* Name input */}
-      <div>
-        <Input
+  return (
+    <div className="ns-offchain-subname-form">
+      <div style={{ padding: 15 }}>
+        {!hideTitle && (
+          <FormHeader
+            isUpdateMode={isUpdateMode}
+            label={label}
+            parentName={name}
+            showFullName={showFullName}
+          />
+        )}
+
+        {/* Name input */}
+        <SubnameInput
           value={label}
-          onChange={(e) => handleNameChanged(e.target.value)}
-          disabled={isCreating}
-          size="lg"
-          placeholder="Enter subname"
-          prefix={<Icon color="grey" size={20} name="search" />}
-          suffix={
-            <Text weight="medium" size="sm" color="grey">
-              .{name}
-            </Text>
-          }
+          parentName={name}
+          isUpdateMode={isUpdateMode}
+          isLoading={isLoadingSubname}
+          isChecking={availability.isChecking}
+          isDisabled={isCreating}
+          isAvailable={availability.isAvailable}
+          minLength={MIN_ENS_LEN}
+          onChange={handleNameChanged}
         />
 
-        {/* Status Messages */}
-        {label.length > 0 && label.length < MIN_ENS_LEN && (
-          <div className="ns-text-center mt-2">
-            <Text size="xs" color="grey">
-              Minimum subname length is 1 character
-            </Text>
+        {/* Owner Address Input */}
+        {label.length >= MIN_ENS_LEN && (
+          <>
+            <OwnerAddressInput
+              value={ownerAddress}
+              error={ownerAddressError}
+              onChange={handleOwnerAddressChange}
+            />
+
+            {/* Add Records - Always show when label is valid */}
+            <ProfileSelector 
+              key={`${label}-${isUpdateMode ? 'update' : 'create'}`}
+              onSelect={() => setShowProfile(true)} 
+            />
+          </>
+        )}
+
+        {/* Error alert */}
+        {errorMessage && (
+          <div className="mt-2">
+            <Alert variant="error" position="vertical">
+              <Text size="sm">{errorMessage}</Text>
+            </Alert>
           </div>
         )}
 
-        {label.length >= MIN_ENS_LEN && availability.isChecking && (
-          <div
-            className="ns-text-center mt-2 d-flex align-items-center justify-content-center"
-            style={{ gap: "8px" }}
-          >
-            <ShurikenSpinner size={18} />
-            <Text size="sm" color="grey">
-              Checking availability
-            </Text>
-          </div>
-        )}
-
-        {label.length >= MIN_ENS_LEN &&
-          !availability.isChecking &&
-          !availability.isAvailable && (
-            <div className="ns-text-center mt-2">
-              <Text size="xs" color="grey">
-                {label}.{name} is not available
-              </Text>
-            </div>
-          )}
-
-        {label.length >= MIN_ENS_LEN &&
-          !availability.isChecking &&
-          availability.isAvailable && (
-            <div className="ns-text-center mt-2">
-              <Text size="xs" color="grey" style={{ color: "green" }}>
-                ✓ {label}.{name} is available
-              </Text>
-            </div>
-          )}
-      </div>
-
-      {/* Owner Address Accordion */}
-      {isAvailableForCreate && (
-        <>
-          <div className="mt-3">
-            <Accordion
-              title={
-                <Text size="sm" weight="medium">
-                  Set Owner Address (Optional)
-                </Text>
-              }
-              isOpen={showOwnerAddress}
-              onToggle={setShowOwnerAddress}
-            >
-              <div style={{ padding: "12px 0" }}>
-                <Input
-                  value={ownerAddress}
-                  onChange={(e) => handleOwnerAddressChange(e.target.value)}
-                  placeholder="0x..."
-                  size="md"
-                />
-                {ownerAddressError && (
-                  <div className="mt-1">
-                    <Text size="xs" color="grey" style={{ color: "red" }}>
-                      {ownerAddressError}
-                    </Text>
-                  </div>
-                )}
-                <div className="mt-1">
-                  <Text size="xs" color="grey">
-                    Leave empty to use default owner
-                  </Text>
-                </div>
-              </div>
-            </Accordion>
-          </div>
-
-          {/* Add Records */}
-          <ProfileSelector onSelect={() => setShowProfile(true)} />
-        </>
-      )}
-
-      {/* Error alert */}
-      {error && (
-        <div className="mt-2">
-          <Alert variant="error" position="vertical">
-            <Text size="sm">{error}</Text>
-          </Alert>
-        </div>
-      )}
-
-      {/* Action buttons */}
-      <div className="ens-update-records-form-actions mt-3">
-        {onCancel && (
+        {/* Action buttons */}
+        <div className="ens-update-records-form-actions mt-2">
           <Button
             variant="outline"
             size="lg"
@@ -457,16 +410,18 @@ export const OffchainSubnameForm = ({
           >
             Cancel
           </Button>
-        )}
-        <Button
-          variant="solid"
-          size="lg"
-          disabled={!isAvailableForCreate || isCreating}
-          onClick={handleCreate}
-          loading={isCreating}
-        >
-          {isCreating ? "Creating..." : "Create"}
-        </Button>
+          <Button
+            variant="solid"
+            size="lg"
+            disabled={!isAvailableForCreate || isCreating || !!ownerAddressError}
+            onClick={handleCreate}
+            loading={isCreating}
+          >
+            {isCreating 
+              ? (isUpdateMode ? "Updating..." : "Creating...") 
+              : actionButtonText}
+          </Button>
+        </div>
       </div>
     </div>
   );
