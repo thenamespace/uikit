@@ -19,123 +19,30 @@ export interface UploadAvatarParams {
   onProgress?: (progress: number) => void;
 }
 
-const AVATAR_LOG_PREFIX = "[AvatarUpload]";
+export type UploadImageType = "avatar" | "header";
 
-const asObject = (value: unknown): Record<string, unknown> | null => {
-  if (!value || typeof value !== "object") {
-    return null;
-  }
-  return value as Record<string, unknown>;
+const IMAGE_UPLOAD_LOG_PREFIX = "[ImageUpload]";
+
+type UploadResultWithAliases = UploadResult & {
+  avatarUrl?: string;
+  headerUrl?: string;
 };
 
-const asString = (value: unknown): string | undefined => {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-};
-
-const asNumber = (value: unknown): number | undefined => {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value;
-  }
-  if (typeof value === "string") {
-    const parsed = Number(value);
-    if (Number.isFinite(parsed)) {
-      return parsed;
-    }
-  }
-  return undefined;
-};
-
-const asBoolean = (value: unknown): boolean | undefined => {
-  if (typeof value === "boolean") {
-    return value;
-  }
-  if (typeof value === "string") {
-    if (value === "true") return true;
-    if (value === "false") return false;
-  }
-  return undefined;
-};
-
-const pickFirstString = (
-  sources: Array<Record<string, unknown> | null>,
-  keys: string[]
-): string | undefined => {
-  for (const source of sources) {
-    if (!source) continue;
-    for (const key of keys) {
-      const value = asString(source[key]);
-      if (value) return value;
-    }
-  }
-  return undefined;
-};
-
-const normalizeUploadResult = (rawResult: unknown): UploadResult => {
-  const root = asObject(rawResult);
-  const rootData = asObject(root?.data);
-  const rootResult = asObject(root?.result);
-  const nestedData = asObject(rootData?.data);
-  const nestedResult = asObject(rootResult?.data);
-  const sources = [root, rootData, rootResult, nestedData, nestedResult];
-
+const withCanonicalUrl = (
+  imageType: UploadImageType,
+  result: UploadResultWithAliases
+): UploadResult => {
   const url =
-    pickFirstString(sources, ["url", "avatarUrl", "imageUrl", "fileUrl"]) ||
-    undefined;
+    result.url ||
+    (imageType === "avatar" ? result.avatarUrl : result.headerUrl) ||
+    result.avatarUrl ||
+    result.headerUrl;
 
   if (!url) {
-    throw new Error("Upload response did not include a URL.");
+    throw new Error("Upload response did not include an image URL.");
   }
 
-  const uploadedAt =
-    pickFirstString(sources, [
-      "uploadedAt",
-      "uploaded_at",
-      "createdAt",
-      "created_at",
-      "timestamp",
-    ]) || new Date().toISOString();
-
-  const fileSize = (() => {
-    for (const source of sources) {
-      if (!source) continue;
-      const parsed = asNumber(source.fileSize ?? source.size ?? source.bytes);
-      if (parsed !== undefined) return parsed;
-    }
-    return 0;
-  })();
-
-  const isUpdate = (() => {
-    for (const source of sources) {
-      if (!source) continue;
-      const parsed = asBoolean(source.isUpdate ?? source.is_update);
-      if (parsed !== undefined) return parsed;
-    }
-    return false;
-  })();
-
-  const pending = (() => {
-    for (const source of sources) {
-      if (!source) continue;
-      const parsed = asBoolean(source.pending);
-      if (parsed !== undefined) return parsed;
-    }
-    return undefined;
-  })();
-
-  const message = pickFirstString(sources, ["message", "status", "detail"]);
-
-  return {
-    url,
-    uploadedAt,
-    fileSize,
-    isUpdate,
-    pending,
-    message,
-  };
+  return { ...result, url };
 };
 
 const getDefaultDomain = () => {
@@ -146,10 +53,24 @@ const getDefaultDomain = () => {
 };
 
 export const getAvatarUploadErrorMessage = (err: unknown): string => {
+  return getImageUploadErrorMessage(err, "avatar");
+};
+
+export const getImageUploadErrorMessage = (
+  err: unknown,
+  imageType: UploadImageType = "avatar"
+): string => {
+  const defaultFailedMessage =
+    imageType === "avatar"
+      ? "Failed to upload avatar."
+      : "Failed to upload header image.";
+
   if (err instanceof AvatarSDKError) {
     switch (err.code) {
       case ErrorCodes.MISSING_PROVIDER:
-        return "Please connect your wallet to upload avatar.";
+        return imageType === "avatar"
+          ? "Please connect your wallet to upload avatar."
+          : "Please connect your wallet to upload header image.";
       case ErrorCodes.NOT_SUBNAME_OWNER:
         return "You do not own this ENS name.";
       case ErrorCodes.FILE_TOO_LARGE:
@@ -161,14 +82,14 @@ export const getAvatarUploadErrorMessage = (err: unknown): string => {
       case ErrorCodes.INVALID_SIGNATURE:
         return "Wallet signature verification failed.";
       default:
-        return err.message || "Failed to upload avatar.";
+        return err.message || defaultFailedMessage;
     }
   }
 
   if (err instanceof Error && err.message) {
     return err.message;
   }
-  return "Failed to upload avatar.";
+  return defaultFailedMessage;
 };
 
 export const useAvatarClient = ({ isTestnet, domain }: UseAvatarClientParams) => {
@@ -203,13 +124,21 @@ export const useAvatarClient = ({ isTestnet, domain }: UseAvatarClientParams) =>
     });
   }, [isTestnet, resolvedDomain, provider]);
 
-  const uploadAvatar = async (params: UploadAvatarParams): Promise<UploadResult> => {
+  const uploadImage = async (
+    imageType: UploadImageType,
+    params: UploadAvatarParams
+  ): Promise<UploadResult> => {
     if (!provider || !address) {
-      throw new Error("Please connect your wallet to upload avatar.");
+      throw new Error(
+        imageType === "avatar"
+          ? "Please connect your wallet to upload avatar."
+          : "Please connect your wallet to upload header image."
+      );
     }
 
     try {
-      console.info(`${AVATAR_LOG_PREFIX} starting`, {
+      console.info(`${IMAGE_UPLOAD_LOG_PREFIX} starting`, {
+        imageType,
         ensName: params.ensName,
         fileName: params.file.name,
         fileType: params.file.type,
@@ -219,24 +148,42 @@ export const useAvatarClient = ({ isTestnet, domain }: UseAvatarClientParams) =>
         wallet: address,
       });
 
-      const rawResult = await (client.uploadAvatar({
-        subname: params.ensName,
-        file: params.file,
-        onProgress: params.onProgress,
-      }) as unknown);
+      const rawResult = (await (imageType === "avatar"
+        ? client.uploadAvatar({
+            subname: params.ensName,
+            file: params.file,
+            onProgress: params.onProgress,
+          })
+        : client.uploadHeader({
+            subname: params.ensName,
+            file: params.file,
+            onProgress: params.onProgress,
+          }))) as UploadResultWithAliases;
 
-      console.info(`${AVATAR_LOG_PREFIX} raw result`, rawResult);
-      const normalizedResult = normalizeUploadResult(rawResult);
-      console.info(`${AVATAR_LOG_PREFIX} normalized result`, normalizedResult);
-      return normalizedResult;
+      const result = withCanonicalUrl(imageType, rawResult);
+
+      console.info(`${IMAGE_UPLOAD_LOG_PREFIX} upload result`, {
+        imageType,
+        result,
+      });
+      return result;
     } catch (err) {
-      console.error(`${AVATAR_LOG_PREFIX} failed`, err);
-      throw new Error(getAvatarUploadErrorMessage(err));
+      console.error(`${IMAGE_UPLOAD_LOG_PREFIX} failed`, { imageType, error: err });
+      throw new Error(getImageUploadErrorMessage(err, imageType));
     }
+  };
+
+  const uploadAvatar = async (params: UploadAvatarParams): Promise<UploadResult> => {
+    return uploadImage("avatar", params);
+  };
+
+  const uploadHeader = async (params: UploadAvatarParams): Promise<UploadResult> => {
+    return uploadImage("header", params);
   };
 
   return {
     uploadAvatar,
-    getErrorMessage: getAvatarUploadErrorMessage,
+    uploadHeader,
+    getErrorMessage: getImageUploadErrorMessage,
   };
 };
