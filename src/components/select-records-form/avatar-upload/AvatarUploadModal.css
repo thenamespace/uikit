@@ -1,37 +1,39 @@
 .ns-avatar-upload-modal-wrapper .ns-modal__body {
-  padding-bottom: 10px;
+  padding-bottom: 14px;
 }
 
 .ns-avatar-upload-modal-wrapper .ns-modal__footer {
-  justify-content: space-between;
+  justify-content: flex-end;
+  border-top: 1px solid var(--ns-color-border);
+  padding-top: 12px;
 }
 
 .ns-avatar-upload-modal {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .ns-avatar-upload-modal__heading {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .ns-avatar-upload-modal__content {
   display: grid;
   grid-template-columns: 1fr 240px;
-  gap: 16px;
+  gap: 18px;
   align-items: start;
 }
 
 .ns-avatar-upload-modal__crop-area {
   position: relative;
   min-height: 320px;
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
   border: 1px solid var(--ns-color-border);
-  background: var(--ns-color-bg-accent);
+  background: color-mix(in srgb, var(--ns-color-bg-accent) 65%, var(--ns-color-bg));
 }
 
 .ns-avatar-upload-modal__empty-state {
@@ -50,7 +52,11 @@
 .ns-avatar-upload-modal__controls {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--ns-color-border);
+  background: color-mix(in srgb, var(--ns-color-bg-accent) 50%, var(--ns-color-bg));
 }
 
 .ns-avatar-upload-modal__file-input {
@@ -59,9 +65,9 @@
 
 .ns-avatar-upload-modal__file-meta {
   border: 1px solid var(--ns-color-border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 10px;
-  background: var(--ns-color-bg-accent);
+  background: var(--ns-color-bg);
 }
 
 .ns-avatar-upload-modal__zoom {
@@ -70,18 +76,18 @@
 
 .ns-avatar-upload-modal__zoom input[type="range"] {
   width: 100%;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .ns-avatar-upload-modal__status {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .ns-avatar-upload-modal__progress {
-  margin-top: 2px;
+  margin-top: 6px;
 }
 
 .ns-avatar-upload-modal__footer {

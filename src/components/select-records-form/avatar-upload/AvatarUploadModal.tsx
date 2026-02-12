@@ -16,7 +16,6 @@ interface AvatarUploadModalProps {
   siweDomain?: string;
   onClose: () => void;
   onUploaded: (data: { url: string; uploadedAt: string }) => void;
-  onUseManualUrl?: () => void;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -33,6 +32,8 @@ const getMaxSizeLabel = () => {
   return formatFileSize(AVATAR_MAX_SIZE);
 };
 
+const AVATAR_MODAL_LOG_PREFIX = "[AvatarUploadModal]";
+
 export const AvatarUploadModal = ({
   isOpen,
   ensName,
@@ -40,7 +41,6 @@ export const AvatarUploadModal = ({
   siweDomain,
   onClose,
   onUploaded,
-  onUseManualUrl,
 }: AvatarUploadModalProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -135,9 +135,25 @@ export const AvatarUploadModal = ({
     setError(null);
     setUploadProgress(0);
     setUploadState("signing");
+    console.info(`${AVATAR_MODAL_LOG_PREFIX} sign+upload started`, {
+      ensName,
+      isTestnet: !!isTestnet,
+      siweDomain: siweDomain || window.location.hostname,
+      selectedFile: {
+        name: selectedFile.name,
+        type: selectedFile.type,
+        size: selectedFile.size,
+      },
+      croppedAreaPixels,
+    });
 
     try {
       const croppedFile = await getCroppedImageFile(selectedFile, croppedAreaPixels);
+      console.info(`${AVATAR_MODAL_LOG_PREFIX} cropped file ready`, {
+        name: croppedFile.name,
+        type: croppedFile.type,
+        size: croppedFile.size,
+      });
       const result = await uploadAvatar({
         ensName,
         file: croppedFile,
@@ -146,6 +162,7 @@ export const AvatarUploadModal = ({
           setUploadProgress(Math.max(0, Math.min(100, Math.round(progress))));
         },
       });
+      console.info(`${AVATAR_MODAL_LOG_PREFIX} upload result`, result);
 
       onUploaded({
         url: result.url,
@@ -153,6 +170,7 @@ export const AvatarUploadModal = ({
       });
       setUploadState("success");
     } catch (err) {
+      console.error(`${AVATAR_MODAL_LOG_PREFIX} upload error`, err);
       setUploadState("editing");
       const errorMessage =
         err instanceof Error ? err.message : "Failed to upload avatar.";
@@ -166,16 +184,6 @@ export const AvatarUploadModal = ({
         <>
           <Button variant="outline" onClick={onClose} disabled={isBusy}>
             Cancel
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              onUseManualUrl?.();
-              onClose();
-            }}
-            disabled={isBusy}
-          >
-            Use URL manually
           </Button>
           <Button disabled={!selectedFile || isBusy} onClick={handleUpload}>
             {uploadState === "signing"

@@ -19,6 +19,125 @@ export interface UploadAvatarParams {
   onProgress?: (progress: number) => void;
 }
 
+const AVATAR_LOG_PREFIX = "[AvatarUpload]";
+
+const asObject = (value: unknown): Record<string, unknown> | null => {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  return value as Record<string, unknown>;
+};
+
+const asString = (value: unknown): string | undefined => {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+};
+
+const asNumber = (value: unknown): number | undefined => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return undefined;
+};
+
+const asBoolean = (value: unknown): boolean | undefined => {
+  if (typeof value === "boolean") {
+    return value;
+  }
+  if (typeof value === "string") {
+    if (value === "true") return true;
+    if (value === "false") return false;
+  }
+  return undefined;
+};
+
+const pickFirstString = (
+  sources: Array<Record<string, unknown> | null>,
+  keys: string[]
+): string | undefined => {
+  for (const source of sources) {
+    if (!source) continue;
+    for (const key of keys) {
+      const value = asString(source[key]);
+      if (value) return value;
+    }
+  }
+  return undefined;
+};
+
+const normalizeUploadResult = (rawResult: unknown): UploadResult => {
+  const root = asObject(rawResult);
+  const rootData = asObject(root?.data);
+  const rootResult = asObject(root?.result);
+  const nestedData = asObject(rootData?.data);
+  const nestedResult = asObject(rootResult?.data);
+  const sources = [root, rootData, rootResult, nestedData, nestedResult];
+
+  const url =
+    pickFirstString(sources, ["url", "avatarUrl", "imageUrl", "fileUrl"]) ||
+    undefined;
+
+  if (!url) {
+    throw new Error("Upload response did not include a URL.");
+  }
+
+  const uploadedAt =
+    pickFirstString(sources, [
+      "uploadedAt",
+      "uploaded_at",
+      "createdAt",
+      "created_at",
+      "timestamp",
+    ]) || new Date().toISOString();
+
+  const fileSize = (() => {
+    for (const source of sources) {
+      if (!source) continue;
+      const parsed = asNumber(source.fileSize ?? source.size ?? source.bytes);
+      if (parsed !== undefined) return parsed;
+    }
+    return 0;
+  })();
+
+  const isUpdate = (() => {
+    for (const source of sources) {
+      if (!source) continue;
+      const parsed = asBoolean(source.isUpdate ?? source.is_update);
+      if (parsed !== undefined) return parsed;
+    }
+    return false;
+  })();
+
+  const pending = (() => {
+    for (const source of sources) {
+      if (!source) continue;
+      const parsed = asBoolean(source.pending);
+      if (parsed !== undefined) return parsed;
+    }
+    return undefined;
+  })();
+
+  const message = pickFirstString(sources, ["message", "status", "detail"]);
+
+  return {
+    url,
+    uploadedAt,
+    fileSize,
+    isUpdate,
+    pending,
+    message,
+  };
+};
+
 const getDefaultDomain = () => {
   if (typeof window === "undefined") {
     return "localhost";
@@ -90,12 +209,28 @@ export const useAvatarClient = ({ isTestnet, domain }: UseAvatarClientParams) =>
     }
 
     try {
-      return await client.uploadAvatar({
+      console.info(`${AVATAR_LOG_PREFIX} starting`, {
+        ensName: params.ensName,
+        fileName: params.file.name,
+        fileType: params.file.type,
+        fileSize: params.file.size,
+        network: isTestnet ? "sepolia" : "mainnet",
+        domain: resolvedDomain,
+        wallet: address,
+      });
+
+      const rawResult = await (client.uploadAvatar({
         subname: params.ensName,
         file: params.file,
         onProgress: params.onProgress,
-      });
+      }) as unknown);
+
+      console.info(`${AVATAR_LOG_PREFIX} raw result`, rawResult);
+      const normalizedResult = normalizeUploadResult(rawResult);
+      console.info(`${AVATAR_LOG_PREFIX} normalized result`, normalizedResult);
+      return normalizedResult;
     } catch (err) {
+      console.error(`${AVATAR_LOG_PREFIX} failed`, err);
       throw new Error(getAvatarUploadErrorMessage(err));
     }
   };

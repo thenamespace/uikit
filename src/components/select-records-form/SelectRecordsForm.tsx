@@ -50,13 +50,15 @@ export const SelectRecordsForm = ({
 }: SelectRecordsFormProps) => {
   const [initialRecords] = useState<EnsRecords>(deepCopy(records));
   const [isAvatarUploadOpen, setIsAvatarUploadOpen] = useState(false);
-  const [avatarUploadFeedback, setAvatarUploadFeedback] = useState<
-    string | null
-  >(null);
+  const [avatarUploadFeedback, setAvatarUploadFeedback] = useState<{
+    message: string;
+    variant: "success" | "error";
+  } | null>(null);
   const [avatarPreviewVersion, setAvatarPreviewVersion] = useState<{
     url: string;
     version: string;
   } | null>(null);
+  const [avatarManualFocusTrigger, setAvatarManualFocusTrigger] = useState(0);
 
   const generalCategoryRef = useRef<HTMLDivElement | null>(null);
   const socialCategoryRef = useRef<HTMLDivElement | null>(null);
@@ -270,10 +272,10 @@ export const SelectRecordsForm = ({
   ) => {
     const _texts = records.texts.filter(text => text.key !== record);
 
-    let _value = value;
+    let _value = typeof value === "string" ? value : "";
     if (_value.length === 0) {
       const initialValue = initialRecords.texts.find(txt => txt.key === record);
-      _value = initialValue ? initialValue.value : value;
+      _value = initialValue ? initialValue.value : "";
     }
 
     onRecordsUpdated({
@@ -286,7 +288,28 @@ export const SelectRecordsForm = ({
     }
   };
 
+  const ensureImageRecordExists = (record: "avatar" | "header") => {
+    const alreadyAdded = records.texts.some(text => text.key === record);
+    if (alreadyAdded) {
+      return;
+    }
+
+    const initialValue = initialRecords.texts.find(txt => txt.key === record);
+    onRecordsUpdated({
+      ...records,
+      texts: [...records.texts, { key: record, value: initialValue?.value || "" }],
+    });
+  };
+
   const handleAvatarUploaded = (data: { url: string; uploadedAt: string }) => {
+    if (!data?.url || data.url.trim().length === 0) {
+      setAvatarUploadFeedback({
+        message: "Upload finished but no avatar URL was returned. Please try again.",
+        variant: "error",
+      });
+      return;
+    }
+
     const uploadedAtMs = new Date(data.uploadedAt).getTime();
     const safeVersion = Number.isFinite(uploadedAtMs)
       ? uploadedAtMs.toString()
@@ -299,15 +322,25 @@ export const SelectRecordsForm = ({
       url: data.url,
       version: safeVersion,
     });
-    setAvatarUploadFeedback("Avatar uploaded. Avatar text record updated.");
+    setAvatarUploadFeedback({
+      message: "Avatar uploaded. Avatar text record updated.",
+      variant: "success",
+    });
   };
 
-  const handleAvatarImageClick = () => {
+  const handleAvatarUploadRequested = () => {
     if (!avatarUpload) {
       return;
     }
     setAvatarUploadFeedback(null);
     setIsAvatarUploadOpen(true);
+  };
+
+  const handleAvatarManualUrlRequested = () => {
+    setAvatarUploadFeedback(null);
+    ensureImageRecordExists("avatar");
+    handleSidebarChange(RecordsSidebarItem.General);
+    setAvatarManualFocusTrigger(prev => prev + 1);
   };
 
   return (
@@ -323,15 +356,20 @@ export const SelectRecordsForm = ({
           onHeaderAdded={(value: string) =>
             handleImageRecordAdded("header", value)
           }
-          onAvatarImageClick={avatarUpload ? handleAvatarImageClick : undefined}
+          onAvatarUploadRequested={
+            avatarUpload ? handleAvatarUploadRequested : undefined
+          }
+          onAvatarManualUrlRequested={
+            avatarUpload ? handleAvatarManualUrlRequested : undefined
+          }
         />
         {avatarUploadFeedback && (
           <Alert
-            variant="success"
+            variant={avatarUploadFeedback.variant}
             dismissible
             onClose={() => setAvatarUploadFeedback(null)}
           >
-            <Text size="sm">{avatarUploadFeedback}</Text>
+            <Text size="sm">{avatarUploadFeedback.message}</Text>
           </Alert>
         )}
       </div>
@@ -377,6 +415,8 @@ export const SelectRecordsForm = ({
                 onTextsChanged={handleTextsUpdated}
                 category={TextRecordCategory.General}
                 searchFilter={searchFilter}
+                focusRecordKey={avatarUpload ? "avatar" : undefined}
+                focusTrigger={avatarUpload ? avatarManualFocusTrigger : undefined}
               />
             </div>
             {/* Social Records Records */}
@@ -422,7 +462,6 @@ export const SelectRecordsForm = ({
           isTestnet={avatarUpload.isTestnet}
           siweDomain={avatarUpload.siweDomain}
           onClose={() => setIsAvatarUploadOpen(false)}
-          onUseManualUrl={() => handleImageRecordAdded("avatar", "")}
           onUploaded={handleAvatarUploaded}
         />
       )}

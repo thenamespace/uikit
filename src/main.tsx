@@ -1,9 +1,12 @@
 import { createRoot } from "react-dom/client";
 import "./styles/index.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { EnsRecordsForm } from "./components";
+import { EnsRecordsForm, OffchainSubnameForm } from "./components";
 import { WalletConnectProvider } from "./web3/wallet-connect";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+
+const PUSHX_PARENT_NAME = "pushx.eth";
+const PUSHX_API_KEY = "";
 
 function TestApp() {
   return (
@@ -26,6 +29,17 @@ function TestApp() {
               { key: "location", value: "e.g. Jupiter" },
             ],
           }}
+        />
+
+        <div style={{ display: "flex", justifyContent: "space-between", margin: "24px 0 12px" }}>
+          <strong>Offchain Subname Form</strong>
+        </div>
+
+        <OffchainSubnameForm
+          name={PUSHX_PARENT_NAME}
+          apiKeyOrToken={PUSHX_API_KEY}
+          isTestnet={false}
+          avatarUploadDomain="localhost"
         />
       </div>
     </WalletConnectProvider>

@@ -86,6 +86,50 @@ Important assumptions:
 - Caller provides valid API key/token for the parent name
 - Owner validation is regex-based EVM address format check
 - Existence checks treat 404 as "does not exist"
+- Avatar upload uses full subname (`{label}.{parent}`) in both create and update
+  editing flows
+
+### C.1) Avatar upload integration details
+
+Avatar upload is integrated into the shared records editor (`SelectRecordsForm`)
+and is reused by both onchain/offchain profile editing views.
+
+Wiring path:
+
+1. `OffchainSubnameForm` passes `avatarUpload` context to
+   `SetSubnameRecords`
+2. `SetSubnameRecords` forwards `avatarUpload` into `SelectRecordsForm`
+3. `SelectRecordsForm` opens `AvatarUploadModal`
+4. `AvatarUploadModal` uses `useAvatarClient().uploadAvatar(...)`
+5. Upload result is written back to `avatar` text record
+
+Related files:
+
+- `src/components/offchain-subname-form/OffchainSubnameForm.tsx`
+- `src/components/subname-mint-form/SetSubnameRecords.tsx`
+- `src/components/select-records-form/SelectRecordsForm.tsx`
+- `src/components/select-records-form/avatar-upload/AvatarUploadModal.tsx`
+- `src/hooks/useAvatarClient.tsx`
+
+### C.2) Upload response normalization + logs
+
+The avatar SDK may return payloads in slightly different shapes depending on
+transport/wrapping. `useAvatarClient` now normalizes common variants before
+passing data into UI:
+
+- root: `url`, `uploadedAt`, etc.
+- nested: `data.url`, `result.url`, `data.data.url`, `result.data.url`
+- alternate URL keys: `avatarUrl`, `imageUrl`, `fileUrl`
+
+Browser logs were added to make debugging deterministic:
+
+- `[AvatarUploadModal] sign+upload started`
+- `[AvatarUploadModal] cropped file ready`
+- `[AvatarUpload] starting`
+- `[AvatarUpload] raw result`
+- `[AvatarUpload] normalized result`
+- `[AvatarUploadModal] upload result`
+- error paths log `[AvatarUpload] failed` / `[AvatarUploadModal] upload error`
 
 ### D) Record update flow (`EnsRecordsForm` + `EnsUpdateRecordsForm`)
 

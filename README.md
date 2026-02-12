@@ -101,6 +101,33 @@ import {
   `EnsContenthashRecord`, listing and tx types
 - Utils: resolver payload builders, records diff/validation, chain/coin helpers
 
+## Recent updates (test app + avatar upload)
+
+- Test app now includes `OffchainSubnameForm` configured for offchain subname
+  testing under `pushx.eth` (see `/src/main.tsx`).
+- Avatar upload is available inside the shared records editor used by:
+  - `EnsRecordsForm`
+  - `OffchainSubnameForm` (create and update flows)
+- Offchain records editing now supports:
+  - Upload avatar image (SIWE-authenticated via `@thenamespace/avatar`)
+  - Add avatar via manual URL
+- Added defensive handling for upload responses that may not return fields in a
+  single shape; the client now normalizes common nested payload patterns.
+- Added upload debug logging in the browser console:
+  - `[AvatarUploadModal] ...` (UI/modal step logs)
+  - `[AvatarUpload] ...` (SDK call + response normalization logs)
+
+### How to debug avatar upload quickly
+
+1. Run `npm run test-app`
+2. Open browser DevTools console
+3. Trigger an avatar upload from the records editor
+4. Check logs:
+   - `[AvatarUploadModal] sign+upload started`
+   - `[AvatarUpload] raw result`
+   - `[AvatarUpload] normalized result`
+   - `[AvatarUploadModal] upload result`
+
 ## Expected data model
 
 Core record shape used throughout the kit:
