@@ -1,5 +1,5 @@
 import "./ImageRecords.css";
-import { Icon, Text } from "@/components/atoms";
+import { Icon } from "@/components/atoms";
 import { Dropdown } from "@/components/molecules";
 
 interface ImageRecordProps {
@@ -44,7 +44,7 @@ export const ImageRecords = ({
   let avatarRecordSet = avatar !== undefined;
   const hasAvatarActions =
     !!onAvatarUploadRequested || !!onAvatarManualUrlRequested;
-  const actionButtonLabel = avatarRecordSet ? "Change avatar" : "Add avatar";
+  const manualActionLabel = avatarRecordSet ? "Edit URL" : "Enter URL manually";
 
   return (
     <div className="ns-image-records">
@@ -64,41 +64,10 @@ export const ImageRecords = ({
           >
             <Icon color="white" name="rotate-circle"></Icon>
           </div>
-
-          // We will allow this when we start supporting avatar uploads
-          // <Dropdown
-          //   trigger={
-          //     <div className="ns-header-handle">
-          //       <Icon color="white" name="rotate-circle"></Icon>
-          //     </div>
-          //   }
-          // >
-          //   <div className="ns-upload-options">
-          //     <Text
-          //       onClick={e => {
-          //         e.stopPropagation();
-          //         if (!headerRecordSet) {
-          //           onHeaderAdded("");
-          //         }
-          //       }}
-          //       weight="medium"
-          //       className="option"
-          //       size="sm"
-          //     >
-          //       Add Header Record
-          //     </Text>
-          //     <Text weight="medium" className="option disabled" size="sm">
-          //       Upload image
-          //     </Text>
-          //     <Text weight="medium" className="option disabled" size="sm">
-          //       Select NFT
-          //     </Text>
-          //   </div>
-          // </Dropdown>
         )}
         <div
           style={avatarStyles}
-          className="ns-avatar-record-cont"
+          className={`ns-avatar-record-cont ${avatarRecordSet ? "ns-avatar-record-cont--set" : ""}`}
         >
           {!avatarRecordSet && hasAvatarActions && (
             <div className="ns-avatar-record-placeholder" aria-hidden="true">
@@ -121,39 +90,47 @@ export const ImageRecords = ({
               <Icon color="grey" name="rotate-circle"></Icon>
             </div>
           )}
+
+          {hasAvatarActions && (
+            <div className="ns-avatar-action-anchor">
+              <Dropdown
+                placement="top"
+                align="end"
+                trigger={
+                  <div
+                    className={`ns-avatar-action-plus ${avatarRecordSet ? "ns-avatar-action-plus--set" : ""}`}
+                    title={avatarRecordSet ? "Change avatar" : "Add avatar"}
+                    aria-label={avatarRecordSet ? "Change avatar" : "Add avatar"}
+                  >
+                    <Icon name="plus" size={16} />
+                  </div>
+                }
+              >
+                <div className="ns-avatar-actions-menu">
+                  {onAvatarUploadRequested && (
+                    <button
+                      type="button"
+                      className="ns-avatar-actions-menu-item"
+                      onClick={() => onAvatarUploadRequested()}
+                    >
+                      Upload image
+                    </button>
+                  )}
+                  {onAvatarManualUrlRequested && (
+                    <button
+                      type="button"
+                      className="ns-avatar-actions-menu-item"
+                      onClick={() => onAvatarManualUrlRequested()}
+                    >
+                      {manualActionLabel}
+                    </button>
+                  )}
+                </div>
+              </Dropdown>
+            </div>
+          )}
         </div>
       </div>
-
-      {hasAvatarActions && (
-        <div className="ns-avatar-actions-row">
-          <Dropdown
-            align="center"
-            trigger={
-              <div className="ns-avatar-action-trigger">
-                <Text weight="medium">{actionButtonLabel}</Text>
-                <Icon name="chevron-down" size={16} />
-              </div>
-            }
-          >
-            <div className="ns-avatar-actions-menu">
-              <button
-                type="button"
-                className="ns-avatar-actions-menu-item"
-                onClick={() => onAvatarUploadRequested?.()}
-              >
-                Upload Image
-              </button>
-              <button
-                type="button"
-                className="ns-avatar-actions-menu-item"
-                onClick={() => onAvatarManualUrlRequested?.()}
-              >
-                Add manual URL
-              </button>
-            </div>
-          </Dropdown>
-        </div>
-      )}
     </div>
   );
 };

@@ -7,7 +7,7 @@ import { useAvatarClient } from "@/hooks";
 import { getCroppedImageFile } from "./cropImage";
 import "./AvatarUploadModal.css";
 
-type UploadState = "idle" | "editing" | "signing" | "uploading" | "success";
+type UploadState = "idle" | "editing" | "signing" | "uploading";
 
 interface AvatarUploadModalProps {
   isOpen: boolean;
@@ -48,6 +48,7 @@ export const AvatarUploadModal = ({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [modalStep, setModalStep] = useState<"edit" | "review">("edit");
   const [uploadState, setUploadState] = useState<UploadState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -58,7 +59,7 @@ export const AvatarUploadModal = ({
   });
 
   const isBusy = uploadState === "signing" || uploadState === "uploading";
-  const isSuccess = uploadState === "success";
+  const isReviewStep = modalStep === "review";
 
   useEffect(() => {
     if (!selectedFile) {
@@ -83,6 +84,7 @@ export const AvatarUploadModal = ({
     setCrop({ x: 0, y: 0 });
     setZoom(1);
     setCroppedAreaPixels(null);
+    setModalStep("edit");
     setUploadState("idle");
     setError(null);
     setUploadProgress(0);
@@ -118,6 +120,7 @@ export const AvatarUploadModal = ({
     }
 
     setSelectedFile(file);
+    setModalStep("edit");
     setUploadState("editing");
     setUploadProgress(0);
   };
@@ -168,7 +171,7 @@ export const AvatarUploadModal = ({
         url: result.url,
         uploadedAt: result.uploadedAt,
       });
-      setUploadState("success");
+      onClose();
     } catch (err) {
       console.error(`${AVATAR_MODAL_LOG_PREFIX} upload error`, err);
       setUploadState("editing");
@@ -178,24 +181,73 @@ export const AvatarUploadModal = ({
     }
   };
 
+  const handleContinue = () => {
+    if (!selectedFile) {
+      setError("Please choose an image first.");
+      return;
+    }
+    if (!croppedAreaPixels) {
+      setError("Please wait for the image cropper to load.");
+      return;
+    }
+    setError(null);
+    setModalStep("review");
+  };
+
+  const handleBackToEdit = () => {
+    if (isBusy) {
+      return;
+    }
+    setError(null);
+    setModalStep("edit");
+    setUploadState("editing");
+  };
+
   const footer = (
     <div className="ns-avatar-upload-modal__footer">
-      {!isSuccess && (
+      {!isReviewStep && (
         <>
-          <Button variant="outline" onClick={onClose} disabled={isBusy}>
+          <Button
+            className="ns-avatar-upload-modal__footer-btn"
+            variant="outline"
+            onClick={onClose}
+            disabled={isBusy}
+          >
             Cancel
           </Button>
-          <Button disabled={!selectedFile || isBusy} onClick={handleUpload}>
+          <Button
+            className="ns-avatar-upload-modal__footer-btn"
+            disabled={!selectedFile || isBusy}
+            onClick={handleContinue}
+          >
+            Continue
+          </Button>
+        </>
+      )}
+
+      {isReviewStep && (
+        <>
+          <Button
+            className="ns-avatar-upload-modal__footer-btn"
+            variant="outline"
+            onClick={handleBackToEdit}
+            disabled={isBusy}
+          >
+            Back
+          </Button>
+          <Button
+            className="ns-avatar-upload-modal__footer-btn"
+            disabled={!selectedFile || isBusy}
+            onClick={handleUpload}
+          >
             {uploadState === "signing"
-              ? "Check Wallet..."
+              ? "Check wallet..."
               : uploadState === "uploading"
                 ? "Uploading..."
                 : "Sign & Upload"}
           </Button>
         </>
       )}
-
-      {isSuccess && <Button onClick={onClose}>Done</Button>}
     </div>
   );
 
@@ -203,7 +255,7 @@ export const AvatarUploadModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="lg"
+      size="md"
       isDismissDisabled={isBusy}
       footer={footer}
       className="ns-avatar-upload-modal-wrapper"
@@ -211,10 +263,7 @@ export const AvatarUploadModal = ({
       <div className="ns-avatar-upload-modal">
         <div className="ns-avatar-upload-modal__heading">
           <Text size="lg" weight="bold">
-            Upload avatar
-          </Text>
-          <Text size="xs" color="grey">
-            Crop your image to 1:1, sign, and upload for {ensName}
+            {isReviewStep ? "Sign and upload" : "Edit image"}
           </Text>
         </div>
 
@@ -224,21 +273,17 @@ export const AvatarUploadModal = ({
           </Alert>
         )}
 
-        {isSuccess && (
-          <Alert variant="success">
-            <Text size="sm">Avatar uploaded. Avatar text record updated.</Text>
-          </Alert>
-        )}
-
         <div className="ns-avatar-upload-modal__content">
-          <div className="ns-avatar-upload-modal__crop-area">
+          <div
+            className={`ns-avatar-upload-modal__crop-area ${isReviewStep ? "ns-avatar-upload-modal__crop-area--locked" : ""}`}
+          >
             {!previewUrl && (
               <div className="ns-avatar-upload-modal__empty-state">
                 <Text size="sm" weight="medium">
                   Choose an image to begin
                 </Text>
                 <Text size="xs" color="grey">
-                  Supported: JPEG, PNG, GIF, WebP
+                  JPG, PNG, GIF, or WebP
                 </Text>
               </div>
             )}
@@ -249,13 +294,23 @@ export const AvatarUploadModal = ({
                 crop={crop}
                 zoom={zoom}
                 aspect={1}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
+                onCropChange={nextCrop => {
+                  if (!isReviewStep) {
+                    setCrop(nextCrop);
+                  }
+                }}
+                onZoomChange={nextZoom => {
+                  if (!isReviewStep) {
+                    setZoom(nextZoom);
+                  }
+                }}
                 onCropComplete={(_, croppedPixels) => {
-                  setCroppedAreaPixels(croppedPixels);
+                  if (!isReviewStep) {
+                    setCroppedAreaPixels(croppedPixels);
+                  }
                 }}
                 cropShape="round"
-                showGrid={false}
+                showGrid={!isReviewStep}
               />
             )}
           </div>
@@ -265,53 +320,52 @@ export const AvatarUploadModal = ({
               ref={fileInputRef}
               type="file"
               accept={acceptedTypes}
-              onChange={(e) => {
+              onChange={e => {
                 handleFileSelected(e.target.files?.[0]);
               }}
               className="ns-avatar-upload-modal__file-input"
             />
 
-            <Button variant="outline" onClick={openFilePicker} disabled={isBusy}>
-              {selectedFile ? "Replace image" : "Choose image"}
-            </Button>
+            {!isReviewStep && (
+              <>
+                <Button variant="outline" onClick={openFilePicker} disabled={isBusy}>
+                  {selectedFile ? "Replace image" : "Choose image"}
+                </Button>
 
-            <Text size="xs" color="grey">
-              Max file size: {getMaxSizeLabel()}
-            </Text>
+                {previewUrl && (
+                  <div className="ns-avatar-upload-modal__zoom">
+                    <Text size="xs" color="grey">
+                      Zoom
+                    </Text>
+                    <input
+                      type="range"
+                      min={1}
+                      max={3}
+                      step={0.01}
+                      value={zoom}
+                      onChange={e => {
+                        setZoom(Number(e.target.value));
+                      }}
+                      disabled={isBusy}
+                    />
+                  </div>
+                )}
+              </>
+            )}
 
-            {selectedFile && (
-              <div className="ns-avatar-upload-modal__file-meta">
-                <Text size="xs" weight="medium">
-                  {selectedFile.name}
-                </Text>
-                <Text size="xs" color="grey">
-                  {formatFileSize(selectedFile.size)}
+            {isReviewStep && (
+              <div className="ns-avatar-upload-modal__review-note">
+                <Text size="sm" color="grey">
+                  Ready to sign a wallet message and upload this avatar.
                 </Text>
               </div>
             )}
-
-            <div className="ns-avatar-upload-modal__zoom">
-              <Text size="xs" color="grey">
-                Zoom
-              </Text>
-              <input
-                type="range"
-                min={1}
-                max={3}
-                step={0.01}
-                value={zoom}
-                onChange={(e) => {
-                  setZoom(Number(e.target.value));
-                }}
-                disabled={!previewUrl || isBusy}
-              />
-            </div>
 
             {uploadState === "signing" && (
               <div className="ns-avatar-upload-modal__status">
                 <ShurikenSpinner size={18} />
                 <Text size="xs" color="grey">
-                  Waiting for wallet signature...
+                  Waiting for signature...
                 </Text>
               </div>
             )}

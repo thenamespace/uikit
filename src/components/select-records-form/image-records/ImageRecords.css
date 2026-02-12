@@ -1,7 +1,7 @@
 .ns-image-records {
   position: relative;
   z-index: 15;
-  margin-bottom: 52px;
+  margin-bottom: 28px;
 }
 
 .ns-image-records .ns-cover-record-cont {
@@ -38,6 +38,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 5;
+  box-shadow: 0 6px 14px color-mix(in srgb, #000 18%, transparent);
+}
+
+.ns-image-records .ns-avatar-record-cont--set {
+  border: 1px solid color-mix(in srgb, var(--ns-color-primary) 22%, transparent);
 }
 
 .ns-image-records .ns-avatar-record-placeholder {
@@ -67,60 +73,74 @@
   transform: scale(1.05);
 }
 
-.ns-avatar-actions-row {
-  margin-top: 58px;
-  display: flex;
-  justify-content: center;
+.ns-avatar-action-anchor {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  z-index: 6;
 }
 
-.ns-avatar-action-trigger {
-  min-width: 170px;
-  height: 42px;
-  border: 1px solid var(--ns-color-border);
-  border-radius: 12px;
+.ns-avatar-action-plus {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ns-color-primary) 35%, var(--ns-color-border));
   background: var(--ns-color-bg);
+  color: var(--ns-color-primary);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 14px;
-  color: var(--ns-color-fg);
+  justify-content: center;
   box-shadow: var(--ns-shadow);
   transition:
+    transform 0.2s ease,
     background-color 0.2s ease,
     border-color 0.2s ease,
-    transform 0.2s ease;
+    box-shadow 0.2s ease;
 }
 
-.ns-avatar-action-trigger:hover {
+.ns-avatar-action-plus:hover {
+  transform: scale(1.05);
   background: var(--ns-color-bg-accent);
-  border-color: color-mix(in srgb, var(--ns-color-primary) 22%, var(--ns-color-border));
+  border-color: var(--ns-color-primary);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--ns-color-primary) 16%, transparent),
+    var(--ns-shadow);
 }
 
-.ns-avatar-action-trigger:active {
-  transform: scale(0.98);
+.ns-avatar-action-plus--set {
+  background: color-mix(in srgb, var(--ns-color-primary) 9%, var(--ns-color-bg));
+}
+
+.ns-avatar-action-plus:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--ns-color-primary) 35%, transparent);
+  outline-offset: 2px;
 }
 
 .ns-avatar-actions-menu {
-  min-width: 190px;
-  padding: 6px;
+  min-width: 148px;
+  padding: 4px;
 }
 
 .ns-avatar-actions-menu-item {
   width: 100%;
   border: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   background: transparent;
   text-align: left;
-  padding: 10px 12px;
+  padding: 8px 9px;
   font-family: var(--ns-font-family);
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--ns-color-fg);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .ns-avatar-actions-menu-item:hover {
   background: var(--ns-color-bg-accent);
+  color: var(--ns-color-primary);
 }
 
 .ns-avatar-actions-menu-item:focus-visible {
@@ -170,4 +190,20 @@
 .ns-upload-options .option:hover {
   opacity: 1;
   background-color: var(--ns-color-bg-accent);
+}
+
+@media screen and (max-width: 600px) {
+  .ns-image-records {
+    margin-bottom: 22px;
+  }
+
+  .ns-avatar-action-plus {
+    width: 36px;
+    height: 36px;
+  }
+
+  .ns-avatar-action-anchor {
+    right: -8px;
+    bottom: -8px;
+  }
 }

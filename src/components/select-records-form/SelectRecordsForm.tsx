@@ -302,28 +302,28 @@ export const SelectRecordsForm = ({
   };
 
   const handleAvatarUploaded = (data: { url: string; uploadedAt: string }) => {
-    if (!data?.url || data.url.trim().length === 0) {
+    const uploadedUrl = data?.url?.trim();
+    if (!uploadedUrl) {
       setAvatarUploadFeedback({
-        message: "Upload finished but no avatar URL was returned. Please try again.",
+        message: "No avatar URL returned. Please try again.",
         variant: "error",
       });
       return;
     }
 
-    const uploadedAtMs = new Date(data.uploadedAt).getTime();
-    const safeVersion = Number.isFinite(uploadedAtMs)
-      ? uploadedAtMs.toString()
-      : Date.now().toString();
+    const currentAvatar = records.texts.find(r => r.key === "avatar")?.value?.trim();
+    const isSameAvatarUrl = currentAvatar === uploadedUrl;
+    const safeVersion = Date.now().toString();
 
-    handleImageRecordAdded("avatar", data.url, {
+    handleImageRecordAdded("avatar", uploadedUrl, {
       scrollToGeneral: false,
     });
     setAvatarPreviewVersion({
-      url: data.url,
+      url: uploadedUrl,
       version: safeVersion,
     });
     setAvatarUploadFeedback({
-      message: "Avatar uploaded. Avatar text record updated.",
+      message: isSameAvatarUrl ? "Avatar refreshed." : "Avatar updated.",
       variant: "success",
     });
   };
