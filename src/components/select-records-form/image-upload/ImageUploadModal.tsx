@@ -11,6 +11,10 @@ import { useAvatarClient, UploadImageType } from "@/hooks";
 import { getCroppedImageFile } from "../avatar-upload/cropImage";
 import "./ImageUploadModal.css";
 
+/** Formats that bypass the canvas crop and upload as-is (GIF: preserves animation, SVG: preserves vectors). */
+const isDirectUploadFormat = (type: string) =>
+  type === "image/gif" || type === "image/svg+xml";
+
 type UploadState = "idle" | "editing" | "signing" | "uploading";
 
 interface ImageUploadModalProps {
@@ -92,6 +96,9 @@ export const ImageUploadModal = ({
   const isBusy = uploadState === "signing" || uploadState === "uploading";
   const isReviewStep = modalStep === "review";
   const imageConfig = IMAGE_CONFIG[imageType];
+  const isDirectUpload = selectedFile
+    ? isDirectUploadFormat(selectedFile.type)
+    : false;
   const maxSizeLabel = formatFileSize(imageConfig.maxSize);
 
   useEffect(() => {
@@ -143,7 +150,9 @@ export const ImageUploadModal = ({
     setError(null);
 
     if (!ALLOWED_FORMATS.includes(file.type)) {
-      setError("Unsupported file type. Please use JPEG, PNG, GIF, or WebP.");
+      setError(
+        "Unsupported file type. Please use JPEG, PNG, GIF, WebP, or SVG."
+      );
       return;
     }
 
@@ -153,9 +162,16 @@ export const ImageUploadModal = ({
     }
 
     setSelectedFile(file);
-    setModalStep("edit");
-    setUploadState("editing");
     setUploadProgress(0);
+
+    if (isDirectUploadFormat(file.type)) {
+      // GIFs and SVGs skip cropping — go straight to review
+      setModalStep("review");
+      setUploadState("editing");
+    } else {
+      setModalStep("edit");
+      setUploadState("editing");
+    }
   };
 
   const handleUpload = async () => {
@@ -163,7 +179,7 @@ export const ImageUploadModal = ({
       setError("Please choose an image first.");
       return;
     }
-    if (!croppedAreaPixels) {
+    if (!isDirectUpload && !croppedAreaPixels) {
       setError("Please wait for the image cropper to load.");
       return;
     }
@@ -185,20 +201,47 @@ export const ImageUploadModal = ({
     });
 
     try {
-      const croppedFile = await getCroppedImageFile(
-        selectedFile,
-        croppedAreaPixels
-      );
-      console.info(`${IMAGE_UPLOAD_MODAL_LOG_PREFIX} cropped file ready`, {
-        imageType,
-        name: croppedFile.name,
-        type: croppedFile.type,
-        size: croppedFile.size,
-      });
+      let fileToUpload: File;
+
+      if (isDirectUpload) {
+        // GIFs are uploaded as-is to preserve animation
+        fileToUpload = selectedFile;
+        console.info(
+          `${IMAGE_UPLOAD_MODAL_LOG_PREFIX} direct upload (no crop)`,
+          {
+            imageType,
+            name: selectedFile.name,
+            type: selectedFile.type,
+            size: selectedFile.size,
+          }
+        );
+      } else {
+        const croppedFile = await getCroppedImageFile(
+          selectedFile,
+          croppedAreaPixels!
+        );
+        console.info(`${IMAGE_UPLOAD_MODAL_LOG_PREFIX} cropped file ready`, {
+          imageType,
+          name: croppedFile.name,
+          type: croppedFile.type,
+          size: croppedFile.size,
+        });
+
+        if (croppedFile.size > imageConfig.maxSize) {
+          setUploadState("editing");
+          setError(
+            `Cropped image is too large (${formatFileSize(croppedFile.size)}). ` +
+            `Maximum size is ${maxSizeLabel}. Try zooming in or choosing a smaller image.`
+          );
+          return;
+        }
+        fileToUpload = croppedFile;
+      }
+
       const uploadImage = imageType === "avatar" ? uploadAvatar : uploadHeader;
       const result = await uploadImage({
         ensName,
-        file: croppedFile,
+        file: fileToUpload,
         onProgress: progress => {
           setUploadState("uploading");
           setUploadProgress(Math.max(0, Math.min(100, Math.round(progress))));
@@ -231,7 +274,7 @@ export const ImageUploadModal = ({
       setError("Please choose an image first.");
       return;
     }
-    if (!croppedAreaPixels) {
+    if (!isDirectUpload && !croppedAreaPixels) {
       setError("Please wait for the image cropper to load.");
       return;
     }
@@ -330,12 +373,12 @@ export const ImageUploadModal = ({
                   Choose an image to begin
                 </Text>
                 <Text size="xs" color="grey">
-                  JPG, PNG, GIF, or WebP ({maxSizeLabel} max)
+                  JPG, PNG, GIF, WebP, or SVG ({maxSizeLabel} max)
                 </Text>
               </div>
             )}
 
-            {previewUrl && (
+            {previewUrl && !isDirectUpload && (
               <Cropper
                 image={previewUrl}
                 crop={crop}
@@ -360,6 +403,14 @@ export const ImageUploadModal = ({
                 showGrid={!isReviewStep}
               />
             )}
+
+            {previewUrl && isDirectUpload && (
+              <img
+                src={previewUrl}
+                alt="Image preview"
+                className="ns-image-upload-modal__gif-preview"
+              />
+            )}
           </div>
 
           <div className="ns-image-upload-modal__controls">
@@ -373,7 +424,7 @@ export const ImageUploadModal = ({
               className="ns-image-upload-modal__file-input"
             />
 
-            {!isReviewStep && (
+            {!isReviewStep && !isDirectUpload && (
               <>
                 <Button
                   variant="outline"
