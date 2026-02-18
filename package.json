@@ -5,6 +5,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "storybook": "pnpm --filter storybook dev",
+    "landing": "pnpm --filter landing dev",
     "lint": "turbo run lint",
     "format": "prettier --write .",
     "format:check": "turbo run format:check"
