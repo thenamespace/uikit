@@ -253,7 +253,7 @@ function SubnameMintSection() {
       />
       <div className="component-grid">
         <DemoPanel>
-          <SubnameMintForm parentName="yourname.eth" isTestnet={false} />
+          <SubnameMintForm parentName="nerdynation.eth" isTestnet={false} />
         </DemoPanel>
         <CodePanel title="SubnameMintForm.tsx" code={MINT_CODE} />
       </div>
