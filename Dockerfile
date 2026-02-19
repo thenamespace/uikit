@@ -1,63 +1,57 @@
-# Build stage
-FROM node:20-alpine AS builder
+# ── Stage 1: Install dependencies ────────────────────────────────────────────
+FROM node:20-alpine AS deps
 
-# Install build dependencies for native modules (if needed)
-# Python and build tools are required for some optional native dependencies
 RUN apk add --no-cache python3 make g++
+RUN npm install -g pnpm@10.13.1
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
+# Copy workspace manifests first for layer caching
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY packages/components/package.json packages/components/
+COPY apps/storybook/package.json         apps/storybook/
+COPY apps/landing/package.json           apps/landing/
 
-# Install dependencies
-# Using npm ci for faster, reliable, reproducible builds
-RUN npm ci --legacy-peer-deps
+RUN pnpm install --frozen-lockfile
 
-# Copy source code and configuration
+# ── Stage 2: Build ────────────────────────────────────────────────────────────
+FROM deps AS builder
+
 COPY . .
 
-# Build Storybook with verbose output to catch any issues
-RUN npm run build-storybook 2>&1 | tee /tmp/build.log || (cat /tmp/build.log && exit 1)
+# Turbo resolves the dependency order automatically:
+# ens-components → landing + storybook (in parallel)
+RUN pnpm turbo run build --filter=landing --filter=storybook --no-daemon
 
-# Verify storybook-static directory was created and has content
-RUN test -d storybook-static && test -f storybook-static/index.html || (echo "Storybook build failed - no output directory" && exit 1)
+# Verify outputs exist
+RUN test -f apps/landing/dist/index.html            || (echo "Landing build missing" && exit 1)
+RUN test -f apps/storybook/storybook-static/index.html || (echo "Storybook build missing" && exit 1)
 
-# List built stories JSON to verify all stories were included
-RUN if [ -f storybook-static/index.json ]; then echo "=== Stories in build ===" && cat storybook-static/index.json | head -100; fi
-
-# Production stage
+# ── Stage 3: Serve ────────────────────────────────────────────────────────────
 FROM nginx:alpine
 
-# Set ownership and permissions for nginx directories
-# The nginx user already exists in nginx:alpine image (UID 101)
-RUN chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
-    chown -R nginx:nginx /etc/nginx/conf.d && \
-    chown -R nginx:nginx /usr/share/nginx/html && \
-    chmod -R 755 /usr/share/nginx/html && \
+# Fix permissions for non-root nginx user
+RUN chown -R nginx:nginx \
+      /var/cache/nginx \
+      /var/log/nginx \
+      /etc/nginx/conf.d \
+      /usr/share/nginx/html && \
     touch /var/run/nginx.pid && \
-    chown nginx:nginx /var/run/nginx.pid && \
-    chmod 755 /var/cache/nginx && \
-    chmod 755 /var/log/nginx
+    chown nginx:nginx /var/run/nginx.pid
 
-# Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 RUN chown nginx:nginx /etc/nginx/conf.d/default.conf
 
-# Copy the built Storybook static files from builder stage
-COPY --from=builder /app/storybook-static /usr/share/nginx/html
+# Landing page → served at /
+COPY --from=builder /app/apps/landing/dist \
+     /usr/share/nginx/html
 
-# Set ownership of copied files
-RUN chown -R nginx:nginx /usr/share/nginx/html && \
-    chmod -R 755 /usr/share/nginx/html
+# Storybook → served at /storybook/
+COPY --from=builder /app/apps/storybook/storybook-static \
+     /usr/share/nginx/html/storybook
 
-# Switch to non-root user (nginx user with UID 101)
+RUN chown -R nginx:nginx /usr/share/nginx/html
+
 USER nginx
-
-# Expose port 3000 (doesn't require root privileges since it's > 1024)
 EXPOSE 3000
-
-# Start nginx as non-root user
 CMD ["nginx", "-g", "daemon off;"]

@@ -1,10 +1,9 @@
-version: '3.8'
-
 services:
-  storybook:
-    image: storybook-1
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    container_name: ui-components-storybook
+    container_name: namespace-ui
     restart: unless-stopped
-
