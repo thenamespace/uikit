@@ -11,8 +11,6 @@ import {
   Pencil,
   Zap,
   Layers,
-  Globe,
-  Package,
   Code2,
   Rocket,
 } from "lucide-react";
@@ -263,14 +261,6 @@ function SubnameMintSection() {
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 
-const HERO_CHIPS = [
-  { Icon: AtSign,  label: "ENS Registration" },
-  { Icon: Pencil,  label: "Profile Records" },
-  { Icon: Zap,     label: "Offchain Subnames" },
-  { Icon: Layers,  label: "Onchain Mint" },
-  { Icon: Globe,   label: "Mainnet + Sepolia" },
-  { Icon: Package, label: "MIT Licensed" },
-];
 
 export function App() {
   return (
@@ -293,56 +283,34 @@ export function App() {
         </div>
       </nav>
 
-      {/* HERO */}
-      <div className="hero">
-        <div className="hero-badge">
-          <span className="hero-badge-dot" />
-          Open source · MIT licensed
-        </div>
-        <h1 className="hero-title">
-          ENS UI Components<br />
-          for <em>any</em> React app
-        </h1>
-        <p className="hero-subtitle">
-          Production-ready components for ENS name registration, record editing,
-          and subname issuance. Drop them in, connect a wallet, ship.
-        </p>
-        <div className="hero-chips">
-          {HERO_CHIPS.map(({ Icon, label }) => (
-            <div key={label} className="hero-chip">
-              <Icon size={14} />
-              {label}
-            </div>
-          ))}
-        </div>
-        <div className="hero-stats">
-          <div>
-            <div className="hero-stat-num">4</div>
-            <div className="hero-stat-label">Components</div>
+      {/* HERO + SECTIONS — single grid-wrapper for connected border */}
+      <div className="grid-wrapper">
+        <div className="hero">
+          <div className="hero-badge">
+            <span className="hero-badge-dot" />
+            Open source · MIT licensed
           </div>
-          <div>
-            <div className="hero-stat-num">0</div>
-            <div className="hero-stat-label">Config needed</div>
-          </div>
-          <div>
-            <div className="hero-stat-num">MIT</div>
-            <div className="hero-stat-label">License</div>
-          </div>
+          <h1 className="hero-title">
+            ENS UI Components<br />
+            for <em>any</em> React app
+          </h1>
+          <p className="hero-subtitle">
+            Production-ready components for ENS name registration, record editing,
+            and subname issuance. Drop them in, connect a wallet, ship.
+          </p>
         </div>
+        <div className="section-divider" />
+        <QuickStartSection />
+        <div className="section-divider" />
+        <EnsRegistrationSection />
+        <div className="section-divider" />
+        <EnsRecordsSection />
+        <div className="section-divider" />
+        <OffchainSubnameSection />
+        <div className="section-divider" />
+        <SubnameMintSection />
+        <div className="section-divider" />
       </div>
-
-      {/* SECTIONS */}
-      <div className="section-divider" />
-      <QuickStartSection />
-      <div className="section-divider" />
-      <EnsRegistrationSection />
-      <div className="section-divider" />
-      <EnsRecordsSection />
-      <div className="section-divider" />
-      <OffchainSubnameSection />
-      <div className="section-divider" />
-      <SubnameMintSection />
-      <div className="section-divider" />
 
       {/* FOOTER */}
       <footer className="footer">

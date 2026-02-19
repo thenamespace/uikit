@@ -3,26 +3,33 @@
 React UI kit for registering ENS names, minting subnames, and managing ENS
 records.
 
+## Repository structure
+
+This is a **pnpm + Turborepo monorepo**:
+
+```
+ui-components/
+├── packages/
+│   └── components/        # @thenamespace/ens-components (published to npm)
+└── apps/
+    ├── storybook/         # Storybook 8 component docs (port 6006)
+    └── landing/           # Landing page / live demo app (port 4000)
+```
+
 ## What this library does
 
-This package gives you production-ready ENS flows:
-
-- Register `.eth` names (commit -> wait -> register)
+- Register `.eth` names (commit → wait → register)
 - Mint onchain subnames from Namespace listings
-- Create/update offchain subnames through Namespace offchain API
-- Edit ENS resolver records (addresses, text, contenthash)
-- Reusable atoms/molecules for wallet-aware ENS UIs
+- Create/update offchain subnames through the Namespace API
+- Edit ENS resolver records (addresses, text, contenthash, avatar)
 
 ## Tech stack
 
 - React + TypeScript
 - `wagmi` + `viem` for wallet, chain, and contract interactions
-- Namespace SDKs:
-  - `@thenamespace/mint-manager`
-  - `@thenamespace/offchain-manager`
-  - `@thenamespace/addresses`
-- Build: Rollup (library), Vite (local app), Storybook (component docs)
-- Styling: CSS + CSS variables + Bootstrap grid utility import
+- Namespace SDKs: `@thenamespace/mint-manager`, `@thenamespace/offchain-manager`, `@thenamespace/avatar`
+- Build: Rollup (library), Vite (apps), Storybook 8
+- Styling: CSS variables
 
 ## Install
 
@@ -30,29 +37,42 @@ This package gives you production-ready ENS flows:
 npm install @thenamespace/ens-components
 ```
 
-Required peer dependencies:
+Peer dependencies (install separately):
 
-- `react` and `react-dom`
-- `wagmi`
-- `viem`
-
-## How developers use it
-
-### 1) Add wallet/web3 provider
-
-You must wrap your app with wagmi/rainbowkit/react-query providers.
-
-You can use the library helper:
-
-```tsx
-import { WalletConnectProvider } from "@thenamespace/ens-components";
-
-export function AppProviders({ children }: { children: React.ReactNode }) {
-  return <WalletConnectProvider>{children}</WalletConnectProvider>;
-}
+```bash
+npm install react react-dom wagmi viem
 ```
 
-Or use your own wagmi setup if you already have one.
+## Usage
+
+### 1) Wrap your app with web3 providers
+
+The library requires wagmi + react-query providers. Use your own setup or
+RainbowKit's `getDefaultConfig`:
+
+```tsx
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { WagmiProvider } from "wagmi";
+import { mainnet, sepolia } from "wagmi/chains";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import "@rainbow-me/rainbowkit/styles.css";
+
+const config = getDefaultConfig({
+  appName: "My App",
+  projectId: "YOUR_WALLETCONNECT_PROJECT_ID",
+  chains: [mainnet, sepolia],
+});
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={new QueryClient()}>
+        <RainbowKitProvider>{children}</RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
 
 ### 2) Import styles
 
@@ -60,7 +80,7 @@ Or use your own wagmi setup if you already have one.
 import "@thenamespace/ens-components/styles.css";
 ```
 
-### 3) Render form components
+### 3) Render components
 
 ```tsx
 import {
@@ -93,65 +113,56 @@ import {
 
 ## Main exported surfaces
 
-- Components: `EnsNameRegistrationForm`, `EnsRecordsForm`,
-  `SubnameMintForm`, `OffchainSubnameForm`, atoms, molecules
-- Hooks: `useRegisterENS`, `useENSResolver`, `useMintManager`,
-  `useMintSubname`, `useOffchainManager`, `useWaitTransaction`,
-  `useAvatarClient`
-- Types: `EnsRecords`, `EnsAddressRecord`, `EnsTextRecord`,
-  `EnsContenthashRecord`, listing and tx types
-- Utils: resolver payload builders, records diff/validation, chain/coin helpers
+- **Components**: `EnsNameRegistrationForm`, `EnsRecordsForm`, `SubnameMintForm`, `OffchainSubnameForm`, atoms, molecules
+- **Hooks**: `useRegisterENS`, `useENSResolver`, `useMintManager`, `useMintSubname`, `useOffchainManager`, `useWaitTransaction`, `useAvatarClient`
+- **Types**: `EnsRecords`, `EnsAddressRecord`, `EnsTextRecord`, `EnsContenthashRecord`, listing and tx types
+- **Utils**: resolver payload builders, records diff/validation, chain/coin helpers
 
 ## Avatar and header upload
 
 The records editor (`SelectRecordsForm`) supports uploading avatar and header
 images via SIWE-authenticated upload through `@thenamespace/avatar`.
 
-- **Avatar upload** - crop to 1:1, max 2 MB
-- **Header upload** - rectangular crop, max 5 MB
-- **Manual URL** - enter an avatar or header URL directly
-
-Both upload paths are available in `EnsRecordsForm`, `OffchainSubnameForm`,
-and `SubnameMintForm` wherever the records editor is used.
-
-## Expected data model
-
-Core record shape used throughout the kit:
-
-```ts
-interface EnsRecords {
-  addresses: { coinType: number; value: string }[];
-  texts: { key: string; value: string }[];
-  contenthash?: { protocol: "ipfs" | "onion3" | "arweave" | "skynet" | "swarm"; value: string };
-}
-```
-
-## Network and behavior assumptions
-
-- ENS registration flow targets:
-  - Mainnet (`isTestnet=false`) or Sepolia (`isTestnet=true`)
-- Registration only handles second-level `.eth` labels
-- Wallet must be connected and switched to expected chain
-- Many flows are client-side only (use `window`/`localStorage`)
-- Offchain subname flow requires valid Namespace API credentials per domain
-- Resolver update assumes resolver supports `multicall`, `setText`, `setAddr`,
-  and `setContenthash`
+- **Avatar upload** — crop to 1:1, max 2 MB
+- **Header upload** — rectangular crop, max 5 MB
+- **Manual URL** — enter an avatar or header URL directly
 
 ## Local development
 
 ```bash
-# Dev library watch
-npm run dev
+# Install all workspace dependencies
+pnpm install
 
-# Storybook
-npm run storybook
+# Start the landing page (http://localhost:4000)
+pnpm landing
 
-# Test app (manual integration app)
-npm run test-app
+# Start Storybook (http://localhost:6006)
+pnpm storybook
 
-# Build package
-npm run build
+# Build everything (library → apps, in dependency order)
+pnpm build
+
+# Build the library only
+pnpm --filter @thenamespace/ens-components build
 ```
+
+Turbo handles build order automatically: the library is always built before
+the apps that depend on it.
+
+## Docker
+
+A single image serves the landing page at `/` and Storybook at `/storybook/`
+on port 3000:
+
+```bash
+docker compose up --build
+```
+
+## Publishing
+
+CI publishes `packages/components` to npm on push to `main` via
+`.github/workflows/npm.yaml`. Bump the version in
+`packages/components/package.json` before merging.
 
 ## Maintainer notes
 
