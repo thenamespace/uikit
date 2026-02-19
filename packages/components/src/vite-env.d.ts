@@ -1,5 +1,31 @@
 /// <reference types="vite/client" />
 
+// Explicit asset declarations so tsc works without vite being installed
+declare module "*.svg" {
+  const content: string;
+  export default content;
+}
+declare module "*.png" {
+  const content: string;
+  export default content;
+}
+declare module "*.jpg" {
+  const content: string;
+  export default content;
+}
+declare module "*.jpeg" {
+  const content: string;
+  export default content;
+}
+declare module "*.gif" {
+  const content: string;
+  export default content;
+}
+declare module "*.webp" {
+  const content: string;
+  export default content;
+}
+
 interface ImportMetaEnv {
   readonly VITE_LIST_MANAGER_API?: string;
   readonly VITE_IS_TESTNET?: string;

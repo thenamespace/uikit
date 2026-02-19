@@ -86,6 +86,7 @@
     "@thenamespace/avatar": "^1.0.0",
     "@thenamespace/mint-manager": "^1.1.1",
     "@thenamespace/offchain-manager": "^1.0.10",
+    "bootstrap": "^5.3.0",
     "lodash": "^4.17.21",
     "lucide-react": ">=0.525.0",
     "react-confetti": "^6.4.0"

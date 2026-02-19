@@ -5,6 +5,9 @@
   "packageManager": "pnpm@10.13.1",
   "scripts": {
     "build": "turbo run build",
+    "build:components": "pnpm --filter @thenamespace/ens-components build",
+    "build:storybook": "pnpm --filter storybook build",
+    "build:landing": "pnpm --filter landing build",
     "dev": "turbo run dev",
     "storybook": "turbo run dev --filter=storybook",
     "landing": "turbo run dev --filter=landing",
