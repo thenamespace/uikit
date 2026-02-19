@@ -27,7 +27,13 @@ export const useMintManager = ({ isTestnet }: UseMintManagerParams) => {
       : ListingNetwork.Mainnet;
     return fetch(
       `${listManagerApi}/api/v1/listing/network/${listingNetwork}/name/${name}`
-    ).then(res => res.json());
+    ).then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Unknown error");
+      }
+      return data;
+    });
   }, [isTestnet]);
 
   return {

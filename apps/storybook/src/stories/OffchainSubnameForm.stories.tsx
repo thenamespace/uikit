@@ -53,7 +53,7 @@ type Story = StoryObj<typeof OffchainSubnameForm>;
 
 export const Default: Story = {
   args: {
-    name: "yourname.eth",
+    name: "offchainsub.eth",
     apiKeyOrToken: "",
     isTestnet: false,
   },
@@ -68,7 +68,7 @@ export const Default: Story = {
 
 export const Testnet: Story = {
   args: {
-    name: "yourname.eth",
+    name: "offchainsub.eth",
     apiKeyOrToken: "",
     isTestnet: true,
   },
@@ -81,7 +81,7 @@ export const Testnet: Story = {
 
 export const PrefilledLabel: Story = {
   args: {
-    name: "yourname.eth",
+    name: "offchainsub.eth",
     apiKeyOrToken: "",
     isTestnet: false,
     label: "alice",
