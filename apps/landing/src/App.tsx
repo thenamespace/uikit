@@ -1,4 +1,5 @@
 import React from "react";
+import ninjaBanner from "./assets/ninja-banner.png";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   EnsNameRegistrationForm,
@@ -170,7 +171,7 @@ function QuickStartSection() {
       </div>
       <div className="install-block">
         <span className="install-prompt">$</span>
-        <code>npm install @thenamespace/ens-components wagmi viem @rainbow-me/rainbowkit @tanstack/react-query</code>
+        <code>npm install @thenamespace/ens-components wagmi viem @tanstack/react-query</code>
       </div>
     </section>
   );
@@ -286,18 +287,19 @@ export function App() {
       {/* HERO + SECTIONS — single grid-wrapper for connected border */}
       <div className="grid-wrapper">
         <div className="hero">
-          <div className="hero-badge">
-            <span className="hero-badge-dot" />
-            Open source · MIT licensed
+          <div className="hero-text">
+            <h1 className="hero-title">
+              ENS UI Components<br />
+              for <em>any</em> React app
+            </h1>
+            <p className="hero-subtitle">
+              Production-ready components for ENS name registration, record editing,
+              and subname issuance. Drop them in, connect a wallet, ship.
+            </p>
           </div>
-          <h1 className="hero-title">
-            ENS UI Components<br />
-            for <em>any</em> React app
-          </h1>
-          <p className="hero-subtitle">
-            Production-ready components for ENS name registration, record editing,
-            and subname issuance. Drop them in, connect a wallet, ship.
-          </p>
+          <div className="hero-image">
+            <img src={ninjaBanner} alt="Namespace ninja" />
+          </div>
         </div>
         <div className="section-divider" />
         <QuickStartSection />
