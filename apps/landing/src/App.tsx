@@ -254,7 +254,8 @@ function SectionHeader({
 
 // ─── Quick Start ──────────────────────────────────────────────────────────────
 
-const WAGMI_SETUP_CODE = `import { WagmiProvider, createConfig, http } from "wagmi";
+const WAGMI_SETUP_CODE = `import "@thenamespace/ens-components/styles";
+import { WagmiProvider, createConfig, http } from "wagmi";
 import { mainnet, sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -294,14 +295,14 @@ function QuickStartSection() {
       dark: false,
       selectable: true,
       title: "Wrap with WagmiProvider",
-      desc: "Configure wagmi once at your app root. All ENS components share the same wallet connection automatically.",
+      desc: "Configure wagmi once at your app root and add styles.",
     },
     {
       num: "03",
       dark: false,
       selectable: false,
       title: "Import and go live",
-      desc: "Drop in any component with a few props. Your users can register ENS names, update records, and mint subnames onchain. No extra setup required.",
+      desc: "Drop in any component with a few props.",
     },
   ];
 
@@ -838,6 +839,7 @@ function NavWalletButton() {
   );
 }
 
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 export function App() {
@@ -846,7 +848,10 @@ export function App() {
       {/* NAV */}
       <nav className="nav">
         <a className="nav-logo" href="#">
-          <img src={logoFull} alt="Namespace" className="nav-logo-full" />
+          <span className="nav-logo-stack">
+            <img src={logoFull} alt="Namespace" className="nav-logo-full" />
+            <span className="nav-logo-sub">ENS Components</span>
+          </span>
           <img src={logoIcon} alt="Namespace" className="nav-logo-icon" />
         </a>
         <div className="nav-links">
@@ -895,7 +900,10 @@ export function App() {
       {/* FOOTER */}
       <footer className="footer">
         <a href="https://namespace.ninja" target="_blank" rel="noreferrer" className="footer-logo-link">
-          <img src={logoFull} alt="Namespace" className="footer-logo" />
+          <span className="footer-logo-stack">
+            <img src={logoFull} alt="Namespace" className="footer-logo" />
+            <span className="footer-logo-sub">ENS Components</span>
+          </span>
         </a>
         <div className="footer-links">
           Built by{" "}
