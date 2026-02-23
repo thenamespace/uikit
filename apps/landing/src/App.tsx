@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ninjaBanner from "./assets/ninja-banner.png";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import {
   EnsNameRegistrationForm,
   EnsRecordsForm,
@@ -278,6 +278,7 @@ const ENS_REG_DEFS: PropDef[] = [
 ];
 
 function EnsRegistrationSection() {
+  const { openConnectModal } = useConnectModal();
   const [values, setValues] = useState<Record<string, any>>(() =>
     Object.fromEntries(ENS_REG_DEFS.map((d) => [d.key, d.default])),
   );
@@ -309,6 +310,7 @@ function EnsRegistrationSection() {
             bannerImage={values.bannerImage || undefined}
             hideBanner={values.hideBanner}
             bannerWidth={values.bannerWidth || undefined}
+            onConnectWallet={openConnectModal}
           />
         </DemoPanel>
       </div>
