@@ -1,61 +1,68 @@
-# `@thenamespace/ens-components`
+<img src="apps/landing/src/assets/logo-full.png" alt="Namespace" height="36" />
 
-React UI kit for registering ENS names, minting subnames, and managing ENS
-records.
+# ENS Components
 
-## Repository structure
+**Drop-in React components for ENS name registration, record editing, and subname issuance.**
 
-This is a **pnpm + Turborepo monorepo**:
+[![npm](https://img.shields.io/npm/v/@thenamespace/ens-components)](https://www.npmjs.com/package/@thenamespace/ens-components)
+[![license](https://img.shields.io/npm/l/@thenamespace/ens-components)](LICENSE)
 
-```
-ui-components/
-├── packages/
-│   └── components/        # @thenamespace/ens-components (published to npm)
-└── apps/
-    ├── storybook/         # Storybook 8 component docs (port 6006)
-    └── landing/           # Landing page / live demo app (port 4000)
-```
+<img src="apps/landing/src/assets/preview.png" alt="ENS UI Components for any React app" width="100%" />
 
-## What this library does
+---
 
-- Register `.eth` names (commit → wait → register)
-- Mint onchain subnames from Namespace listings
-- Create/update offchain subnames through the Namespace API
-- Edit ENS resolver records (addresses, text, contenthash, avatar)
+## Live demo
 
-## Tech stack
+**[uikit.namespace.ninja](https://uikit.namespace.ninja)** — interactive playground for all components with live prop editing and generated code snippets.
 
-- React + TypeScript
-- `wagmi` + `viem` for wallet, chain, and contract interactions
-- Namespace SDKs: `@thenamespace/mint-manager`, `@thenamespace/offchain-manager`, `@thenamespace/avatar`
-- Build: Rollup (library), Vite (apps), Storybook 8
-- Styling: CSS variables
+---
+
+## What's included
+
+| Component | What it does |
+|-----------|-------------|
+| `EnsNameRegistrationForm` | Full `.eth` registration flow — search, commit, wait, register |
+| `EnsRecordsForm` | Edit resolver records (addresses, text, contenthash, avatar) for a name you own |
+| `SelectRecordsForm` | Standalone record composer — no wallet or transaction required |
+| `SubnameMintForm` | Mint onchain subnames from a Namespace listing |
+| `OffchainSubnameForm` | Create and update gasless offchain subnames via the Namespace API |
+
+---
 
 ## Install
 
 ```bash
 npm install @thenamespace/ens-components
+# or
+pnpm add @thenamespace/ens-components
 ```
 
-Peer dependencies (install separately):
+Install peer dependencies if you don't have them already:
 
 ```bash
-npm install react react-dom wagmi viem
+npm install react react-dom wagmi viem @tanstack/react-query
 ```
 
-## Usage
+---
 
-### 1) Wrap your app with web3 providers
+## Setup
 
-The library requires wagmi + react-query providers. Use your own setup or
-RainbowKit's `getDefaultConfig`:
+### 1. Add styles
 
 ```tsx
+import "@thenamespace/ens-components/styles.css";
+```
+
+### 2. Wrap your app with wagmi providers
+
+The components require `WagmiProvider` and `QueryClientProvider`. The example below uses RainbowKit for wallet connection — any wagmi-compatible setup works.
+
+```tsx
+import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { mainnet, sepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import "@rainbow-me/rainbowkit/styles.css";
 
 const config = getDefaultConfig({
   appName: "My App",
@@ -74,58 +81,187 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 ```
 
-### 2) Import styles
+---
+
+## Components
+
+### EnsNameRegistrationForm
+
+Guides users through the full `.eth` registration flow: search → commit → wait → register.
 
 ```tsx
-import "@thenamespace/ens-components/styles.css";
+import { EnsNameRegistrationForm } from "@thenamespace/ens-components";
+
+<EnsNameRegistrationForm
+  isTestnet={false}
+  referrer="0xYourReferrerAddress"
+  onConnectWallet={() => openConnectModal()}
+/>
 ```
 
-### 3) Render components
+| Prop | Type | Description |
+|------|------|-------------|
+| `isTestnet` | `boolean` | Use Sepolia instead of mainnet |
+| `referrer` | `string` | Registration referrer wallet address |
+| `noBorder` | `boolean` | Remove the card border |
+| `title` | `string` | Override the form heading |
+| `subtitle` | `string` | Override the subtitle |
+| `bannerImage` | `string` | Custom banner image URL |
+| `hideBanner` | `boolean` | Hide the banner entirely |
+| `onConnectWallet` | `() => void` | Called when the user needs to connect a wallet |
+
+---
+
+### EnsRecordsForm
+
+Edit all resolver records for an ENS name the connected wallet owns.
 
 ```tsx
-import {
-  EnsNameRegistrationForm,
-  EnsRecordsForm,
-  SubnameMintForm,
-  OffchainSubnameForm,
-} from "@thenamespace/ens-components";
+import { EnsRecordsForm } from "@thenamespace/ens-components";
 
-// Register an ENS name
-<EnsNameRegistrationForm isTestnet={false} />;
-
-// Update records for an existing name
 <EnsRecordsForm
   name="alice.eth"
-  existingRecords={{ texts: [], addresses: [] }}
+  existingRecords={{ addresses: [], texts: [] }}
   isTestnet={false}
-/>;
-
-// Mint onchain subname
-<SubnameMintForm parentName="alice.eth" isTestnet={false} />;
-
-// Create/update offchain subname (requires API token/key)
-<OffchainSubnameForm
-  name="alice.eth"
-  apiKeyOrToken="YOUR_NAMESPACE_API_KEY"
-  isTestnet={false}
-/>;
+/>
 ```
 
-## Main exported surfaces
+| Prop | Type | Description |
+|------|------|-------------|
+| `name` | `string` | ENS name to edit |
+| `existingRecords` | `EnsRecords` | Current on-chain records |
+| `isTestnet` | `boolean` | Use Sepolia instead of mainnet |
+| `noBorder` | `boolean` | Remove the card border |
+| `txConfirmations` | `number` | Block confirmations to wait after tx |
+| `onCancel` | `() => void` | Called when the user cancels |
 
-- **Components**: `EnsNameRegistrationForm`, `EnsRecordsForm`, `SubnameMintForm`, `OffchainSubnameForm`, atoms, molecules
-- **Hooks**: `useRegisterENS`, `useENSResolver`, `useMintManager`, `useMintSubname`, `useOffchainManager`, `useWaitTransaction`, `useAvatarClient`
-- **Types**: `EnsRecords`, `EnsAddressRecord`, `EnsTextRecord`, `EnsContenthashRecord`, listing and tx types
-- **Utils**: resolver payload builders, records diff/validation, chain/coin helpers
+---
 
-## Avatar and header upload
+### SelectRecordsForm
 
-The records editor (`SelectRecordsForm`) supports uploading avatar and header
-images via SIWE-authenticated upload through `@thenamespace/avatar`.
+Standalone record editor with no wallet or transaction required. Use it to compose records before passing them to any other form.
 
-- **Avatar upload** — crop to 1:1, max 2 MB
-- **Header upload** — rectangular crop, max 5 MB
-- **Manual URL** — enter an avatar or header URL directly
+```tsx
+import { SelectRecordsForm } from "@thenamespace/ens-components";
+import { useState } from "react";
+
+const [records, setRecords] = useState({ addresses: [], texts: [] });
+
+<SelectRecordsForm
+  records={records}
+  onRecordsUpdated={setRecords}
+/>
+```
+
+---
+
+### SubnameMintForm
+
+Full minting flow for onchain subnames — price lookup, profile records, and the mint transaction.
+
+```tsx
+import { SubnameMintForm } from "@thenamespace/ens-components";
+
+<SubnameMintForm
+  parentName="yourname.eth"
+  isTestnet={false}
+  onConnectWallet={() => openConnectModal()}
+/>
+```
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `parentName` | `string` | ENS name users will mint subnames under |
+| `isTestnet` | `boolean` | Use Sepolia instead of mainnet |
+| `txConfirmations` | `number` | Block confirmations to wait after tx |
+| `onConnectWallet` | `() => void` | Called when the user needs to connect |
+| `onCancel` | `() => void` | Called when the user cancels |
+
+---
+
+### OffchainSubnameForm
+
+Create and update gasless offchain subnames through the Namespace API. Requires an API key from [dev.namespace.ninja](https://dev.namespace.ninja).
+
+```tsx
+import { OffchainSubnameForm } from "@thenamespace/ens-components";
+import { createOffchainClient } from "@thenamespace/offchain-manager";
+
+const offchainManager = createOffchainClient({
+  domainApiKeys: { "yourname.eth": "your-api-key" },
+  mode: "mainnet", // or "sepolia"
+});
+
+<OffchainSubnameForm
+  name="yourname.eth"
+  offchainManager={offchainManager}
+  onSubnameCreated={async (data) => {
+    await offchainManager.createSubname({
+      parentName: data.parentName,
+      label: data.label,
+      addresses: data.addresses,
+      texts: data.texts,
+      owner: data.owner,
+    });
+  }}
+  onSubnameUpdated={async (data) => {
+    await offchainManager.updateSubname(data.fullSubname, {
+      addresses: data.addresses,
+      texts: data.texts,
+    });
+  }}
+/>
+```
+
+Install the offchain manager separately:
+
+```bash
+npm install @thenamespace/offchain-manager
+```
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `name` | `string` | Parent ENS name |
+| `offchainManager` | `OffchainClient` | Client from `createOffchainClient()` |
+| `isTestnet` | `boolean` | Use Sepolia instead of mainnet |
+| `label` | `string` | Pre-fill and lock the subname label |
+| `title` | `string` | Override the header title |
+| `subtitle` | `string` | Show a subtitle below the header |
+| `hideTitle` | `boolean` | Hide the header entirely |
+| `onSubnameCreated` | `(data) => Promise<void>` | Called after a new subname is submitted |
+| `onSubnameUpdated` | `(data) => Promise<void>` | Called after an existing subname is updated |
+
+---
+
+## Theming
+
+All colors, radii, and spacing are CSS variables. Override them in your own stylesheet to match your brand:
+
+```css
+:root {
+  --ns-color-primary: #3b82f6;
+  --ns-color-bg: #ffffff;
+  --ns-color-bg-secondary: #f9fafb;
+  --ns-color-text: #111827;
+  --ns-color-text-secondary: #6b7280;
+  --ns-color-border: #e5e7eb;
+  --ns-radius-md: 8px;
+  --ns-radius-lg: 12px;
+}
+```
+
+---
+
+## Repository structure
+
+```
+ui-components/
+├── packages/
+│   └── components/        # @thenamespace/ens-components  (published to npm)
+└── apps/
+    ├── storybook/         # Storybook 8 component explorer  (port 6006)
+    └── landing/           # Interactive demo & docs         (port 4000)
+```
 
 ## Local development
 
@@ -134,37 +270,24 @@ images via SIWE-authenticated upload through `@thenamespace/avatar`.
 pnpm install
 
 # Start the landing page (http://localhost:4000)
-pnpm landing
+pnpm --filter landing dev
 
 # Start Storybook (http://localhost:6006)
-pnpm storybook
+pnpm --filter storybook dev
 
-# Build everything (library → apps, in dependency order)
-pnpm build
-
-# Build the library only
+# Build the library
 pnpm --filter @thenamespace/ens-components build
+
+# Build everything in dependency order
+turbo run build
 ```
 
-Turbo handles build order automatically: the library is always built before
-the apps that depend on it.
+---
 
-## Docker
+## Links
 
-A single image serves the landing page at `/` and Storybook at `/storybook/`
-on port 3000:
-
-```bash
-docker compose up --build
-```
-
-## Publishing
-
-CI publishes `packages/components` to npm on push to `main` via
-`.github/workflows/npm.yaml`. Bump the version in
-`packages/components/package.json` before merging.
-
-## Maintainer notes
-
-See `docs/MAINTAINER_NOTES.md` for architecture walkthrough, assumptions, and
-known implementation caveats.
+- **Live demo** — [uikit.namespace.ninja](https://uikit.namespace.ninja)
+- **npm** — [@thenamespace/ens-components](https://www.npmjs.com/package/@thenamespace/ens-components)
+- **API keys** — [dev.namespace.ninja](https://dev.namespace.ninja)
+- **Namespace** — [namespace.ninja](https://namespace.ninja)
+- **Builders Telegram** — [t.me/+u2X1_QbR-CVmMGIy](https://t.me/+u2X1_QbR-CVmMGIy)
