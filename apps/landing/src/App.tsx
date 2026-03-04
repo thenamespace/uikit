@@ -762,7 +762,7 @@ function OffchainSubnameSection({ isTestnet, onIsTestnetChange }: { isTestnet: b
 // ─── Onchain Subnames ─────────────────────────────────────────────────────────
 
 const MINT_DEFS: PropDef[] = [
-  { key: "parentName",        type: "string",  default: "filepay.eth", tip: "The ENS name users will mint subnames under", placeholder: "yourname.eth", required: true, readonly: true },
+  { key: "parentName",        type: "string",  default: "artii.eth", tip: "The ENS name users will mint subnames under", placeholder: "yourname.eth", required: true, readonly: true },
   { key: "isTestnet",         type: "boolean", default: false,             tip: "Use Sepolia testnet instead of Ethereum mainnet" },
   { key: "txConfirmations",   type: "number",  default: 1,                 tip: "Number of block confirmations to wait after the mint transaction" },
   { key: "avatarUploadDomain", type: "string", default: "",                tip: "Domain used for SIWE message signing during avatar upload", placeholder: "yourdomain.com" },
@@ -770,9 +770,11 @@ const MINT_DEFS: PropDef[] = [
 
 function SubnameMintSection({ isTestnet, onIsTestnetChange }: { isTestnet: boolean; onIsTestnetChange: (v: boolean) => void }) {
   const { openConnectModal } = useConnectModal();
+  const parentName = isTestnet ? "unicorn.eth" : "artii.eth";
   const [values, setValues] = useState<Record<string, any>>(() => ({
     ...Object.fromEntries(MINT_DEFS.map((d) => [d.key, d.default])),
     isTestnet,
+    parentName,
   }));
   const [mountKey, setMountKey] = useState(0);
   const onChange = (key: string, val: any) => {
@@ -781,8 +783,8 @@ function SubnameMintSection({ isTestnet, onIsTestnetChange }: { isTestnet: boole
   };
 
   useEffect(() => {
-    setValues((prev) => ({ ...prev, isTestnet }));
-  }, [isTestnet]);
+    setValues((prev) => ({ ...prev, isTestnet, parentName }));
+  }, [isTestnet, parentName]);
   const code = generateCode("SubnameMintForm", MINT_DEFS, values);
 
   return (
@@ -797,7 +799,7 @@ function SubnameMintSection({ isTestnet, onIsTestnetChange }: { isTestnet: boole
         <DemoPanel>
           <SubnameMintForm
             key={`${String(isTestnet)}-${mountKey}`}
-            parentName="filepay.eth"
+            parentName={parentName}
             isTestnet={isTestnet}
             txConfirmations={values.txConfirmations || undefined}
             avatarUploadDomain={values.avatarUploadDomain || undefined}
