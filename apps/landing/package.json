@@ -10,13 +10,14 @@
   },
   "dependencies": {
     "@thenamespace/ens-components": "workspace:*",
+    "@thenamespace/offchain-manager": "^1.0.10",
     "@rainbow-me/rainbowkit": "^2.2.8",
     "@tanstack/react-query": "^5.0.0",
     "lucide-react": "^0.511.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "wagmi": "^2.18.2",
-    "viem": "^2.38.4"
+    "wagmi": "^2.19.5",
+    "viem": "^2.46.3"
   },
   "devDependencies": {
     "@types/react": "^19.1.12",
