@@ -7,7 +7,6 @@ import logoFull from "./assets/logo-full.png";
 import logoIcon from "./assets/logo-icon.png";
 import ensSvg from "./assets/ens.svg";
 import shurikenSvg from "./assets/shuriken.svg";
-import ninjaSvg from "./assets/ninja.svg";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import {
   EnsNameRegistrationForm,
@@ -23,6 +22,11 @@ import {
   GitBranch,
   Send,
   Rocket,
+  BookOpenText,
+  MousePointerClick,
+  Unlink,
+  Anvil,
+  Megaphone,
 } from "lucide-react";
 import "./landing.css";
 
@@ -367,6 +371,7 @@ function EnsRegistrationSection({ isTestnet, onIsTestnetChange }: { isTestnet: b
     ...Object.fromEntries(ENS_REG_DEFS.map((d) => [d.key, d.default])),
     isTestnet,
   }));
+  const [mountKey, setMountKey] = useState(0);
 
   const onChange = (key: string, val: any) => {
     setValues((prev) => ({ ...prev, [key]: val }));
@@ -394,7 +399,7 @@ function EnsRegistrationSection({ isTestnet, onIsTestnetChange }: { isTestnet: b
         </div>
         <DemoPanel>
           <EnsNameRegistrationForm
-            key={String(isTestnet)}
+            key={`${String(isTestnet)}-${mountKey}`}
             isTestnet={isTestnet}
             referrer={values.referrer || undefined}
             noBorder={values.noBorder}
@@ -405,6 +410,7 @@ function EnsRegistrationSection({ isTestnet, onIsTestnetChange }: { isTestnet: b
             bannerWidth={values.bannerWidth || undefined}
             avatarUploadDomain={values.avatarUploadDomain || undefined}
             onConnectWallet={openConnectModal}
+            onRegistrationSuccess={() => setMountKey((k) => k + 1)}
           />
         </DemoPanel>
       </div>
@@ -547,7 +553,7 @@ function EnsRecordsSection({ isTestnet, onIsTestnetChange }: { isTestnet: boolea
   return (
     <section className="section" id="ens-records">
       <SectionHeader
-        icon={shurikenSvg}
+        icon={BookOpenText}
         name="ENS Records"
         title="Edit Profile Records"
         desc="Full-featured editor for text records, addresses, contenthash, and avatar uploads. Reads existing records and writes them back via a resolver transaction."
@@ -610,9 +616,10 @@ function EnsRecordsSection({ isTestnet, onIsTestnetChange }: { isTestnet: boolea
 // ─── Select Records ───────────────────────────────────────────────────────────
 
 const SELECT_RECORDS_CODE = `import { SelectRecordsForm } from "@thenamespace/ens-components";
+import type { EnsRecords } from "@thenamespace/ens-components";
 import { useState } from "react";
 
-const [records, setRecords] = useState({ addresses: [], texts: [] });
+const [records, setRecords] = useState<EnsRecords>({ addresses: [], texts: [] });
 
 <SelectRecordsForm
   records={records}
@@ -625,7 +632,7 @@ function SelectRecordsSection() {
   return (
     <section className="section" id="select-records">
       <SectionHeader
-        icon={shurikenSvg}
+        icon={MousePointerClick}
         name="Record Selector"
         title="Select ENS Records"
         desc="Standalone record editor. No wallet or transaction required. Let users compose text records, addresses, and contenthash before submitting them to any form."
@@ -688,6 +695,7 @@ function OffchainSubnameSection({ isTestnet, onIsTestnetChange }: { isTestnet: b
   }));
   const [ensName, setEnsName] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [offchainMountKey, setOffchainMountKey] = useState(0);
 
   const onChange = (key: string, val: any) => {
     setValues((prev) => ({ ...prev, [key]: val }));
@@ -712,7 +720,7 @@ function OffchainSubnameSection({ isTestnet, onIsTestnetChange }: { isTestnet: b
   return (
     <section className="section" id="offchain-subname">
       <SectionHeader
-        icon={shurikenSvg}
+        icon={Unlink}
         name="Offchain Subnames"
         title="Create Offchain Subnames"
         desc="Let users claim subnames instantly via the Namespace API. No gas, no on-chain transaction. Just a parent ENS name and an API key."
@@ -756,7 +764,7 @@ function OffchainSubnameSection({ isTestnet, onIsTestnetChange }: { isTestnet: b
           </div>
           <div style={isReady ? undefined : { opacity: 0.4, pointerEvents: "none" }}>
             <OffchainSubnameForm
-              key={`${String(isTestnet)}-${values.label}-${ensName}`}
+              key={`${String(isTestnet)}-${values.label}-${ensName}-${offchainMountKey}`}
               name={ensName || "yourname.eth"}
               offchainManager={offchainManager}
               isTestnet={isTestnet}
@@ -764,6 +772,7 @@ function OffchainSubnameSection({ isTestnet, onIsTestnetChange }: { isTestnet: b
               title={values.title || undefined}
               subtitle={values.subtitle || undefined}
               hideTitle={values.hideTitle}
+              onCancel={() => setOffchainMountKey((k) => k + 1)}
               onSubnameCreated={async (data) => {
                 await offchainManager.createSubname({
                   parentName: data.parentName,
@@ -772,12 +781,14 @@ function OffchainSubnameSection({ isTestnet, onIsTestnetChange }: { isTestnet: b
                   texts: data.texts,
                   owner: data.owner,
                 });
+                setOffchainMountKey((k) => k + 1);
               }}
               onSubnameUpdated={async (data) => {
                 await offchainManager.updateSubname(data.fullSubname, {
                   addresses: data.addresses,
                   texts: data.texts,
                 });
+                setOffchainMountKey((k) => k + 1);
               }}
             />
           </div>
@@ -820,7 +831,7 @@ function SubnameMintSection({ isTestnet, onIsTestnetChange }: { isTestnet: boole
   return (
     <section className="section" id="subname-mint">
       <SectionHeader
-        icon={shurikenSvg}
+        icon={Anvil}
         name="Onchain Subnames"
         title="Mint Onchain Subnames"
         desc="Full minting flow for onchain subnames: price lookup, profile records, and the mint transaction. Works with any ENS name using the Namespace L2 resolver."
@@ -835,6 +846,7 @@ function SubnameMintSection({ isTestnet, onIsTestnetChange }: { isTestnet: boole
             subtitle={values.subtitle || undefined}
             onConnectWallet={openConnectModal}
             onCancel={() => setMountKey((k) => k + 1)}
+            onSuccess={() => setMountKey((k) => k + 1)}
           />
         </DemoPanel>
         <div className="code-col">
@@ -852,7 +864,7 @@ function ReportBugSection() {
   return (
     <section className="section" id="report-bug">
       <SectionHeader
-        icon={ninjaSvg}
+        icon={Megaphone}
         name="Community"
         title="Get Help & Report Issues"
         desc="Found a bug or need support? Reach out in the Namespace Builders Telegram group or open an issue on GitHub."
