@@ -10,7 +10,7 @@ import {
   zeroAddress,
 } from "viem";
 import { mainnet, sepolia } from "viem/chains";
-import { usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useSwitchChain, useWalletClient } from "wagmi";
 import { getEnsContracts } from "@thenamespace/addresses";
 import { createEnsReferer, equalsIgnoreCase, formatFloat } from "@/utils";
 import { ABIS } from "./abis";
@@ -49,9 +49,11 @@ interface EnsRegistration {
 }
 
 export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
+  
   const publicClient = usePublicClient({
     chainId: isTestnet ? sepolia.id : mainnet.id,
   });
+  const { address } = useAccount()
   const { data: walletClient } = useWalletClient({
     chainId: isTestnet ? sepolia.id : mainnet.id,
   });
@@ -60,11 +62,14 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
     label: string,
     expiryInYears: number = 1
   ): Promise<RentPriceResponse> => {
+  
+    const ethController = getEthController();
     const price = (await publicClient!.readContract({
       abi: ABIS.ETH_REGISTRAR_CONTOLLER,
       functionName: "rentPrice",
-      args: [label, expiryInYears * SECONDS_IN_YEAR],
-      address: getEthController(),
+      args: [label, BigInt(expiryInYears * SECONDS_IN_YEAR)],
+      address: ethController,
+      account: address!
     })) as { base: bigint; premium: bigint };
 
     const totalPrice = price.base + price.premium;
