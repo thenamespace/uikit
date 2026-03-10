@@ -46,6 +46,7 @@ export const TextRecords = ({
 
   const [lastAddedKey, setLastAddedKey] = useState<string | null>(null);
   const [customDrafts, setCustomDrafts] = useState<CustomDraft[]>([]);
+  const [lastAddedDraftId, setLastAddedDraftId] = useState<string | null>(null);
   const inputRefs = useRef<
     Record<string, HTMLInputElement | HTMLTextAreaElement | null>
   >({});
@@ -69,8 +70,19 @@ export const TextRecords = ({
   };
 
   const handleAddCustomDraft = () => {
-    setCustomDrafts(prev => [...prev, { id: genDraftId(), key: "", value: "" }]);
+    const id = genDraftId();
+    setCustomDrafts(prev => [...prev, { id, key: "", value: "" }]);
+    setLastAddedDraftId(id);
   };
+
+  useEffect(() => {
+    if (!lastAddedDraftId) return;
+    const el = inputRefs.current[lastAddedDraftId];
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.focus();
+    setLastAddedDraftId(null);
+  }, [customDrafts, lastAddedDraftId]);
 
   const handleCustomDraftKeyChange = (draftId: string, newKey: string) => {
     const draft = customDrafts.find(d => d.id === draftId)!;
@@ -314,6 +326,9 @@ export const TextRecords = ({
           <div key={draft.id} style={{ marginBottom: 10 }}>
             <div className="d-flex align-items-center" style={{ gap: 6 }}>
               <Input
+                ref={(el: HTMLInputElement | null) => {
+                  inputRefs.current[draft.id] = el;
+                }}
                 style={{ flex: 1 }}
                 value={draft.key}
                 onChange={e => handleCustomDraftKeyChange(draft.id, e.target.value)}
