@@ -1,4 +1,4 @@
-<img src="apps/landing/src/assets/logo-full.jpeg" alt="Namespace" height="36" />
+<img src="apps/landing/src/assets/logo-wide.png" alt="Namespace" height="36" />
 
 # ENS Components
 
@@ -277,7 +277,7 @@ turbo run build
 
 ## Links
 
-- **Live demo** — [uikit.namespace.ninja](https://uikit.namespace.ninja)
+- **Live demo** — [enscomponents.com](https://enscomponents.com)
 - **npm** — [@thenamespace/ens-components](https://www.npmjs.com/package/@thenamespace/ens-components)
 - **API keys** — [dev.namespace.ninja](https://dev.namespace.ninja)
 - **Namespace** — [namespace.ninja](https://namespace.ninja)
