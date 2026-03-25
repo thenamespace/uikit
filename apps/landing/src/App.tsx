@@ -47,9 +47,37 @@ const PRODUCT_SCHEMA = {
     name: "Namespace",
     url: "https://namespace.ninja",
   },
-  codeRepository: "https://github.com/thenamespace/uikit",
+  codeRepository: "https://github.com/thenamespace/ens-components",
   programmingLanguage: ["TypeScript", "React"],
   keywords: "ENS, Ethereum Name Service, React, subnames, Web3, wagmi",
+};
+
+const SOURCE_CODE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  name: "@thenamespace/ens-components",
+  description:
+    "Production-ready React component library for ENS name registration, profile record editing, and subname issuance.",
+  url: "https://github.com/thenamespace/ens-components",
+  codeRepository: "https://github.com/thenamespace/ens-components",
+  programmingLanguage: [
+    { "@type": "ComputerLanguage", name: "TypeScript" },
+    { "@type": "ComputerLanguage", name: "CSS" },
+  ],
+  runtimePlatform: "Node.js / Web Browser",
+  targetProduct: {
+    "@type": "SoftwareApplication",
+    name: "@thenamespace/ens-components",
+  },
+  license: "https://opensource.org/licenses/MIT",
+  author: {
+    "@type": "Organization",
+    name: "Namespace",
+    url: "https://namespace.ninja",
+  },
+  version: "latest",
+  keywords:
+    "ENS, Ethereum Name Service, React, wagmi, viem, Web3, subnames, TypeScript",
 };
 
 export function App() {
@@ -60,6 +88,7 @@ export function App() {
       <SEO />
       <StructuredData schema={ORG_SCHEMA} />
       <StructuredData schema={PRODUCT_SCHEMA} />
+      <StructuredData schema={SOURCE_CODE_SCHEMA} />
 
       {/* NAV */}
       <nav className="nav" aria-label="Main navigation">

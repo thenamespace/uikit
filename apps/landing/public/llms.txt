@@ -6,9 +6,169 @@ Allow: /
 AI-Training: allowed
 AI-Retrieval: allowed
 
-## About this site
+## About
 
-ENS Components (https://enscomponents.com) is the official interactive documentation and live playground for @thenamespace/ens-components — a production-ready React component library for building ENS (Ethereum Name Service) experiences.
+ENS Components (https://enscomponents.com) is the official interactive documentation and live
+playground for @thenamespace/ens-components — a production-ready React component library for
+building ENS (Ethereum Name Service) experiences. It ships five drop-in components for ENS name
+registration, profile record editing, and subname issuance, all with built-in wallet integration
+via wagmi and viem.
+
+## Package
+
+- npm: @thenamespace/ens-components
+- GitHub: https://github.com/thenamespace/ens-components
+- License: MIT
+- Developer portal: https://dev.namespace.ninja
+
+## Installation
+
+```bash
+npm install @thenamespace/ens-components wagmi viem @tanstack/react-query
+```
+
+Import the stylesheet once at your app root:
+
+```tsx
+import "@thenamespace/ens-components/styles";
+```
+
+Wrap your app with wagmi's WagmiProvider and QueryClientProvider (see Quick Start on the site).
+
+## Components
+
+### 1. EnsNameRegistrationForm
+Full .eth name registration flow: search → commit → wait → register.
+
+Key props:
+- name?: string — pre-fill a search name
+- isTestnet?: boolean — use Sepolia (default: false)
+- referrer?: Address — referrer address for fee sharing
+- noBorder?: boolean — remove card border
+- title?: string — override card title
+- subtitle?: string — override card subtitle
+- bannerImage?: string — custom banner image URL
+- hideBanner?: boolean — hide the top banner
+- avatarUploadDomain?: string — SIWE domain for avatar uploads
+- onRegistrationSuccess?: (result: RegistrationSuccessData) => void
+- onRegistrationStart?: (name: string) => void
+- onConnectWallet?: () => void
+- onClose?: (isSuccess: boolean) => void
+
+### 2. EnsRecordsForm
+Full profile record editor for an ENS name. Fetches current on-chain records and lets the user
+edit text records, addresses, avatar, and contenthash, then submits a single multicall transaction.
+
+Key props:
+- name: string — full ENS name (e.g. "alice.eth")
+- existingRecords: EnsRecords — current records (fetch with useENSResolver hook)
+- isTestnet?: boolean
+- resolverChainId?: number — override resolver chain
+- resolverAddress?: Address — override resolver contract
+- noBorder?: boolean
+- avatarUploadDomain?: string
+- txConfirmations?: number — confirmations to wait for (default: 1)
+- onRecordsUpdated?: (diff: EnsRecordsDiff) => void
+- onTransactionSent?: (hash: Hash) => void
+- onCancel?: () => void
+- onGreat?: () => void
+
+### 3. SelectRecordsForm
+Standalone record selector with no wallet requirement. Renders the same editor UI but calls back
+with the updated EnsRecords object — useful when you manage the submit step yourself.
+
+Key props:
+- records: EnsRecords — current record state
+- onRecordsUpdated: (records: EnsRecords) => void — called on every change
+- actionButtons?: React.ReactNode — inject custom buttons at the bottom
+- avatarUpload?: AvatarUploadContext — enable avatar/header image uploads
+
+### 4. OffchainSubnameForm
+Gasless offchain subname creation via the Namespace CCIP-Read gateway (EIP-3668). No wallet
+transaction required for end users.
+
+Key props:
+- offchainManager: OffchainClient — client instance from @thenamespace/offchain-manager
+- name: string — parent ENS name (e.g. "myname.eth")
+- label?: string — pre-fill the subname label
+- isTestnet?: boolean
+- title?: string
+- subtitle?: string
+- hideTitle?: boolean
+- avatarUploadDomain?: string
+- onSubnameCreated?: (data: OffchainSubnameCreatedData) => void
+- onSubnameUpdated?: (data: OffchainSubnameCreatedData) => void
+- onCancel?: () => void
+
+### 5. SubnameMintForm
+Onchain subname minting under a Namespace-activated ENS name. Looks up price, lets user pick
+records, then submits a wallet transaction.
+
+Key props:
+- parentName: string — parent ENS name
+- label?: string — pre-fill the subname label
+- isTestnet?: boolean
+- title?: string
+- subtitle?: string
+- avatarUploadDomain?: string
+- txConfirmations?: number
+- onSubnameMinted?: (data: SubnameMintedData) => void
+- onSuccess?: (data: MintSuccessData) => void
+- onConnectWallet?: () => void
+- onCancel?: () => void
+
+## Key TypeScript Types
+
+```ts
+interface EnsRecords {
+  addresses: EnsAddressRecord[];
+  texts: EnsTextRecord[];
+  contenthash?: EnsContenthashRecord;
+}
+
+interface EnsTextRecord { key: string; value: string; }
+interface EnsAddressRecord { coinType: number; value: string; }
+interface EnsContenthashRecord {
+  protocol: ContenthashProtocol;
+  value: string;
+}
+
+enum ContenthashProtocol {
+  Ipfs = "ipfs", Onion = "onion3", Arweave = "arweave",
+  Skynet = "skynet", Swarm = "swarm",
+}
+
+type ChainName = "eth" | "arb" | "base" | "bitcoin" | "matic" | "op" | "sol" | "zora" | "celo";
+```
+
+## CSS Custom Properties (Theming)
+
+Override these on `:root` or `[data-theme="dark"]` to theme the components:
+
+```css
+:root {
+  --ns-font-family: "Satoshi", system-ui, sans-serif;
+  --ns-radius-sm: 4px;
+  --ns-radius-md: 8px;
+  --ns-radius-lg: 12px;
+  --ns-color-bg: #ffffff;
+  --ns-color-bg-accent: #f4f4f4;
+  --ns-color-bg-accent-hover: #d9d9d9;
+  --ns-color-bg-darker: #e2e2e2;
+  --ns-color-fg: #111827;
+  --ns-color-muted: #6b7280;
+  --ns-color-primary: #1f1f1f;
+  --ns-color-primary-contrast: #ffffff;
+  --ns-color-border: #e5e7eb;
+  --ns-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+```
+
+## Framework Compatibility
+
+Works in any React 19+ app. Compatible with Next.js (App Router and Pages Router), Remix, Vite,
+and Create React App. For SSR frameworks, mark the component tree as a Client Component or use
+dynamic imports with ssr: false, since components use wagmi wallet hooks.
 
 ## What this site contains
 
@@ -18,16 +178,7 @@ ENS Components (https://enscomponents.com) is the official interactive documenta
 - Quick-start installation guide
 - FAQ covering common integration questions
 
-## Key components documented here
+## Full API reference
 
-1. EnsNameRegistrationForm — Full .eth name registration flow (search, commit, register)
-2. EnsRecordsForm — Profile record editor (text records, addresses, avatar, contenthash)
-3. SelectRecordsForm — Standalone record selector with no wallet required
-4. OffchainSubnameForm — Gasless offchain subname creation via the Namespace API
-5. SubnameMintForm — Onchain subname minting with price lookup and wallet transaction
-
-## Package
-
-npm: @thenamespace/ens-components
-GitHub: https://github.com/thenamespace/ens-components
-Developer portal: https://dev.namespace.ninja
+See https://enscomponents.com/llms-full.txt for the complete API reference with all prop tables,
+full TypeScript types, CSS variable listing, error handling notes, and integration recipes.

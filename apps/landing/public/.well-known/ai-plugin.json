@@ -1,0 +1,30 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "ENS Components by Namespace",
+  "name_for_model": "ens_components",
+  "description_for_human": "Production-ready React components for ENS name registration, profile record editing, and subname issuance.",
+  "description_for_model": "ENS Components (@thenamespace/ens-components) is a React component library for building Ethereum Name Service (ENS) experiences. It provides five drop-in components: EnsNameRegistrationForm (full .eth registration flow), EnsRecordsForm (on-chain profile record editor), SelectRecordsForm (wallet-free record selector), OffchainSubnameForm (gasless CCIP-Read subname creation), and SubnameMintForm (on-chain subname minting). Components integrate with wagmi, viem, and @tanstack/react-query. Theming is done via CSS custom properties prefixed with --ns-. Supports Next.js, Remix, Vite, and CRA. Full API reference is at https://enscomponents.com/llms-full.txt.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://enscomponents.com/.well-known/openapi.yaml",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://enscomponents.com/favicon.png",
+  "contact_email": "support@namespace.ninja",
+  "legal_info_url": "https://namespace.ninja",
+  "capabilities": {
+    "documentation": {
+      "llms_txt": "https://enscomponents.com/llms.txt",
+      "llms_full_txt": "https://enscomponents.com/llms-full.txt"
+    },
+    "package": {
+      "npm": "@thenamespace/ens-components",
+      "registry": "https://www.npmjs.com/package/@thenamespace/ens-components",
+      "repository": "https://github.com/thenamespace/ens-components",
+      "license": "MIT"
+    }
+  }
+}
