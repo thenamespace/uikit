@@ -1,0 +1,633 @@
+# @thenamespace/ens-components — Full API Reference
+# https://enscomponents.com/llms-full.txt
+# Summary version: https://enscomponents.com/llms.txt
+
+User-agent: *
+Allow: /
+AI-Training: allowed
+AI-Retrieval: allowed
+
+---
+
+## Package
+
+- Name: @thenamespace/ens-components
+- npm: https://www.npmjs.com/package/@thenamespace/ens-components
+- GitHub: https://github.com/thenamespace/ens-components
+- License: MIT
+- Developer portal: https://dev.namespace.ninja
+
+---
+
+## Installation
+
+```bash
+npm install @thenamespace/ens-components wagmi viem @tanstack/react-query
+```
+
+Import the stylesheet once at your app root:
+
+```tsx
+import "@thenamespace/ens-components/styles";
+```
+
+---
+
+## Quick Start
+
+```tsx
+// providers.tsx (or equivalent app root)
+import { WagmiProvider, createConfig, http } from "wagmi";
+import { mainnet } from "wagmi/chains";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const config = createConfig({
+  chains: [mainnet],
+  transports: { [mainnet.id]: http() },
+});
+const queryClient = new QueryClient();
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+
+// page.tsx
+import "@thenamespace/ens-components/styles";
+import { EnsNameRegistrationForm } from "@thenamespace/ens-components";
+
+export default function Page() {
+  return <EnsNameRegistrationForm />;
+}
+```
+
+---
+
+## Framework Compatibility
+
+| Framework         | Support | Notes |
+|-------------------|---------|-------|
+| Next.js App Router | ✅ | Mark component tree as `"use client"` or use `next/dynamic` with `ssr: false` |
+| Next.js Pages Router | ✅ | Import normally; works with `_app.tsx` providers |
+| Remix             | ✅ | Use `<ClientOnly>` wrapper or `lazy` imports for SSR safety |
+| Vite + React      | ✅ | No special setup needed |
+| Create React App  | ✅ | No special setup needed |
+
+Components use wagmi hooks (window.ethereum, wallet state) and must render on the client.
+
+---
+
+## Component Reference
+
+---
+
+### EnsNameRegistrationForm
+
+Full .eth name registration flow: search → commit → 60-second wait → register.
+Requires the connected wallet to be on mainnet (or Sepolia if isTestnet=true).
+
+```tsx
+import { EnsNameRegistrationForm } from "@thenamespace/ens-components";
+
+<EnsNameRegistrationForm
+  name="alice"
+  onRegistrationSuccess={(result) => console.log("Registered!", result)}
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| name | `string` | `undefined` | Pre-fill the search input with this name (label only or full "label.eth") |
+| isTestnet | `boolean` | `false` | Use Sepolia testnet ENS contracts |
+| referrer | `Address` | `undefined` | Referrer address for ENS protocol fee sharing |
+| noBorder | `boolean` | `false` | Remove the card border/shadow |
+| className | `string` | `undefined` | Additional CSS class on the root element |
+| title | `string` | `undefined` | Override the card title |
+| subtitle | `string` | `undefined` | Override the card subtitle |
+| bannerImage | `string` | `undefined` | URL of a custom banner image |
+| hideBanner | `boolean` | `false` | Hide the top decorative banner |
+| bannerWidth | `number` | `undefined` | Width in px of the banner image |
+| avatarUploadDomain | `string` | `undefined` | SIWE domain for avatar/header image uploads |
+| onRegistrationSuccess | `(result: RegistrationSuccessData) => void` | `undefined` | Called after successful registration |
+| onRegistrationStart | `(name: string) => void` | `undefined` | Called when the user starts the commit step |
+| onConnectWallet | `() => void` | `undefined` | Called when the connect-wallet button is clicked |
+| onClose | `(isSuccess: boolean) => void` | `undefined` | Called when the user closes/dismisses the form |
+
+#### Callback Types
+
+```ts
+interface RegistrationSuccessData {
+  expiryInYears: number;
+  registrationCost: string;   // formatted ETH string
+  transactionFees: string;    // formatted ETH string
+  total: string;              // formatted ETH string
+  expiryDate: string;         // ISO date string
+}
+```
+
+#### Behavior Without Wallet
+
+If no wallet is connected, the form shows a "Connect Wallet" prompt. The user can still type a
+name and see availability, but the commit/register buttons are disabled. Pass `onConnectWallet`
+to hook into your own wallet connection modal.
+
+---
+
+### EnsRecordsForm
+
+Profile record editor for an ENS name. Fetches current on-chain records, renders the editor, and
+submits a multicall transaction to update changed records.
+
+```tsx
+import { EnsRecordsForm } from "@thenamespace/ens-components";
+import { useENSResolver } from "@thenamespace/ens-components";
+
+const { records } = useENSResolver({ name: "alice.eth" });
+
+<EnsRecordsForm
+  name="alice.eth"
+  existingRecords={records}
+  onRecordsUpdated={(diff) => console.log("Updated", diff)}
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| name | `string` | **required** | Full ENS name (e.g. "alice.eth") |
+| existingRecords | `EnsRecords` | **required** | Current records to populate the editor |
+| isTestnet | `boolean` | `false` | Use Sepolia |
+| resolverChainId | `number` | `undefined` | Override which chain to resolve on |
+| resolverAddress | `Address` | `undefined` | Override the resolver contract address |
+| noBorder | `boolean` | `false` | Remove card border |
+| className | `string` | `undefined` | Additional CSS class |
+| avatarUploadDomain | `string` | `undefined` | SIWE domain for avatar/header image uploads |
+| txConfirmations | `number` | `1` | Number of block confirmations to wait for |
+| onRecordsUpdated | `(diff: EnsRecordsDiff) => void` | `undefined` | Called after confirmed update |
+| onTransactionSent | `(hash: Hash) => void` | `undefined` | Called immediately after tx broadcast |
+| onCancel | `() => void` | `undefined` | Called when the user cancels |
+| onGreat | `() => void` | `undefined` | Called when the user clicks "Great" on the success screen |
+
+#### Behavior Without Wallet
+
+If no wallet is connected or the wallet is on the wrong chain, the form shows a
+"Connect & Switch Chain" prompt instead of the save button. The editor UI is still rendered so
+users can inspect records.
+
+---
+
+### SelectRecordsForm
+
+Standalone record selector with no wallet requirement. Renders the same editor UI as
+EnsRecordsForm but calls back with an updated EnsRecords object on every change. You control
+what happens with the data (e.g. display a custom submit button, batch it with other operations).
+
+```tsx
+import { SelectRecordsForm, EnsRecords } from "@thenamespace/ens-components";
+
+const [records, setRecords] = useState<EnsRecords>({ addresses: [], texts: [] });
+
+<SelectRecordsForm
+  records={records}
+  onRecordsUpdated={setRecords}
+  actionButtons={<button onClick={handleSave}>Save</button>}
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| records | `EnsRecords` | **required** | Current record state to display |
+| onRecordsUpdated | `(records: EnsRecords) => void` | **required** | Called with updated records on every change |
+| actionButtons | `React.ReactNode` | `undefined` | Custom buttons rendered below the form |
+| avatarUpload | `AvatarUploadContext` | `undefined` | Enable avatar/header image upload UI |
+
+```ts
+interface AvatarUploadContext {
+  ensName: string;
+  isTestnet?: boolean;
+  siweDomain?: string;  // domain used for SIWE message
+}
+```
+
+---
+
+### OffchainSubnameForm
+
+Gasless offchain subname creation via the Namespace CCIP-Read gateway (EIP-3668).
+Subnames are created instantly without any wallet transaction for the end user.
+Requires a `OffchainClient` instance from `@thenamespace/offchain-manager`.
+
+```tsx
+import { OffchainSubnameForm } from "@thenamespace/ens-components";
+import { OffchainClient } from "@thenamespace/offchain-manager";
+
+const client = new OffchainClient({ apiKey: "YOUR_API_KEY" });
+
+<OffchainSubnameForm
+  offchainManager={client}
+  name="myname.eth"
+  onSubnameCreated={(data) => console.log("Created", data.fullSubname)}
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| offchainManager | `OffchainClient` | **required** | Client instance from @thenamespace/offchain-manager |
+| name | `string` | **required** | Parent ENS name (e.g. "myname.eth") |
+| label | `string` | `undefined` | Pre-fill the subname label input |
+| isTestnet | `boolean` | `false` | Use Sepolia |
+| title | `string` | `undefined` | Override card title |
+| subtitle | `string` | `undefined` | Override card subtitle |
+| hideTitle | `boolean` | `false` | Hide the title/subtitle section |
+| avatarUploadDomain | `string` | `undefined` | SIWE domain for avatar/header uploads |
+| onSubnameCreated | `(data: OffchainSubnameCreatedData) => void \| Promise<void>` | `undefined` | Called after successful creation |
+| onSubnameUpdated | `(data: OffchainSubnameCreatedData) => void \| Promise<void>` | `undefined` | Called after successful update |
+| onCancel | `() => void` | `undefined` | Called on cancel |
+
+#### Callback Types
+
+```ts
+interface OffchainSubnameCreatedData {
+  label: string;         // subname label (e.g. "alice")
+  parentName: string;    // parent name (e.g. "myname.eth")
+  fullSubname: string;   // full name (e.g. "alice.myname.eth")
+  addresses: Array<{ chain: ChainName; value: string }>;
+  texts: Array<{ key: string; value: string }>;
+  owner?: string;        // owner address if set
+}
+```
+
+#### Getting an API Key
+
+Create an account on https://dev.namespace.ninja, connect your wallet, and generate an API key
+for your ENS name.
+
+#### Behavior Without Wallet
+
+OffchainSubnameForm does not require a connected wallet. The subname is created server-side via
+the Namespace API. A wallet is only needed if the form is configured to set an owner address.
+
+---
+
+### SubnameMintForm
+
+Onchain subname minting under a Namespace-activated ENS name. Looks up the mint price for the
+parent name, lets the user choose a label and set records, then submits a wallet transaction.
+
+```tsx
+import { SubnameMintForm } from "@thenamespace/ens-components";
+
+<SubnameMintForm
+  parentName="myname.eth"
+  onSubnameMinted={(data) => console.log("Minted", data.fullSubname)}
+/>
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| parentName | `string` | **required** | Parent ENS name under which to mint |
+| label | `string` | `undefined` | Pre-fill the subname label |
+| isTestnet | `boolean` | `false` | Use Sepolia |
+| title | `string` | `undefined` | Override card title |
+| subtitle | `string` | `undefined` | Override card subtitle |
+| avatarUploadDomain | `string` | `undefined` | SIWE domain for avatar/header uploads |
+| txConfirmations | `number` | `1` | Block confirmations to wait for |
+| onSubnameMinted | `(data: SubnameMintedData) => void` | `undefined` | Called after confirmed mint |
+| onSuccess | `(data: MintSuccessData) => void` | `undefined` | Alternative success callback |
+| onConnectWallet | `() => void` | `undefined` | Called when connect-wallet button is clicked |
+| onCancel | `() => void` | `undefined` | Called on cancel |
+
+#### Callback Types
+
+```ts
+interface SubnameMintedData {
+  label: string;
+  parentName: string;
+  fullSubname: string;
+  records: EnsRecords;
+  price: string;           // formatted ETH string
+  transactionFees: string; // formatted ETH string
+  ownerAddress: string;
+  txHash: string;
+  chainId: number;
+}
+```
+
+#### Behavior Without Wallet
+
+If no wallet is connected, the form shows a "Connect Wallet" button. Pass `onConnectWallet` to
+open your own wallet modal. The availability check and price lookup still work without a wallet.
+
+---
+
+## TypeScript Types (full export list)
+
+```ts
+// Records
+interface EnsRecords {
+  addresses: EnsAddressRecord[];
+  texts: EnsTextRecord[];
+  contenthash?: EnsContenthashRecord;
+}
+
+interface EnsTextRecord {
+  key: string;   // e.g. "com.twitter", "url", "description", "email"
+  value: string;
+}
+
+interface EnsAddressRecord {
+  coinType: number;  // SLIP-44 coin type, e.g. 60 = ETH, 0 = BTC
+  value: string;     // address string
+}
+
+interface EnsContenthashRecord {
+  protocol: ContenthashProtocol;
+  value: string;  // CID or equivalent
+}
+
+enum ContenthashProtocol {
+  Ipfs    = "ipfs",
+  Onion   = "onion3",
+  Arweave = "arweave",
+  Skynet  = "skynet",
+  Swarm   = "swarm",
+}
+
+// Chain identifiers
+type ChainName =
+  | "eth"     // Ethereum / EVM (coin type 60)
+  | "arb"     // Arbitrum
+  | "base"    // Base
+  | "bitcoin" // Bitcoin (coin type 0)
+  | "matic"   // Polygon
+  | "op"      // Optimism
+  | "sol"     // Solana
+  | "zora"    // Zora
+  | "celo";   // Celo
+
+// ENS Listing (used by SubnameMintForm internally)
+interface NameListing {
+  type: ListingType;
+  name: string;
+  isVerified: boolean;
+  nameNetwork: ListingNetwork;
+  l2Metadata?: {
+    isBurnable: boolean;
+    isExpirable: boolean;
+    registryAddress: Address;
+    registryNetwork: ListingNetwork;
+  };
+}
+
+enum ListingType    { L1 = "L1", L2 = "L2" }
+enum ListingNetwork {
+  Base       = "BASE",
+  Optimism   = "OPTIMISM",
+  Mainnet    = "MAINNET",
+  Sepolia    = "SEPOLIA",
+  BaseSepolia = "BASE_SEPOLIA",
+}
+
+enum TxProgress { Pending = 0, Success = 1, Failed = 2 }
+```
+
+---
+
+## Exported Hooks
+
+```ts
+// Resolve current on-chain records for an ENS name
+useENSResolver(options: { name: string; isTestnet?: boolean })
+  → { records: EnsRecords; isLoading: boolean; error: Error | null; ... }
+
+// Full ENS registration flow (used internally by EnsNameRegistrationForm)
+useRegisterENS(options)
+
+// Wait for a transaction to confirm
+useWaitTransaction(hash: Hash, confirmations?: number)
+
+// Offchain subname management
+useOffchainManager(client: OffchainClient)
+
+// Onchain subname mint management
+useMintManager(options)
+useMintSubname(options)
+
+// ENS avatar upload
+useAvatarClient(options)
+```
+
+---
+
+## CSS Custom Properties (complete list)
+
+Import `@thenamespace/ens-components/styles` and then override any variable on `:root`
+(or on a scoped selector) to theme the components.
+
+### Layout & Typography
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--ns-font-family` | `"Satoshi", system-ui, sans-serif` | Component font stack |
+| `--ns-radius-sm` | `4px` | Small border radius |
+| `--ns-radius-md` | `8px` | Medium border radius |
+| `--ns-radius-lg` | `12px` | Large border radius |
+| `--ns-shadow` | `0 1px 2px rgba(0,0,0,0.04)` | Default box shadow |
+
+### Colors (Light Theme)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--ns-color-bg` | `#ffffff` | Component background |
+| `--ns-color-bg-accent` | `#f4f4f4` | Subtle accent background |
+| `--ns-color-bg-accent-hover` | `#d9d9d9` | Accent hover state |
+| `--ns-color-bg-darker` | `#e2e2e2` | Darker accent |
+| `--ns-color-fg` | `#111827` | Primary foreground / text |
+| `--ns-color-muted` | `#6b7280` | Muted / secondary text |
+| `--ns-color-primary` | `#1f1f1f` | Primary action color (buttons) |
+| `--ns-color-primary-contrast` | `#ffffff` | Text on primary color |
+| `--ns-color-border` | `#e5e7eb` | Border color |
+
+### Alert Colors
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `--ns-alert-error-bg` | `#fef2f2` | Error alert background |
+| `--ns-alert-error-border` | `#fecaca` | Error alert border |
+| `--ns-alert-error-text` | `#dc2626` | Error alert text |
+| `--ns-alert-warning-bg` | `#fffbeb` | Warning alert background |
+| `--ns-alert-warning-border` | `#fed7aa` | Warning alert border |
+| `--ns-alert-warning-text` | `#d97706` | Warning alert text |
+| `--ns-alert-info-bg` | `#eff6ff` | Info alert background |
+| `--ns-alert-info-border` | `#bfdbfe` | Info alert border |
+| `--ns-alert-info-text` | `#257eeb` | Info alert text |
+| `--ns-alert-success-bg` | `#f0fdf4` | Success alert background |
+| `--ns-alert-success-border` | `#bbf7d0` | Success alert border |
+| `--ns-alert-success-text` | `#16a34a` | Success alert text |
+
+### Dark Theme
+
+Apply `data-theme="dark"` to any ancestor element (or `<html>`) to activate the built-in dark
+palette. Override individual variables after that to customise further.
+
+```css
+/* Custom dark theme override example */
+[data-theme="dark"] {
+  --ns-color-bg: #0b0f19;
+  --ns-color-fg: #e5e7eb;
+  --ns-color-muted: #9ca3af;
+  --ns-color-border: #1f2937;
+}
+```
+
+---
+
+## Theming Example
+
+```css
+/* Minimal brand override */
+:root {
+  --ns-color-primary: #7c3aed;          /* purple primary */
+  --ns-color-primary-contrast: #ffffff;
+  --ns-radius-md: 4px;                  /* sharper corners */
+  --ns-font-family: "Inter", sans-serif;
+}
+```
+
+---
+
+## Error Handling
+
+### Common Errors
+
+| Scenario | Behaviour |
+|----------|-----------|
+| Wallet not connected | Components show a "Connect Wallet" button. Pass `onConnectWallet` to open your modal. |
+| Wrong chain | Components show a "Switch Chain" prompt. EnsRecordsForm handles this automatically. |
+| Name not available | EnsNameRegistrationForm shows an inline error; search stays active. |
+| Transaction rejected by user | Alert shown; form resets to pre-submit state. |
+| API key invalid / expired | OffchainSubnameForm shows an inline error alert. |
+| Subname already taken | Input shows an availability indicator; submit is disabled. |
+| RPC error | Alert shown with error message; retry is possible. |
+
+### Retry Pattern
+
+All forms reset cleanly after an error — the user can retry without refreshing.
+
+---
+
+## Integration Recipes
+
+### Next.js App Router
+
+```tsx
+// components/EnsRegistration.tsx
+"use client";
+import "@thenamespace/ens-components/styles";
+import { EnsNameRegistrationForm } from "@thenamespace/ens-components";
+
+export function EnsRegistration() {
+  return (
+    <EnsNameRegistrationForm
+      onConnectWallet={() => { /* open your RainbowKit / ConnectKit modal */ }}
+      onRegistrationSuccess={(r) => console.log(r)}
+    />
+  );
+}
+```
+
+### Custom Wallet Connect Integration
+
+```tsx
+<EnsNameRegistrationForm
+  onConnectWallet={() => openConnectModal()}   // RainbowKit
+/>
+<SubnameMintForm
+  parentName="myname.eth"
+  onConnectWallet={() => open()}               // Web3Modal / AppKit
+/>
+```
+
+### Read & Edit Records
+
+```tsx
+import { useENSResolver, EnsRecordsForm } from "@thenamespace/ens-components";
+
+function EditRecords({ name }: { name: string }) {
+  const { records, isLoading } = useENSResolver({ name });
+
+  if (isLoading) return <p>Loading…</p>;
+
+  return (
+    <EnsRecordsForm
+      name={name}
+      existingRecords={records}
+      onRecordsUpdated={(diff) => console.log("Changed records:", diff)}
+    />
+  );
+}
+```
+
+### Offchain Subnames with API Key
+
+```tsx
+import { OffchainClient } from "@thenamespace/offchain-manager";
+import { OffchainSubnameForm } from "@thenamespace/ens-components";
+
+const client = new OffchainClient({ apiKey: process.env.NEXT_PUBLIC_NS_API_KEY });
+
+function SubnameForm() {
+  return (
+    <OffchainSubnameForm
+      offchainManager={client}
+      name="myname.eth"
+      onSubnameCreated={async (data) => {
+        console.log("Created:", data.fullSubname);
+        // data.addresses, data.texts are also available
+      }}
+    />
+  );
+}
+```
+
+---
+
+## Utility Classes
+
+The stylesheet exposes a small set of layout utility classes:
+
+| Class | Effect |
+|-------|--------|
+| `ns-text-center` | `text-align: center` |
+| `ns-text-left` | `text-align: left` |
+| `ns-text-right` | `text-align: right` |
+| `ns-wd-100` | `width: 100%` |
+| `ns-card-container` | Styled card wrapper |
+| `ns-me-1/2/3` | Margin-end (right in LTR) small/medium/large |
+| `ns-ms-1/2/3` | Margin-start (left in LTR) small/medium/large |
+| `ns-mt-1/2/3` | Margin-top small/medium/large |
+| `ns-mb-1/2/3` | Margin-bottom small/medium/large |
+
+---
+
+## Links
+
+- npm: https://www.npmjs.com/package/@thenamespace/ens-components
+- GitHub: https://github.com/thenamespace/ens-components
+- Developer portal: https://dev.namespace.ninja
+- Interactive docs: https://enscomponents.com
+- Summary llms.txt: https://enscomponents.com/llms.txt
