@@ -7,7 +7,7 @@ import { Button, Icon, Input, Text, ShurikenSpinner } from "@/components";
 import { PricingDisplay } from "@/components/molecules";
 import ninjaImage from "../../assets/banner.png";
 import shurikenImage from "../../assets/shuriken.svg";
-import { useRegisterENS } from "@/hooks";
+import { useRegisterENS, useEthDollarValue } from "@/hooks";
 import { useAccount } from "wagmi";
 
 const MIN_ENS_LEN = 3;
@@ -69,6 +69,7 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
   onConnectWallet,
 }) => {
   const { isConnected } = useAccount();
+  const { ethUsdRate } = useEthDollarValue();
   const { isEnsAvailable, getRegistrationPrice } = useRegisterENS({
     isTestnet,
   });
@@ -279,6 +280,7 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
               years,
               onYearsChange: handleYearsChange,
             }}
+            ethUsdRate={ethUsdRate}
           />
 
           {/* COMPLETE PROFILE */}

@@ -24,6 +24,8 @@ export interface PricingDisplayProps {
     years: number;
     onYearsChange: (years: number) => void;
   };
+  // ETH/USD rate for dollar conversion display
+  ethUsdRate?: number | null;
   className?: string;
 }
 
@@ -32,9 +34,19 @@ export const PricingDisplay: React.FC<PricingDisplayProps> = ({
   networkFees,
   total,
   expiryPicker,
+  ethUsdRate,
   className = "",
 }) => {
   const totalLoading = total.isChecking || primaryFee.isChecking || networkFees?.isChecking;
+
+  const totalUsd = React.useMemo(() => {
+    if (!ethUsdRate || totalLoading || total.amount === "Free" || total.amount === "N/A") {
+      return null;
+    }
+    const eth = parseFloat(String(total.amount));
+    if (isNaN(eth) || eth <= 0) return null;
+    return (eth * ethUsdRate).toFixed(2);
+  }, [ethUsdRate, total.amount, totalLoading]);
 
   return (
     <div className={`ens-registration-pricing ${className}`}>
@@ -87,9 +99,16 @@ export const PricingDisplay: React.FC<PricingDisplayProps> = ({
         {totalLoading ? (
           <ShurikenSpinner size={20} />
         ) : (
-          <Text size="lg" weight="bold">
-            {total.amount === "Free" ? "Free" : `${total.amount} ETH`}
-          </Text>
+          <div style={{ textAlign: "right" }}>
+            <Text size="lg" weight="bold">
+              {total.amount === "Free" ? "Free" : `${total.amount} ETH`}
+            </Text>
+            {totalUsd && (
+              <Text size="xs" color="grey">
+                ≈ ${totalUsd}
+              </Text>
+            )}
+          </div>
         )}
       </div>
     </div>
