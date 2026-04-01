@@ -13,7 +13,7 @@ import { Address, ContractFunctionExecutionError, formatEther, Hash } from "viem
 import { normalize } from "viem/ens";
 import { debounce, deepCopy, getEnsRecordsDiff } from "@/utils";
 import "./SubnameMintForm.css";
-import { useMintManager, useMintSubname, useWaitTransaction } from "@/hooks";
+import { useMintManager, useMintSubname, useWaitTransaction, useEthDollarValue } from "@/hooks";
 import { getChainIdForListingNetwork, ListingType, EnsRecords } from "@/types";
 import {
   MintDetailsResponse,
@@ -236,6 +236,7 @@ const SubnameMintFormContent = ({
 }: SubnameMintContentProps) => {
   const { address: connectedAddress, chain: currentChain } = useAccount();
   const { switchChain, isPending: isSwitchingChain } = useSwitchChain();
+  const { ethUsdRate } = useEthDollarValue();
   const { mintClient } = useMintManager({ isTestnet });
   const { mintSubname, estimateTransactionFees } = useMintSubname({ chainId });
   const { waitTx } = useWaitTransaction({ chainId });
@@ -360,78 +361,6 @@ const SubnameMintFormContent = ({
     }
   }, []);
 
-  const [transactionFees, setTransactionFees] = useState<{
-    isChecking: boolean;
-    estimatedGas: number;
-    failed: boolean;
-    price: {
-      wei: bigint;
-      eth: number;
-    };
-  }>({
-    isChecking: false,
-    estimatedGas: 0,
-    failed: false,
-    price: {
-      wei: 0n,
-      eth: 0,
-    },
-  });
-
-  const [gasEstimated, setGasEstimated] = useState(false);
-
-  // Fetch gas estimate
-  const fetchGasEstimate = async (labelToEstimate: string, recordsToEstimate: EnsRecords) => {
-    if (!connectedAddress) return;
-
-    setTransactionFees((prev) => ({ ...prev, isChecking: true, failed: false }));
-
-    try {
-      // Convert records to mint format
-      const ensMintRecords: EnsMintRecords = {
-        addresses: recordsToEstimate.addresses.map((addr) => ({
-          chain: addr.coinType,
-          value: addr.value,
-        })),
-        texts: recordsToEstimate.texts.map((text) => ({
-          key: text.key,
-          value: text.value,
-        })),
-      };
-
-      // Get mint transaction parameters
-      const mintTx = await mintClient.getMintTransactionParameters({
-        records: ensMintRecords,
-        label: labelToEstimate,
-        parentName,
-        owner: connectedAddress,
-        minterAddress: connectedAddress,
-      });
-
-      const result = await estimateTransactionFees({
-        mintTx,
-        account: connectedAddress,
-      });
-
-      if (result) {
-        setTransactionFees({
-          isChecking: false,
-          estimatedGas: Number(result.gasEstimate),
-          failed: false,
-          price: {
-            wei: result.totalFeeWei,
-            eth: result.totalFeeEth,
-          },
-        });
-        setGasEstimated(true);
-      } else {
-        setTransactionFees((prev) => ({ ...prev, isChecking: false, failed: true }));
-      }
-    } catch (err) {
-      console.error("Gas estimation error:", err);
-      setTransactionFees((prev) => ({ ...prev, isChecking: false, failed: true }));
-    }
-  };
 
   const handleNameChanged = async (value: string) => {
     const _value = value.toLowerCase().trim();
@@ -447,8 +376,7 @@ const SubnameMintFormContent = ({
     }
 
     setLabel(_value);
-    setGasEstimated(false); // Reset gas estimation for new name
-    setTransactionFees((prev) => ({ ...prev, failed: false })); // Reset failed state
+    setGasEstimated(false);
 
     if (_value.length >= MIN_ENS_LEN) {
       setAvailability({ isAvailable: false, isChecking: true });
@@ -457,6 +385,13 @@ const SubnameMintFormContent = ({
       debouncedCheckMintDetails(_value, parentName, connectedAddress!);
     }
   };
+
+  const [gasEstimated, setGasEstimated] = useState(false);
+  const [transactionFees, setTransactionFees] = useState<{
+    isChecking: boolean;
+    failed: boolean;
+    price: { wei: bigint; eth: number };
+  }>({ isChecking: false, failed: false, price: { wei: 0n, eth: 0 } });
 
   // Format ETH value with smart precision for small numbers
   const formatEthDisplay = (value: number): string => {
@@ -472,20 +407,12 @@ const SubnameMintFormContent = ({
     let fees = 0;
     let total = price;
 
-    // If gas estimation failed, show N/A for fees
     if (transactionFees.failed) {
-      return {
-        regFees: "N/A",
-        regPrice: isFree ? "Free" : formatEthDisplay(price),
-        regTotal: "N/A",
-        isFree,
-      };
+      return { regFees: "N/A", regPrice: isFree ? "Free" : formatEthDisplay(price), regTotal: "N/A", isFree };
     }
 
-    if (transactionFees) {
-      fees += transactionFees.price.eth;
-      total += transactionFees.price.eth;
-    }
+    fees += transactionFees.price.eth;
+    total += transactionFees.price.eth;
 
     return {
       regFees: formatEthDisplay(fees),
@@ -502,9 +429,8 @@ const SubnameMintFormContent = ({
     setYears(newYears);
   };
 
-  const totalPriceLoading =
-    transactionFees?.isChecking || mintDetails.isChecking;
-  const transactionFeesLoading = transactionFees?.isChecking || false;
+  const totalPriceLoading = transactionFees.isChecking || mintDetails.isChecking;
+  const transactionFeesLoading = transactionFees.isChecking;
 
   // Check for blocking errors that prevent minting entirely
   const blockingError = useMemo<{
@@ -570,18 +496,51 @@ const SubnameMintFormContent = ({
     );
   }, [label, availability, blockingError, isSubnameReserved]);
 
-  // Estimate gas when name becomes available for the first time
+  const fetchGasEstimate = async (labelToEstimate: string, recordsToEstimate: EnsRecords) => {
+    if (!connectedAddress) return;
+    setTransactionFees((prev) => ({ ...prev, isChecking: true, failed: false }));
+    try {
+      const ensMintRecords: EnsMintRecords = {
+        addresses: recordsToEstimate.addresses.map((addr) => ({ chain: addr.coinType, value: addr.value })),
+        texts: recordsToEstimate.texts.map((text) => ({ key: text.key, value: text.value })),
+      };
+      const mintTx = await mintClient.getMintTransactionParameters({
+        records: ensMintRecords,
+        label: labelToEstimate,
+        parentName,
+        owner: connectedAddress,
+        minterAddress: connectedAddress,
+      });
+      const result = await estimateTransactionFees({ mintTx, account: connectedAddress });
+      if (result) {
+        setTransactionFees({ isChecking: false, failed: false, price: { wei: result.totalFeeWei, eth: result.totalFeeEth } });
+        setGasEstimated(true);
+      } else {
+        setTransactionFees((prev) => ({ ...prev, isChecking: false, failed: true }));
+      }
+    } catch {
+      setTransactionFees((prev) => ({ ...prev, isChecking: false, failed: true }));
+    }
+  };
+
+  // Reset gas estimate when wallet connects/disconnects so estimation re-runs
   useEffect(() => {
-    if (isAvailableForMint && !gasEstimated && label.length >= MIN_ENS_LEN) {
+    if (connectedAddress) {
+      setGasEstimated(false);
+    }
+  }, [connectedAddress]);
+
+  // Trigger gas estimation once the name becomes available for minting
+  useEffect(() => {
+    if (isAvailableForMint && !gasEstimated && label.length >= MIN_ENS_LEN && connectedAddress) {
       fetchGasEstimate(label, ensRecords);
     }
-  }, [isAvailableForMint, gasEstimated, label]);
+  }, [isAvailableForMint, gasEstimated, label, connectedAddress]);
 
   const handleSaveRecords = () => {
     const newRecords = deepCopy(ensRecordTemplate);
     setEnsRecords(newRecords);
     setShowProfile(false);
-    // Re-estimate gas when records change
     if (label.length >= MIN_ENS_LEN) {
       fetchGasEstimate(label, newRecords);
     }
@@ -599,6 +558,8 @@ const SubnameMintFormContent = ({
 
     let tx: Hash | null = null;
     let mintPrice: bigint = 0n;
+
+    console.log("Handling mint state", connectedAddress!, "Connected address")
 
     // Step 1: Get mint transaction parameters and execute
     try {
@@ -854,6 +815,7 @@ const SubnameMintFormContent = ({
                   }
                 : undefined
             }
+            ethUsdRate={ethUsdRate}
           />
 
           <ProfileSelector onSelect={() => setShowProfile(true)} />
