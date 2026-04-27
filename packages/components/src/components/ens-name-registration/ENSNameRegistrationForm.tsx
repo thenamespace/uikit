@@ -5,7 +5,6 @@ import { SetNameRecords } from "./SetNameRecords";
 import { EnsRecords } from "@/types";
 import { deepCopy, getEnsRecordsDiff } from "@/utils";
 import { secondsFromYears } from "@/utils/date";
-import { useAccount } from "wagmi";
 import { RegistrationProcess } from "./RegistrationProcess";
 import { SuccessScreen } from "./registration";
 import { Address } from "viem";
