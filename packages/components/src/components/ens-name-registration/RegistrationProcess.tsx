@@ -18,7 +18,7 @@ import { generateEnsRegistrationSecret } from "./ensRegistrationUtils";
 import { Address } from "viem";
 
 interface RegistrationSuccessData {
-  expiryInYears: number;
+  durationLabel: string;
   registrationCost: string;
   transactionFees: string;
   total: string;
@@ -27,7 +27,7 @@ interface RegistrationSuccessData {
 
 interface RegistrationProcessProps {
   label: string;
-  expiryInYears: number;
+  durationInSeconds: number;
   isTestnet: boolean;
   records: EnsRecords;
   onBack?: (clearState?: boolean) => void;
@@ -38,29 +38,26 @@ interface RegistrationProcessProps {
 
 const getBlankRegistrationState = (
   label: string,
-  exiryInYears: number,
+  durationInSeconds: number,
   records: EnsRecords,
   isTestnet: boolean,
   referrer?: Address
-) => {
-  const blankRegistrationState: RegistrationState = {
-    step: ProcessSteps.Start,
-    label: label,
-    commitment: { completed: false, time: 0 },
-    registration: { completed: false },
-    timerStartedAt: 0,
-    expiryInYears: exiryInYears,
-    secret: generateEnsRegistrationSecret(),
-    records: records,
-    isTestnet: isTestnet,
-    referrer: referrer,
-  };
-  return blankRegistrationState;
-};
+): RegistrationState => ({
+  step: ProcessSteps.Start,
+  label,
+  commitment: { completed: false, time: 0 },
+  registration: { completed: false },
+  timerStartedAt: 0,
+  durationInSeconds,
+  secret: generateEnsRegistrationSecret(),
+  records,
+  isTestnet,
+  referrer,
+});
 
 export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
   label,
-  expiryInYears,
+  durationInSeconds,
   isTestnet = false,
   records,
   onBack,
@@ -74,34 +71,22 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
   const expectedChainId = isTestnet ? sepolia.id : mainnet.id;
   const isOnCorrectNetwork = chain?.id === expectedChainId;
   const shouldSwitchNetwork = chain && !isOnCorrectNetwork;
+
   const [registrationState, setRegistrationState] = useState<RegistrationState>(
-    getBlankRegistrationState(
-      label,
-      expiryInYears,
-      records,
-      isTestnet,
-      referrer
-    )
+    () => getBlankRegistrationState(label, durationInSeconds, records, isTestnet, referrer)
   );
   const [showConfirmClose, setShowConfirmClose] = useState(false);
 
   useEffect(() => {
-    // TODO: Remove ugly useEffect!
-    setRegistrationState({ ...registrationState, records });
+    setRegistrationState((prev) => ({ ...prev, records }));
   }, [records]);
 
   const handleSwitchNetwork = () => {
-    if (switchChain) {
-      switchChain({ chainId: expectedChainId });
-    }
+    if (switchChain) switchChain({ chainId: expectedChainId });
   };
 
   const handleTimerPassed = () => {
-    const newState = {
-      ...registrationState,
-      step: ProcessSteps.TimerCompleted,
-    };
-    setRegistrationState(newState);
+    setRegistrationState((prev) => ({ ...prev, step: ProcessSteps.TimerCompleted }));
   };
 
   const networkName = isTestnet ? "Sepolia" : "Mainnet";
@@ -117,15 +102,6 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
     }
   };
 
-  const handleConfirmClose = () => {
-    setShowConfirmClose(false);
-    onBack?.(true);
-  };
-
-  const handleCancelClose = () => {
-    setShowConfirmClose(false);
-  };
-
   return (
     <div className="ens-registration-progress">
       <button
@@ -137,11 +113,7 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
         <Icon name="chevron-left" size={16} />
       </button>
       <div className="d-flex justify-content-center">
-        <img
-          style={{ width: "250px", margin: "auto" }}
-          src={ninjaImage}
-          alt="Ninja Image"
-        />
+        <img style={{ width: "250px", margin: "auto" }} src={ninjaImage} alt="Ninja Image" />
       </div>
       <div className="ns-text-center mt-2 mb-2">
         <Text size="lg" weight="medium">
@@ -157,8 +129,7 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
           <Alert variant="warning" title="Wrong Network">
             <div className="d-flex flex-column align-items-center">
               <Text size="sm" className="mb-2">
-                Please switch to {networkName} to continue with the registration
-                process.
+                Please switch to {networkName} to continue with the registration process.
               </Text>
               <Button onClick={handleSwitchNetwork} size="md">
                 Switch to {networkName}
@@ -174,33 +145,22 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
             <CommitmentStep
               state={registrationState}
               isTestnet={isTestnet}
-              onStateUpdated={state => {
-
+              onStateUpdated={(state) => {
                 if (state.step === ProcessSteps.CommitmentSent) {
                   onStart?.(`${state.label}.eth`);
                 }
-
                 setRegistrationState(state);
               }}
             />
           </div>
-
           <div className="mt-2">
-            <TimerStep
-              state={registrationState}
-              onTimerCompleted={() => {
-                handleTimerPassed();
-              }}
-            />
+            <TimerStep state={registrationState} onTimerCompleted={handleTimerPassed} />
           </div>
-
           <div className="mt-2">
             <RegistrationStep
               state={registrationState}
               isTestnet={isTestnet}
-              onStateUpdated={state => {
-                setRegistrationState(state);
-              }}
+              onStateUpdated={setRegistrationState}
               onSuccess={onSuccess}
             />
           </div>
@@ -209,21 +169,24 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
 
       <Modal
         isOpen={showConfirmClose}
-        onClose={handleCancelClose}
+        onClose={() => setShowConfirmClose(false)}
         title="Leave Registration?"
         size="sm"
         footer={
           <div style={{ display: "flex", gap: 8, width: "100%" }}>
             <Button
               variant="outline"
-              onClick={handleCancelClose}
+              onClick={() => setShowConfirmClose(false)}
               style={{ flex: 1 }}
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
-              onClick={handleConfirmClose}
+              onClick={() => {
+                setShowConfirmClose(false);
+                onBack?.(true);
+              }}
               style={{ flex: 1 }}
             >
               Leave
@@ -232,8 +195,8 @@ export const RegistrationProcess: React.FC<RegistrationProcessProps> = ({
         }
       >
         <Text size="sm">
-          If you leave now, you will lose all your registration progress. Are
-          you sure you want to continue?
+          If you leave now, you will lose all your registration progress. Are you sure you want to
+          continue?
         </Text>
       </Modal>
     </div>

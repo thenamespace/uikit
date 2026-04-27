@@ -4,6 +4,7 @@ import { RegistrationSummary } from "./RegistrationSummary";
 import { SetNameRecords } from "./SetNameRecords";
 import { EnsRecords } from "@/types";
 import { deepCopy, getEnsRecordsDiff } from "@/utils";
+import { secondsFromYears } from "@/utils/date";
 import { useAccount } from "wagmi";
 import { RegistrationProcess } from "./RegistrationProcess";
 import { SuccessScreen } from "./registration";
@@ -34,7 +35,7 @@ enum RegistrationSteps {
 }
 
 interface RegistrationSuccessData {
-  expiryInYears: number;
+  durationLabel: string;
   registrationCost: string;
   transactionFees: string;
   total: string;
@@ -42,25 +43,15 @@ interface RegistrationSuccessData {
 }
 
 const getLabel = (name?: string) => {
-  if (!name) {
-    return "";
-  }
-
-  if (name.split(".").length !== 1) {
-    return name.split(".")[0];
-  }
+  if (!name) return "";
+  if (name.split(".").length !== 1) return name.split(".")[0];
   return name;
 };
 
-export const EnsNameRegistrationForm = (
-  props: EnsNameRegistrationFormProps
-) => {
+export const EnsNameRegistrationForm = (props: EnsNameRegistrationFormProps) => {
   const [label, setLabel] = useState<string>(getLabel(props.name));
-  const [step, setStep] = useState<RegistrationSteps>(
-    RegistrationSteps.Summary
-  );
-  const [years, setYears] = useState(1);
-  // TODO: Implement gas prices, Currently its hardcoded!
+  const [step, setStep] = useState<RegistrationSteps>(RegistrationSteps.Summary);
+  const [durationSeconds, setDurationSeconds] = useState(() => secondsFromYears(new Date(), 1));
   const [regTxFees, setRegTxFees] = useState<{
     isChecking: boolean;
     estimatedGas: number;
@@ -68,46 +59,34 @@ export const EnsNameRegistrationForm = (
   }>({
     estimatedGas: 0,
     isChecking: false,
-    price: {
-      wei: 0n,
-      eth: 0.0001,
-    },
+    price: { wei: 0n, eth: 0.0001 },
   });
   const [price, setPrice] = useState<{
     isChecking: boolean;
     wei: bigint;
     eth: number;
-  }>({
-    isChecking: false,
-    wei: 0n,
-    eth: 0,
-  });
+  }>({ isChecking: false, wei: 0n, eth: 0 });
   const [nameValidation, setNameValidation] = useState<{
     isChecking: boolean;
     isTaken: boolean;
     reason?: string;
-  }>({
-    isChecking: false,
-    isTaken: false,
-  });
+  }>({ isChecking: false, isTaken: false });
   const [showProfile, setShowProfile] = useState(false);
-
   const [ensRecordTemplate, setEnsRecordsTemplate] = useState<EnsRecords>({
     addresses: [],
     texts: [],
   });
-
   const [ensRecords, setEnsRecords] = useState<EnsRecords>({
     addresses: [],
     texts: [],
   });
 
-  const hasRecordsDifference = useMemo(() => {
-    return getEnsRecordsDiff(ensRecords, ensRecordTemplate).isDifferent;
-  }, [ensRecords, ensRecordTemplate]);
+  const hasRecordsDifference = useMemo(
+    () => getEnsRecordsDiff(ensRecords, ensRecordTemplate).isDifferent,
+    [ensRecords, ensRecordTemplate]
+  );
 
-  const [successData, setSuccessData] =
-    useState<RegistrationSuccessData | null>();
+  const [successData, setSuccessData] = useState<RegistrationSuccessData | null>();
 
   const handleSaveRecords = () => {
     setEnsRecords(deepCopy(ensRecordTemplate));
@@ -121,7 +100,7 @@ export const EnsNameRegistrationForm = (
 
   const clearInputState = () => {
     setLabel("");
-    setYears(1);
+    setDurationSeconds(secondsFromYears(new Date(), 1));
     setEnsRecords({ addresses: [], texts: [] });
     setEnsRecordsTemplate({ addresses: [], texts: [] });
     setNameValidation({ isChecking: false, isTaken: false });
@@ -155,7 +134,7 @@ export const EnsNameRegistrationForm = (
           {!showProfile && (
             <RegistrationSummary
               label={label}
-              years={years}
+              durationSeconds={durationSeconds}
               price={price}
               nameValidation={nameValidation}
               isTestnet={props.isTestnet || false}
@@ -166,7 +145,7 @@ export const EnsNameRegistrationForm = (
               hideBanner={props.hideBanner}
               bannerWidth={props.bannerWidth}
               onLabelChange={setLabel}
-              onYearsChange={setYears}
+              onDurationChange={setDurationSeconds}
               onPriceChange={setPrice}
               onNameValidationChange={setNameValidation}
               onSetProfile={() => setShowProfile(true)}
@@ -180,12 +159,10 @@ export const EnsNameRegistrationForm = (
         <RegistrationProcess
           isTestnet={props.isTestnet || false}
           label={label}
-          expiryInYears={years}
+          durationInSeconds={durationSeconds}
           records={ensRecords}
           onBack={(clearState?: boolean) => {
-            if (clearState) {
-              clearInputState();
-            }
+            if (clearState) clearInputState();
             setStep(RegistrationSteps.Summary);
           }}
           onStart={props.onRegistrationStart}
@@ -199,7 +176,7 @@ export const EnsNameRegistrationForm = (
       {step === RegistrationSteps.Success && successData && (
         <SuccessScreen
           ensName={label}
-          expiryInYears={successData.expiryInYears}
+          durationLabel={successData.durationLabel}
           registrationCost={successData.registrationCost}
           transactionFees={successData.transactionFees}
           total={successData.total}
