@@ -12,6 +12,7 @@ import { getSupportedAddressByChainId } from "@/constants/records/addressConstan
 import { Address, ContractFunctionExecutionError, formatEther, Hash } from "viem";
 import { normalize } from "viem/ens";
 import { debounce, deepCopy, getEnsRecordsDiff } from "@/utils";
+import { secondsFromYears } from "@/utils/date";
 import "./SubnameMintForm.css";
 import { useMintManager, useMintSubname, useWaitTransaction, useEthDollarValue } from "@/hooks";
 import { getChainIdForListingNetwork, ListingType, EnsRecords } from "@/types";
@@ -287,7 +288,7 @@ const SubnameMintFormContent = ({
     return getEnsRecordsDiff(ensRecords, ensRecordTemplate).isDifferent;
   }, [ensRecords, ensRecordTemplate]);
 
-  const [years, setYears] = useState(1);
+  const [durationSeconds, setDurationSeconds] = useState(() => secondsFromYears(new Date(), 1));
   const [availability, setAvailability] = useState<{
     isChecking: boolean;
     isAvailable: boolean;
@@ -422,11 +423,8 @@ const SubnameMintFormContent = ({
     };
   }, [mintDetails, transactionFees]);
 
-  const handleYearsChange = (newYears: number) => {
-    if (newYears < 1) {
-      return;
-    }
-    setYears(newYears);
+  const handleDurationChange = (seconds: number) => {
+    setDurationSeconds(seconds);
   };
 
   const totalPriceLoading = transactionFees.isChecking || mintDetails.isChecking;
@@ -810,8 +808,8 @@ const SubnameMintFormContent = ({
             expiryPicker={
               isExpirable
                 ? {
-                    years,
-                    onYearsChange: handleYearsChange,
+                    durationSeconds,
+                    onDurationChange: handleDurationChange,
                   }
                 : undefined
             }
