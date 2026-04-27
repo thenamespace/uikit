@@ -60,10 +60,13 @@
 }
 
 .ns-duration-picker__date-display {
-  font-weight: 700;
-  font-size: 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
   color: var(--ns-color-primary, #3b82f6);
   pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Native date input positioned over the control (invisible, triggers browser picker) */
