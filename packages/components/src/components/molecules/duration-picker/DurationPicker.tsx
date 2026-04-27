@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import "./DurationPicker.css";
 import { Button, Text } from "@/components/atoms";
 import {
@@ -27,16 +27,17 @@ export const DurationPicker: React.FC<DurationPickerProps> = ({
   onDurationChange,
   minSeconds = MIN_REGISTRATION_SECONDS,
 }) => {
-  const [durationType, setDurationType] = React.useState<"years" | "date">("years");
+  const [durationType, setDurationType] = useState<"years" | "date">("years");
   const dateInputRef = useRef<HTMLInputElement>(null);
-  const nowSeconds = Math.floor(Date.now() / 1000);
+  const nowSecondsRef = useRef(Math.floor(Date.now() / 1000));
+  const nowSeconds = nowSecondsRef.current;
 
   const years = Math.max(1, Math.floor(yearsFromSeconds(durationSeconds)));
+  const minusSeconds = secondsFromYears(new Date(), years - 1);
 
   const handleMinusYear = () => {
-    const newSeconds = secondsFromYears(new Date(), years - 1);
-    if (newSeconds >= minSeconds) {
-      onDurationChange(newSeconds);
+    if (minusSeconds >= minSeconds) {
+      onDurationChange(minusSeconds);
     }
   };
 
@@ -70,7 +71,7 @@ export const DurationPicker: React.FC<DurationPickerProps> = ({
     }
   };
 
-  const minusDisabled = secondsFromYears(new Date(), years - 1) < minSeconds;
+  const minusDisabled = minusSeconds < minSeconds;
   const expirySeconds = nowSeconds + durationSeconds;
   const expiryDateDisplay = new Date(expirySeconds * 1000).toLocaleDateString("en-US", {
     month: "long",
