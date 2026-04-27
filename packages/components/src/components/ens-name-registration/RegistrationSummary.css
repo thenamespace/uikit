@@ -35,12 +35,6 @@
   padding-top: 8px;
 }
 
-.ens-expiry-picker {
-  padding: 10px;
-  border: 1px solid var(--ns-color-border);
-  border-radius: 10px;
-}
-
 .ens-registration-form-container .ens-profile-selector {
   border: 3px dashed var(--ns-color-border);
   border-radius: 10px;
