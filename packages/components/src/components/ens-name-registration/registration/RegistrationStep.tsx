@@ -135,14 +135,13 @@ export const RegistrationStep: React.FC<RegistrationStepProps> = ({
     }
   };
 
-  const { isCurrentStep, isDisabled, isPending, isCompleted } = useMemo(() => {
-    const isPending = state.step < ProcessSteps.TimerCompleted;
+  const { isCurrentStep, isDisabled, isCompleted } = useMemo(() => {
     const isCurrentStep =
       state.step >= ProcessSteps.TimerCompleted &&
       state.step < ProcessSteps.RegistrationCompleted;
     const isCompleted = state.step >= ProcessSteps.RegistrationCompleted;
     const isDisabled = state.step < ProcessSteps.TimerCompleted;
-    return { isCurrentStep, isDisabled, isPending, isCompleted };
+    return { isCurrentStep, isDisabled, isCompleted };
   }, [state]);
 
   const getProgressStatusBadge = () => {

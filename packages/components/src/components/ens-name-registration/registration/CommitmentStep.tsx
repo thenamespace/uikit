@@ -60,7 +60,7 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({
     let tx: Hash | null = null;
 
     try {
-      setBtnState({ ...btnState, waitingWallet: true });
+      setBtnState({ waitingWallet: true, waitingTx: false });
 
       const request: RegistrationRequest = {
         label: state.label,
