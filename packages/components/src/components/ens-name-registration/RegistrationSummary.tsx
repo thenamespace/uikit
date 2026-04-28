@@ -3,6 +3,7 @@ import "./RegistrationSummary.css";
 import { normalize } from "viem/ens";
 
 import { debounce, formatFloat } from "@/utils";
+import { MIN_REGISTRATION_SECONDS } from "@/utils/date";
 import { Button, Icon, Input, Text, ShurikenSpinner } from "@/components";
 import { PricingDisplay } from "@/components/molecules";
 import ninjaImage from "../../assets/banner.png";
@@ -14,20 +15,20 @@ const MIN_ENS_LEN = 3;
 
 export interface RegistrationSummaryProps {
   label: string;
-  years: number;
+  durationSeconds: number;
   price: {
     isChecking: boolean;
     wei: bigint;
     eth: number;
   };
   transactionFees?: {
-    isChecking: boolean
-    estimatedGas: number
+    isChecking: boolean;
+    estimatedGas: number;
     price: {
-      wei: bigint
-      eth: number
-    }
-  }
+      wei: bigint;
+      eth: number;
+    };
+  };
   nameValidation: {
     isChecking: boolean;
     isTaken: boolean;
@@ -40,9 +41,13 @@ export interface RegistrationSummaryProps {
   hideBanner?: boolean;
   bannerWidth?: number;
   onLabelChange: (label: string) => void;
-  onYearsChange: (years: number) => void;
+  onDurationChange: (seconds: number) => void;
   onPriceChange: (price: { isChecking: boolean; wei: bigint; eth: number }) => void;
-  onNameValidationChange: (validation: { isChecking: boolean; isTaken: boolean; reason?: string }) => void;
+  onNameValidationChange: (validation: {
+    isChecking: boolean;
+    isTaken: boolean;
+    reason?: string;
+  }) => void;
   onSetProfile?: () => void;
   onStart?: () => void;
   onConnectWallet?: () => void;
@@ -50,7 +55,7 @@ export interface RegistrationSummaryProps {
 
 export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
   label,
-  years,
+  durationSeconds,
   price,
   nameValidation,
   transactionFees,
@@ -61,7 +66,7 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
   hideBanner = false,
   bannerWidth = 250,
   onLabelChange,
-  onYearsChange,
+  onDurationChange,
   onPriceChange,
   onNameValidationChange,
   onSetProfile,
@@ -70,12 +75,9 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
 }) => {
   const { isConnected } = useAccount();
   const { ethUsdRate } = useEthDollarValue();
-  const { isEnsAvailable, getRegistrationPrice } = useRegisterENS({
-    isTestnet,
-  });
+  const { isEnsAvailable, getRegistrationPrice } = useRegisterENS({ isTestnet });
 
   const { regPrice, regFees, regTotal } = useMemo(() => {
-
     let regPrice = 0;
     let regFees = 0;
     let total = 0;
@@ -84,27 +86,19 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
       regPrice += price.eth;
       total += price.eth;
     }
-
     if (transactionFees) {
       regFees += transactionFees.price.eth;
       total += transactionFees.price.eth;
     }
 
-    return {
-      regFees,
-      regPrice,
-      regTotal: formatFloat (total, 5)
-    }
-
-  },[price, transactionFees])
+    return { regFees, regPrice, regTotal: formatFloat(total, 5) };
+  }, [price, transactionFees]);
 
   const checkAvailability = async (labelToCheck: string) => {
-    let _available = false;
-
     try {
-      _available = await isEnsAvailable(labelToCheck);
-      onNameValidationChange({ isChecking: false, isTaken: !_available });
-    } catch (err) {
+      const available = await isEnsAvailable(labelToCheck);
+      onNameValidationChange({ isChecking: false, isTaken: !available });
+    } catch {
       onNameValidationChange({
         isChecking: false,
         isTaken: false,
@@ -113,21 +107,12 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
     }
   };
 
-
-  const checkRegistrationPrice = async (labelToCheck: string, expiry: number) => {
+  const checkRegistrationPrice = async (labelToCheck: string, durationSecs: number) => {
     try {
-      const rentPrice = await getRegistrationPrice(labelToCheck, expiry);
-      onPriceChange({
-        isChecking: false,
-        eth: rentPrice.eth,
-        wei: rentPrice.wei,
-      });
-    } catch (err) {
-      onPriceChange({
-        isChecking: false,
-        eth: -1,
-        wei: 0n,
-      });
+      const rentPrice = await getRegistrationPrice(labelToCheck, durationSecs);
+      onPriceChange({ isChecking: false, eth: rentPrice.eth, wei: rentPrice.wei });
+    } catch {
+      onPriceChange({ isChecking: false, eth: -1, wei: 0n });
     }
   };
 
@@ -138,8 +123,8 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
 
   const debouncedCheckPrice = useCallback(
     debounce(
-      (labelToCheck: string, expiryYears: number) =>
-        checkRegistrationPrice(labelToCheck, expiryYears),
+      (labelToCheck: string, durationSecs: number) =>
+        checkRegistrationPrice(labelToCheck, durationSecs),
       500
     ),
     []
@@ -147,14 +132,10 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
 
   const handleNameChanged = async (value: string) => {
     const _value = value.toLocaleLowerCase().trim();
-
-    if (_value.includes(".")) {
-      return;
-    }
-
+    if (_value.includes(".")) return;
     try {
       normalize(_value);
-    } catch (err) {
+    } catch {
       return;
     }
 
@@ -164,33 +145,29 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
       onNameValidationChange({ isChecking: true, isTaken: false });
       onPriceChange({ isChecking: true, eth: 0, wei: 0n });
       debouncedCheckAvailability(_value);
-      debouncedCheckPrice(_value, years);
+      debouncedCheckPrice(_value, durationSeconds);
     } else {
       onNameValidationChange({ isChecking: false, isTaken: false });
     }
   };
 
-  const handleYearsChange = (newYears: number) => {
-    if (newYears < 1) {
-      return;
-    }
+  const handleDurationChange = (newSeconds: number) => {
+    if (newSeconds < MIN_REGISTRATION_SECONDS) return;
     onPriceChange({ ...price, isChecking: true });
-    onYearsChange(newYears);
-    debouncedCheckPrice(label, newYears);
+    onDurationChange(newSeconds);
+    debouncedCheckPrice(label, newSeconds);
   };
 
-  const isNameAvailable = useMemo(() => {
-    return (
+  const isNameAvailable = useMemo(
+    () =>
       label.length >= MIN_ENS_LEN &&
       !nameValidation.isChecking &&
-      !nameValidation.isTaken
-    );
-  }, [label.length, nameValidation.isChecking, nameValidation.isTaken]);
+      !nameValidation.isTaken,
+    [label.length, nameValidation.isChecking, nameValidation.isTaken]
+  );
 
   const nextBtnDisabled =
-    label.length < MIN_ENS_LEN ||
-    nameValidation.isChecking ||
-    nameValidation.isTaken;
+    label.length < MIN_ENS_LEN || nameValidation.isChecking || nameValidation.isTaken;
 
   const totalPriceLoading = transactionFees?.isChecking || price.isChecking;
   const transactionFeesLoading = transactionFees?.isChecking || false;
@@ -216,7 +193,7 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
       </div>
       <Input
         value={label}
-        onChange={e => handleNameChanged(e.target.value)}
+        onChange={(e) => handleNameChanged(e.target.value)}
         size="lg"
         wrapperClassName="ens-name-input"
         prefix={<Icon color="grey" size={20} name="search" />}
@@ -227,7 +204,6 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
         }
       />
 
-      {/* Status Messages */}
       {label.length < MIN_ENS_LEN && (
         <div className="ns-text-center mt-2">
           <Text size="xs" color="grey">
@@ -258,7 +234,6 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
           </div>
         )}
 
-      {/* RECEIPT - Only show when name is available */}
       {isNameAvailable && (
         <>
           <PricingDisplay
@@ -277,13 +252,13 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
               isChecking: totalPriceLoading,
             }}
             expiryPicker={{
-              years,
-              onYearsChange: handleYearsChange,
+              durationSeconds,
+              onDurationChange: handleDurationChange,
+              minSeconds: MIN_REGISTRATION_SECONDS,
             }}
             ethUsdRate={ethUsdRate}
           />
 
-          {/* COMPLETE PROFILE */}
           <div
             className="ens-profile-selector mt-2"
             onClick={onSetProfile}
@@ -292,12 +267,7 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
             <div className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
                 <div className="shuriken-cont d-flex align-items-center justify-content-center">
-                  <img
-                    className="shuriken"
-                    width={50}
-                    src={shurikenImage}
-                    alt="shuricken"
-                  ></img>
+                  <img className="shuriken" width={50} src={shurikenImage} alt="shuricken" />
                 </div>
                 <div className="ms-3">
                   <Text size="sm" weight="medium">
@@ -313,13 +283,9 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
           </div>
         </>
       )}
+
       {!isConnected && onConnectWallet ? (
-        <Button
-          style={{ width: "100%" }}
-          size="lg"
-          className="mt-2"
-          onClick={onConnectWallet}
-        >
+        <Button style={{ width: "100%" }} size="lg" className="mt-2" onClick={onConnectWallet}>
           Connect Wallet
         </Button>
       ) : (

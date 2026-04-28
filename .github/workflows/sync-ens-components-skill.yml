@@ -1,0 +1,45 @@
+name: Sync ENS Components Skill to DevRel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".agents/skills/ens-components/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync-to-devrel-skills:
+    name: Sync to thenamespace/skills
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout uikit
+        uses: actions/checkout@v4
+
+      - name: Checkout devrel skills repo
+        uses: actions/checkout@v4
+        with:
+          repository: thenamespace/skills
+          token: ${{ secrets.CROSS_REPO_SYNC_TOKEN }}
+          path: target
+
+      - name: Sync skill files
+        run: |
+          mkdir -p target/skills/ens-components
+          rsync -av --delete .agents/skills/ens-components/ target/skills/ens-components/
+
+      - name: Create pull request in thenamespace/skills
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.CROSS_REPO_SYNC_TOKEN }}
+          path: target
+          commit-message: "chore: sync ens-components skill from uikit"
+          branch: "chore/sync-ens-components-skill"
+          delete-branch: true
+          title: "chore: sync ens-components skill from uikit"
+          body: |
+            Automated sync triggered by changes to `.agents/skills/ens-components/**` in `thenamespace/uikit`.
+
+            This PR updates `skills/ens-components/**` in `thenamespace/skills`.
