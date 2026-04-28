@@ -13,19 +13,25 @@ import {
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 
-const ALCHEMY_RPC = "https://eth-mainnet.g.alchemy.com/v2/hFMEk-pg2hvLDZM9UOHQH";
+const ALCHEMY_KEY = "hFMEk-pg2hvLDZM9UOHQH";
+const ALCHEMY_MAINNET = `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`;
+const ALCHEMY_SEPOLIA = `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_KEY}`;
+const ALCHEMY_POLYGON = `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`;
+const ALCHEMY_OPTIMISM = `https://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`;
+const ALCHEMY_ARBITRUM = `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`;
+const ALCHEMY_BASE = `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`;
 
 const config = getDefaultConfig({
   appName: "Namespace Storybook",
   projectId: "YOUR_PROJECT_ID",
   chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
   transports: {
-    [mainnet.id]: http(ALCHEMY_RPC),
-    [polygon.id]: http(ALCHEMY_RPC),
-    [optimism.id]: http(ALCHEMY_RPC),
-    [arbitrum.id]: http(ALCHEMY_RPC),
-    [base.id]: http(ALCHEMY_RPC),
-    [sepolia.id]: http(ALCHEMY_RPC),
+    [mainnet.id]: http(ALCHEMY_MAINNET),
+    [polygon.id]: http(ALCHEMY_POLYGON),
+    [optimism.id]: http(ALCHEMY_OPTIMISM),
+    [arbitrum.id]: http(ALCHEMY_ARBITRUM),
+    [base.id]: http(ALCHEMY_BASE),
+    [sepolia.id]: http(ALCHEMY_SEPOLIA),
   },
   ssr: false,
 });

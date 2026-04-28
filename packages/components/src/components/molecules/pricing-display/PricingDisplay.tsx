@@ -40,7 +40,7 @@ export const PricingDisplay: React.FC<PricingDisplayProps> = ({
     if (!ethUsdRate || totalLoading || total.amount === "Free" || total.amount === "N/A") {
       return null;
     }
-    const eth = parseFloat(String(total.amount));
+    const eth = parseFloat(String(total.amount).replace(/^~/, ""));
     if (isNaN(eth) || eth <= 0) return null;
     return (eth * ethUsdRate).toFixed(2);
   }, [ethUsdRate, total.amount, totalLoading]);

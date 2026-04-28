@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./ENSNamesRegistrarComponent.css";
 import { RegistrationSummary } from "./RegistrationSummary";
 import { SetNameRecords } from "./SetNameRecords";
@@ -61,12 +61,14 @@ export const EnsNameRegistrationForm = (props: EnsNameRegistrationFormProps) => 
   const [regTxFees, setRegTxFees] = useState<{
     isChecking: boolean;
     failed?: boolean;
+    isHeuristic?: boolean;
     estimatedGas: number;
     price: { wei: bigint; eth: number };
   }>({
     estimatedGas: 0,
     isChecking: false,
     failed: false,
+    isHeuristic: false,
     price: { wei: 0n, eth: 0 },
   });
   const [price, setPrice] = useState<{
@@ -97,46 +99,14 @@ export const EnsNameRegistrationForm = (props: EnsNameRegistrationFormProps) => 
   const [successData, setSuccessData] = useState<RegistrationSuccessData | null>();
 
   const feeRequestRef = useRef(0);
+  const estimateFnRef = useRef(estimateRegistrationFees);
+  const referrerRef = useRef(props.referrer);
+  estimateFnRef.current = estimateRegistrationFees;
+  referrerRef.current = props.referrer;
 
-  const runFeeEstimate = useCallback(
-    async (
-      requestId: number,
-      params: {
-        label: string;
-        owner: Address;
-        durationInSeconds: number;
-        records: EnsRecords;
-      }
-    ) => {
-      try {
-        const result = await estimateRegistrationFees({
-          label: params.label,
-          owner: params.owner,
-          durationInSeconds: params.durationInSeconds,
-          secret: REG_SECRET_PLACEHOLDER,
-          records: params.records,
-          referrer: props.referrer,
-        });
-        if (feeRequestRef.current !== requestId) return;
-        setRegTxFees({
-          isChecking: false,
-          failed: false,
-          estimatedGas: Number(result.gasEstimate),
-          price: { wei: result.wei, eth: result.eth },
-        });
-      } catch {
-        if (feeRequestRef.current !== requestId) return;
-        setRegTxFees({
-          isChecking: false,
-          failed: true,
-          estimatedGas: 0,
-          price: { wei: 0n, eth: 0 },
-        });
-      }
-    },
-    [estimateRegistrationFees, props.referrer]
-  );
-
+  // Stable debounced estimator: closures read from refs, so the function
+  // identity never changes and the effect below doesn't re-fire on every
+  // render of useRegisterENS().
   const debouncedEstimate = useMemo(
     () =>
       debounce(
@@ -149,11 +119,39 @@ export const EnsNameRegistrationForm = (props: EnsNameRegistrationFormProps) => 
             records: EnsRecords;
           }
         ) => {
-          void runFeeEstimate(requestId, params);
+          estimateFnRef
+            .current({
+              label: params.label,
+              owner: params.owner,
+              durationInSeconds: params.durationInSeconds,
+              secret: REG_SECRET_PLACEHOLDER,
+              records: params.records,
+              referrer: referrerRef.current,
+            })
+            .then((result) => {
+              if (feeRequestRef.current !== requestId) return;
+              setRegTxFees({
+                isChecking: false,
+                failed: false,
+                isHeuristic: result.isHeuristic,
+                estimatedGas: Number(result.gasEstimate),
+                price: { wei: result.wei, eth: result.eth },
+              });
+            })
+            .catch(() => {
+              if (feeRequestRef.current !== requestId) return;
+              setRegTxFees({
+                isChecking: false,
+                failed: true,
+                isHeuristic: false,
+                estimatedGas: 0,
+                price: { wei: 0n, eth: 0 },
+              });
+            });
         },
         500
       ),
-    [runFeeEstimate]
+    []
   );
 
   useEffect(() => {
@@ -166,18 +164,24 @@ export const EnsNameRegistrationForm = (props: EnsNameRegistrationFormProps) => 
       price.isChecking ||
       price.eth <= 0
     ) {
+      // Cancel any in-flight estimation result so it doesn't apply later.
+      feeRequestRef.current += 1;
       return;
     }
 
     const requestId = feeRequestRef.current + 1;
     feeRequestRef.current = requestId;
-    setRegTxFees((prev) => ({ ...prev, isChecking: true, failed: false }));
+    setRegTxFees((prev) =>
+      prev.isChecking && !prev.failed ? prev : { ...prev, isChecking: true, failed: false }
+    );
     debouncedEstimate(requestId, {
       label,
       owner: connectedAddress,
       durationInSeconds: durationSeconds,
       records: ensRecords,
     });
+    // debouncedEstimate is intentionally omitted from deps — it's stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     connectedAddress,
     label,
@@ -187,7 +191,6 @@ export const EnsNameRegistrationForm = (props: EnsNameRegistrationFormProps) => 
     nameValidation.isTaken,
     price.isChecking,
     price.eth,
-    debouncedEstimate,
   ]);
 
   const handleSaveRecords = () => {
@@ -240,7 +243,7 @@ export const EnsNameRegistrationForm = (props: EnsNameRegistrationFormProps) => 
               price={price}
               nameValidation={nameValidation}
               isTestnet={props.isTestnet || false}
-              transactionFees={regTxFees}
+              transactionFees={connectedAddress ? regTxFees : undefined}
               title={props.title}
               subtitle={props.subtitle}
               bannerImage={props.bannerImage}

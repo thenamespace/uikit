@@ -33,11 +33,35 @@ export interface RegistrationFeeEstimate {
   eth: number;
   gasEstimate: bigint;
   gasPrice: bigint;
+  /** True when the precise eth_estimateGas+stateOverride path failed and we
+   *  fell back to a heuristic. UI can mark the value as approximate. */
+  isHeuristic: boolean;
 }
 
 const COMMITMENTS_SLOT = 1n;
 const FIVE_MINUTES_SECONDS = 5 * 60;
-const MIN_PRIORITY_FEE_WEI = 1_500_000_000n;
+
+// Heuristic gas costs for RPCs that reject eth_estimateGas state overrides
+// (e.g. cloudflare-eth, some public Sepolia endpoints). Numbers picked to
+// match observed gas usage of the v3 ETHRegistrarController on mainnet.
+const HEURISTIC_COMMIT_GAS = 50_000n;
+const HEURISTIC_REGISTER_BASE_GAS = 240_000n;
+const HEURISTIC_GAS_PER_RECORD = 50_000n;
+
+const isStateOverrideRejection = (err: unknown): boolean => {
+  const e = err as { code?: number; cause?: { code?: number }; message?: string; shortMessage?: string };
+  const code = e?.code ?? e?.cause?.code;
+  if (code === -32602 || code === -32601 || code === -32000) return true;
+  const msg = `${e?.shortMessage ?? ""} ${e?.message ?? ""}`.toLowerCase();
+  return (
+    msg.includes("state override") ||
+    msg.includes("stateoverride") ||
+    msg.includes("too many arguments") ||
+    msg.includes("invalid argument 2") ||
+    msg.includes("3rd parameter") ||
+    msg.includes("does not support")
+  );
+};
 
 const NAMESPACE_REFERRER_ADDRESS = "0xb7B18611b8C51B4B3F400BaF09DB49E61e0aF044";
 
@@ -179,20 +203,10 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
     return { txHash: tx, price };
   };
 
-  const getEffectiveGasPrice = async (): Promise<bigint> => {
-    try {
-      const [block, priorityFee] = await Promise.all([
-        publicClient!.getBlock({ blockTag: "latest" }),
-        publicClient!.estimateMaxPriorityFeePerGas().catch(() => 0n),
-      ]);
-      const baseFee = block.baseFeePerGas ?? (await publicClient!.getGasPrice());
-      const effectivePriorityFee =
-        priorityFee > MIN_PRIORITY_FEE_WEI ? priorityFee : MIN_PRIORITY_FEE_WEI;
-      return baseFee * 2n + effectivePriorityFee;
-    } catch {
-      return publicClient!.getGasPrice();
-    }
-  };
+  // Use eth_gasPrice (matches wagmi's useGasPrice and what ens-app-v3 displays).
+  // The wallet may use a higher gas price at submission, but for the displayed
+  // estimate we want parity with ENS app so users can compare like-for-like.
+  const getEffectiveGasPrice = (): Promise<bigint> => publicClient!.getGasPrice();
 
   // Storage slot for ETHRegistrarController.commitments[commitment].
   // Solidity layout for `mapping(bytes32 => uint256) commitments` at slot 1
@@ -232,15 +246,20 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
     const fiveMinAgo = BigInt(Math.floor(Date.now() / 1000) - FIVE_MINUTES_SECONDS);
     const balanceOverride = price.wei * 2n + parseEther("1000000");
 
-    const [commitGas, registerGas, gasPrice] = await Promise.all([
-      publicClient!.estimateContractGas({
+    const gasPricePromise = getEffectiveGasPrice();
+
+    const commitGasPromise = publicClient!
+      .estimateContractGas({
         address: controller,
         abi: ABIS.ETH_REGISTRAR_CONTOLLER,
         functionName: "commit",
         args: [commitment],
         account: request.owner,
-      }),
-      publicClient!.estimateContractGas({
+      })
+      .catch(() => HEURISTIC_COMMIT_GAS);
+
+    const registerGasPromise = publicClient!
+      .estimateContractGas({
         address: controller,
         abi: ABIS.ETH_REGISTRAR_CONTOLLER,
         functionName: "register",
@@ -257,16 +276,38 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
               },
             ],
           },
-          {
-            address: request.owner,
-            balance: balanceOverride,
-          },
+          { address: request.owner, balance: balanceOverride },
         ],
-      }),
-      getEffectiveGasPrice(),
+      })
+      .then((g) => ({ gas: g, isHeuristic: false }))
+      .catch((err) => {
+        // Fall back to a heuristic on any failure — not just state-override
+        // rejection. Common failures we want to absorb: RPC doesn't honor
+        // state overrides (Cloudflare, some public Sepolia), wrong-chain RPC
+        // misconfig (controller not deployed at that address), execution
+        // reverted for any reason. Logging the cause helps debugging.
+        if (typeof console !== "undefined") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[useRegisterENS] register-gas estimation failed; using heuristic.",
+            isStateOverrideRejection(err) ? "(state override unsupported)" : "",
+            err
+          );
+        }
+        const recordCount =
+          (request.records.addresses?.length ?? 0) + (request.records.texts?.length ?? 0);
+        const heuristic =
+          HEURISTIC_REGISTER_BASE_GAS + BigInt(recordCount) * HEURISTIC_GAS_PER_RECORD;
+        return { gas: heuristic, isHeuristic: true };
+      });
+
+    const [commitGas, registerResult, gasPrice] = await Promise.all([
+      commitGasPromise,
+      registerGasPromise,
+      gasPricePromise,
     ]);
 
-    const totalGas = commitGas + registerGas;
+    const totalGas = commitGas + registerResult.gas;
     const totalWei = totalGas * gasPrice;
 
     return {
@@ -274,6 +315,7 @@ export const useRegisterENS = ({ isTestnet }: { isTestnet?: boolean }) => {
       eth: parseFloat(formatEther(totalWei)),
       gasEstimate: totalGas,
       gasPrice,
+      isHeuristic: registerResult.isHeuristic,
     };
   };
 

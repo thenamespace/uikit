@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import "./RegistrationSummary.css";
 import { normalize } from "viem/ens";
 
-import { debounce, formatFloat } from "@/utils";
+import { debounce } from "@/utils";
 import { MIN_REGISTRATION_SECONDS } from "@/utils/date";
 import { Button, Icon, Input, Text, ShurikenSpinner } from "@/components";
 import { PricingDisplay } from "@/components/molecules";
@@ -24,6 +24,7 @@ export interface RegistrationSummaryProps {
   transactionFees?: {
     isChecking: boolean;
     failed?: boolean;
+    isHeuristic?: boolean;
     estimatedGas: number;
     price: {
       wei: bigint;
@@ -79,27 +80,19 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
   const { isEnsAvailable, getRegistrationPrice } = useRegisterENS({ isTestnet });
 
   const { regPrice, regFees, regTotal } = useMemo(() => {
-    let regPrice = 0;
-    let regFees: number | string = 0;
-    let total: number | string = 0;
+    const priceEth = price?.eth ?? 0;
+    const feesEth = transactionFees?.price.eth ?? 0;
+    const heuristicPrefix = transactionFees?.isHeuristic ? "~" : "";
 
-    if (price) {
-      regPrice += price.eth;
-      total = (total as number) + price.eth;
-    }
-    if (transactionFees?.failed) {
-      regFees = "N/A";
-      total = "N/A";
-    } else if (transactionFees) {
-      regFees = (regFees as number) + transactionFees.price.eth;
-      total = (total as number) + transactionFees.price.eth;
-    }
+    const regPrice = priceEth > 0 ? priceEth.toFixed(4) : "0.0000";
+    const regFees = transactionFees?.failed
+      ? "N/A"
+      : `${heuristicPrefix}${feesEth.toFixed(4)}`;
+    const regTotal = transactionFees?.failed
+      ? "N/A"
+      : `${heuristicPrefix}${(priceEth + feesEth).toFixed(4)}`;
 
-    return {
-      regFees,
-      regPrice,
-      regTotal: typeof total === "number" ? formatFloat(total, 5) : total,
-    };
+    return { regPrice, regFees, regTotal };
   }, [price, transactionFees]);
 
   const checkAvailability = async (labelToCheck: string) => {
@@ -251,10 +244,11 @@ export const RegistrationSummary: React.FC<RegistrationSummaryProps> = ({
               amount: regPrice,
               isChecking: price.isChecking,
             }}
-            networkFees={{
-              amount: regFees,
-              isChecking: transactionFeesLoading,
-            }}
+            networkFees={
+              transactionFees
+                ? { amount: regFees, isChecking: transactionFeesLoading }
+                : undefined
+            }
             total={{
               amount: regTotal,
               isChecking: totalPriceLoading,
